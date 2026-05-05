@@ -41,7 +41,7 @@ export class AdminDashboardComponent implements OnInit {
         title: 'Login Failed',
         icon: 'warning',
       });
-      this.router.navigate(['/Home']);
+      this.router.navigate(['Home']);
     }
   }
 
@@ -49,7 +49,7 @@ export class AdminDashboardComponent implements OnInit {
   //   this.router.navigateByUrl(val);
   // }
 
-    goto(path: string) {
+  goto(path: string) {
     this.isNavbarCollapsed = true;
     const targetPath = path.startsWith('/') ? path : '/' + path;
     this.router.navigate([targetPath]);

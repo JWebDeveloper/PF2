@@ -549,7 +549,7 @@ export class AdminAssignTestComponent implements OnInit {
   //   return this.selectedFile != null;
   // }
 
-AssignedToNew:any;
+  AssignedToNew: any;
 
   ReAssginStaff(AssignTest: any): void {
     if (!this.AssignedToNew) {
@@ -561,7 +561,7 @@ AssignedToNew:any;
     // formData.append('UserId', AssignTest.userEmailId);
     // formData.append('AssignedTo', this.AssignedTo);
 
-     const formData = new FormData();
+    const formData = new FormData();
     formData.append('RecordId', AssignTest.recordId);
     formData.append('BookingId', AssignTest.bookingId);
     formData.append('InstrumentId', AssignTest.instrumentId);

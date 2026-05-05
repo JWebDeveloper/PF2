@@ -73,7 +73,11 @@ export class BookingResultsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
+   this.LoadPageDetails();
+  }
+
+  LoadPageDetails(){
+     this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
    if (GetCookieData) {
       const retrievedCookies = JSON.parse(GetCookieData);
@@ -231,7 +235,8 @@ export class BookingResultsComponent implements OnInit {
               title: 'No Result Found for this Test',
               icon: 'error'
             }).then(() => {
-              window.location.reload();
+                 this.LoadPageDetails();
+              // window.location.reload();
             });
           }
         }

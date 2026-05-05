@@ -73,6 +73,7 @@ export class AdminActionBookingsComponent implements OnInit {
   Remarks: any;
   originalData: any[] = []; // Loaded from API and remains unchanged
   selectedStatus: string;
+Modal: any;
 
   constructor(
     private CIFwebService: LpuCIFWebService,
@@ -92,7 +93,11 @@ export class AdminActionBookingsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';//'http://172.19.2.52/umsweb/webftp/CIFDocuments/';
+  this.LoadPageDetailss();
+  }
+  LoadPageDetailss(): void {
+
+  this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';//'http://172.19.2.52/umsweb/webftp/CIFDocuments/';
     const GetCookieData = this.cookieService.get('authData');
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole = retrievedCookies.UserRole;
@@ -228,7 +233,7 @@ export class AdminActionBookingsComponent implements OnInit {
 
   }
 
-  VerifyData(BookingData: any) {
+  VerifyData(BookingData: any, Modal: any) {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
     if (this.FileData) {
@@ -249,14 +254,18 @@ export class AdminActionBookingsComponent implements OnInit {
               title: 'Uploaded Successfully!',
               icon: 'success'
             }).then(() => {
-              window.location.reload();
+              Modal.close();
+               this.LoadPageDetailss();
+              // window.location.reload();
             });
           } else {
             Swal.fire({
               title: 'Already Uploaded Results for this Test',
               icon: 'error'
             }).then(() => {
-              window.location.reload();
+              // window.location.reload();
+              Modal.close();
+               this.LoadPageDetailss();
             });
           }
           const elapsed = new Date().getTime() - startTime;

@@ -67,7 +67,7 @@ export class LpuCIFWebService {
 
   getLpuFooter(): Observable<any> {
     // return this.http.get('https://localhost:7125/api/LpuCIFHeaderFooter/GetLpuFooter');
-    return this.http.get(AUTH_API +'api/LpuCIFHeaderFooter/GetLpuFooter');
+    return this.http.get(AUTH_API + 'api/LpuCIFHeaderFooter/GetLpuFooter');
   }
 
 
@@ -140,8 +140,8 @@ export class LpuCIFWebService {
   }
 
   GetAnalysisDetails(InstrumentId: any): Observable<any> {
-     let token = this.storageService.getUser();
-  
+    let token = this.storageService.getUser();
+
     const httpOptions = {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -154,8 +154,8 @@ export class LpuCIFWebService {
 
 
   GetDuationAndPrice(AnalysisId: any, UserId: any, Duration: string): Observable<any> {
-  let token = this.storageService.getUser();
-  
+    let token = this.storageService.getUser();
+
     const httpOptions = {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -168,11 +168,11 @@ export class LpuCIFWebService {
 
 
   addBookingSlot(newBookingData: FormData): Observable<any> {
-      let token = this.storageService.getUser();
-  
+    let token = this.storageService.getUser();
+
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      // .set('Authorization', 'Bearer ' + this.authToken)
+    // .set('Authorization', 'Bearer ' + this.authToken)
     return this.http.post(
       // AUTH_API_LOCAL + 'api/LpuCIF/NewBookingSlot', newBookingData, { headers }
       AUTH_API + 'api/LpuCIF/NewBookingSlot', newBookingData, { headers })
@@ -457,7 +457,7 @@ export class LpuCIFWebService {
   GetUserAllBookingSlot(UserEmailId: string): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
-       .set('Authorization', 'Bearer ' + authToken) // for local API
+      .set('Authorization', 'Bearer ' + authToken) // for local API
       // .set('Authorization', 'Bearer ' + this.authToken)
       .set('Content-Type', 'application/json');
     return this.http.get(
@@ -498,7 +498,7 @@ export class LpuCIFWebService {
   CIFGetUserDetails(UserEmailId: string): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
-       .set('Authorization', 'Bearer ' + authToken)
+      .set('Authorization', 'Bearer ' + authToken)
       // .set('Authorization', 'Bearer ' + this.authToken)
       .set('Content-Type', 'application/json');
     return this.http.get(
@@ -675,7 +675,7 @@ export class LpuCIFWebService {
 
 
   GetAllEventDetails(): Observable<any> {
-     let token = this.storageService.getUser();
+    let token = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + this.authToken)
       .set('Content-Type', 'application/json');

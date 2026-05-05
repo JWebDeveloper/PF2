@@ -239,7 +239,7 @@ export class AdminUpdateSampleStatusComponent implements OnInit {
       next: (response: any) => {
         const validResponse = response && Array.isArray(response.item1) && response.item1.length > 0;
         if (!validResponse) {
-          this.showAlert('Something went wrong', 'Unexpected server response. Please try again.', 'error');
+          this.showAlert('Status already updated', 'No Ation Required.', 'error');
           this.loadingIndicator = false;
           this.modalRef.close();
           // this.modalRef = null;
@@ -265,7 +265,7 @@ export class AdminUpdateSampleStatusComponent implements OnInit {
               this.showAlert('Sample Status Updated!', '', 'success', true);
               break;
             case 'Failed':
-              this.showAlert('Test is already assigned', 'You cannot assign it again.', 'warning');
+              this.showAlert('Sample is already Updated', 'No further action is required.', 'warning');
               break;
             default:
               this.showAlert('Status already updated', 'No further action is required.', 'info');

@@ -69,6 +69,7 @@ export class AdminUserDetailsComponent implements OnInit {
   uploadEnabled: boolean;
   Remarks: any;
   candidateName: any;
+Modal: any;
 
   constructor(
     private CIFwebService: LpuCIFWebService,
@@ -89,11 +90,13 @@ export class AdminUserDetailsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
+
+    this.PageLoadDetails();
+    // const GetCookieData = this.cookieService.get('authData');
+    // const retrievedCookies = JSON.parse(GetCookieData);
+    // this.UserRole = retrievedCookies.UserRole;
+    // this.user_Email = retrievedCookies.EmailId;
+    // this.candidateName = retrievedCookies.CandidateName;
     // if (GetCookieData) {
     //   const retrievedCookies = JSON.parse(GetCookieData);
     //   this.UserRole = retrievedCookies.UserRole;
@@ -106,9 +109,27 @@ export class AdminUserDetailsComponent implements OnInit {
     //   });
     //   this.router.navigate(['/Home']);
     // }
-    this.getBookingDetails()
+   
   }
 
+
+
+  PageLoadDetails() {
+    const GetCookieData = this.cookieService.get('authData');
+    if (GetCookieData) {
+      const retrievedCookies = JSON.parse(GetCookieData);
+      this.UserRole = retrievedCookies.UserRole;
+      this.user_Email = retrievedCookies.EmailId;
+      this.candidateName = retrievedCookies.CandidateName;
+    } else {
+      swal.fire({
+        title: 'Login Failed ',
+        icon: 'warning',
+      });
+      this.router.navigate(['Home']);
+    }
+    this.getBookingDetails()
+  }
   searchQuery: string = ''; // Property to store the search query
 
   search() {
@@ -299,14 +320,16 @@ export class AdminUserDetailsComponent implements OnInit {
             title: 'Uploaded Successfully!',
             icon: 'success'
           }).then(() => {
-            window.location.reload();
+            // window.location.reload();
+             this.PageLoadDetails();
           });
         } else {
           Swal.fire({
             title: 'Already Uploaded Results for this Test',
             icon: 'error'
           }).then(() => {
-            window.location.reload();
+            // window.location.reload();
+             this.PageLoadDetails();
           });
         }
       },
@@ -418,7 +441,8 @@ export class AdminUserDetailsComponent implements OnInit {
           '',
           'success'
         ).then(() => {
-          window.location.reload();
+           this.PageLoadDetails();          
+          // window.location.reload();
         });
       }
     });

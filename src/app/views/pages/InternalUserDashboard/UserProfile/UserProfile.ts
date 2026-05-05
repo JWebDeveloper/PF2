@@ -26,10 +26,15 @@ export class UserProfile implements OnInit {
   ) {}
 
   ngOnInit(): void {
-   this.loadForm();
-    this.populateUserData();
+  this.LoadPageDetails();
   }
 
+  LoadPageDetails() {
+
+    this.loadForm();
+    this.populateUserData();
+
+  }
   loadForm(): void {
     this.cifUserForm = this.fb.group({
       EmailId: [{ value: '', disabled: true }, [Validators.required, Validators.email, Validators.maxLength(150)]],
@@ -99,7 +104,7 @@ export class UserProfile implements OnInit {
       this.cifUserForm.get('EmailId')?.disable();
 
       const updatedData = this.cifUserForm.getRawValue();
-      console.log('Updated profile:', updatedData);
+      // console.log('Updated profile:', updatedData);
 
       this.isSubmitted = true;
       this.isLoading = true;
@@ -117,47 +122,82 @@ export class UserProfile implements OnInit {
       formData.append("Address", updatedData.Address);
       formData.append("UserEmail", updatedData.EmailId);
 
-      this.CIFwebService.UpdateUserDetails(formData).subscribe({
-        next: (data) => {
-          let result = data.item1[0]['msg'];
-          let errorCode = data.item1[0]['returnId'];
+       this.CIFwebService.UpdateUserDetails(formData).subscribe({
+              next: (data: any) => {
+                const returnId =data.item1[0]['returnId'];
+                const message =  data.item1[0]['msg'];
+      
+                if (returnId === 1 || returnId === -1) {
+                  swal.fire({
+                    title: returnId === 1 ? 'Upload Successful' : 'Receipt Already Exists',
+                    text: returnId === 1 ? 'Receipt saved successfully!' : (message || 'A receipt has already been uploaded.'),
+                    icon: returnId === 1 ? 'success' : 'warning'
+                  }).then(() => {
+                    // REFRESH DATA MANUALLY (Avoids IIS 404)
+                    this.LoadPageDetails();
+      
+                  });
+                } else if (returnId === 0) {
+                  swal.fire({
+                    title: 'Upload Failed',
+                    text: message || 'Failed to upload receipt. Please try again.',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                  });
+                }
+              },
+              error: (error: any) => {
+                swal.fire({
+                  title: 'Error',
+                  text: 'Internal Server error',
+                  icon: 'error',
+                  showConfirmButton: false
+                });
+              }
+            });
+      
+      // this.CIFwebService.UpdateUserDetails(formData).subscribe({
+      //   next: (data) => {
+      //     let result = data.item1[0]['msg'];
+      //     let errorCode = data.item1[0]['returnId'];
 
-          if (result === 'Success') {
-            swal.fire({
-              title: 'Details Updated Successfully',
-              text: data.item1[0]['msg'],
-              icon: 'success',
-            }).then(() => {
-              window.location.reload();
-            });
-          } else if (errorCode === -1) {
-            swal.fire({
-              title: 'Already Submitted',
-              icon: 'error',
-            }).then(() => {
-              window.location.reload();
-            });
-          } else {
-            swal.fire({
-              title: 'Some Technical Issue',
-              text: result,
-              icon: 'error',
-            }).then(() => {
-              window.location.reload();
-            });
-          }
-        },
-        error: () => {
-          swal.fire({
-            title: 'Error Occurred',
-            text: 'Unable to complete the request. Please try again later.',
-            icon: 'error',
-          });
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
+      //     if (result === 'Success') {
+      //       swal.fire({
+      //         title: 'Details Updated Successfully',
+      //         text: data.item1[0]['msg'],
+      //         icon: 'success',
+      //       }).then(() => {
+      //         window.location.reload();
+      //       });
+      //     } else if (errorCode === -1) {
+      //       swal.fire({
+      //         title: 'Already Submitted',
+      //         icon: 'error',
+      //       }).then(() => {
+      //         window.location.reload();
+      //       });
+      //     } else {
+      //       swal.fire({
+      //         title: 'Some Technical Issue',
+      //         text: result,
+      //         icon: 'error',
+      //       }).then(() => {
+      //         window.location.reload();
+      //       });
+      //     }
+      //   },
+      //   error: () => {
+      //     swal.fire({
+      //       title: 'Error Occurred',
+      //       text: 'Unable to complete the request. Please try again later.',
+      //       icon: 'error',
+      //     });
+      //   },
+      //   complete: () => {
+      //     this.isLoading = false;
+      //   }
+      // });
     } else {
       console.log('Form invalid');
     }

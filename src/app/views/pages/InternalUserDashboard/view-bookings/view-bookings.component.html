@@ -98,6 +98,7 @@
                                                         <!-- <i class="mdi mdi-upload fs-5"></i> -->
                                                         <i class="fa icon-upload "></i> 
                                                     </button>
+                                                    
                                                 </ng-template>
                                             </td>
                                             <td>
@@ -320,7 +321,8 @@
                         <div class="col-12 text-center">
                             <button type="submit" class="btn btn-primary"
                                 [disabled]="!fileChosen[BookingCase?.bookingId]"
-                                (click)="UpdateFileDocument(BookingCase?.bookingId)">
+                                (click)="UpdateFileDocument(BookingCase?.bookingId, modal)">
+                                <!-- (click)="UpdateFileDocument(BookingCase?.bookingId)"> -->
                                 <i class="mdi mdi-upload me-1"></i> Upload Receipt
                             </button>
                         </div>

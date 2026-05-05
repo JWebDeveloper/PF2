@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StaffMenuComponent } from './StaffMenu.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { StaffMenuComponent } from './StaffMenu.component';
     StaffMenuComponent  
   ],
   imports: [
-    CommonModule  
+    CommonModule  ,
+    RouterModule
   ]
 })
 export class StaffMenuModule {}

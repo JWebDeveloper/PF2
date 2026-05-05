@@ -35,60 +35,62 @@ export class AdminMouComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   // ── Session ───────────────────────────────────────────────────────────────
-  adminEmail    = '';
-  adminName     = '';
-  userRole      = '';
-  userEmail     = '';
+  adminEmail = '';
+  adminName = '';
+  userRole = '';
+  userEmail = '';
   candidateName = '';
   serverUrl = '';
-  ServerUrl ='';
+  ServerUrl = '';
   // ── Data ──────────────────────────────────────────────────────────────────
-  mouList:   MouRecord[] = [];
-  isLoading  = false;
+  mouList: MouRecord[] = [];
+  isLoading = false;
   processing = false;
 
   // ── Filter & search ───────────────────────────────────────────────────────
-  searchQuery    = '';
-  filterStatus   = '';
+  searchQuery = '';
+  filterStatus = '';
   filterApproved = '';
   filterUserType = '';
 
   // ── Pagination ────────────────────────────────────────────────────────────
   currentPage = 1;
-  pageSize    = 10;
+  pageSize = 10;
 
   // ── Modal state ───────────────────────────────────────────────────────────
   pendingAction: 'Approve' | 'DisApprove' | 'Delete' | null = null;
-  pendingRow:    MouRecord | null = null;
+  pendingRow: MouRecord | null = null;
   approvalRemark = '';
 
   constructor(
-    private readonly cifWebService:  LpuCIFWebService,
-    private readonly mouService:     MOUCrudOperation,
+    private readonly cifWebService: LpuCIFWebService,
+    private readonly mouService: MOUCrudOperation,
     private readonly storageService: StorageService,
-    private readonly authService:    AuthService,
-    private readonly cdRef:          ChangeDetectorRef,
-    private readonly modalService:   NgbModal,
-    private readonly authSession:    LoginSessionService,
-    private readonly router:         Router,
-    private readonly route:          ActivatedRoute,
-    private readonly cookieService:  CookieService,
-  ) {}
+    private readonly authService: AuthService,
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly modalService: NgbModal,
+    private readonly authSession: LoginSessionService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly cookieService: CookieService,
+  ) { }
 
   ngOnInit(): void {
-    this.loadSession();    
-    this.loadAllMous();
-    
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';//'http://172.19.2.52/umsweb/webftp/CIFDocuments/CIFMouDocuments/';
-    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';
+    this.SetupPageDetails();
   }
 
-  ngOnDestroy(): void {    
+  SetupPageDetails(): void {
+    this.loadSession();
+    this.loadAllMous();
+    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';
+    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';
+  }
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
- 
+
   private loadSession(): void {
     const raw = this.cookieService.get('authData');
 
@@ -99,16 +101,16 @@ export class AdminMouComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const c            = JSON.parse(raw);
-      this.adminEmail    = c.EmailId       ?? '';
-      this.adminName     = c.CandidateName ?? '';
-      this.userRole      = c.UserRole      ?? '';
-      this.userEmail     = c.EmailId       ?? '';
+      const c = JSON.parse(raw);
+      this.adminEmail = c.EmailId ?? '';
+      this.adminName = c.CandidateName ?? '';
+      this.userRole = c.UserRole ?? '';
+      this.userEmail = c.EmailId ?? '';
       this.candidateName = c.CandidateName ?? '';
     } catch {
       Swal.fire({ title: 'Session Error', text: 'Invalid session. Please login again.', icon: 'error' });
       this.cookieService.delete('authData');
-      this.router.navigate(['/Home']);
+      this.router.navigate(['Home']);
     }
   }
 
@@ -119,9 +121,9 @@ export class AdminMouComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: res => {
-          this.mouList     = res.item1 ?? [];
+          this.mouList = res.item1 ?? [];
           this.currentPage = 1;
-          this.isLoading   = false;
+          this.isLoading = false;
         },
         error: () => {
           this.isLoading = false;
@@ -133,34 +135,34 @@ export class AdminMouComponent implements OnInit, OnDestroy {
   // ── Filtered list getter ──────────────────────────────────────────────────
   get filteredList(): MouRecord[] {
     let data = this.mouList;
-    const q  = this.searchQuery.toLowerCase().trim();
+    const q = this.searchQuery.toLowerCase().trim();
 
-    if (q)                   data = data.filter(m => Object.values(m).some(v => String(v).toLowerCase().includes(q)));
-    if (this.filterStatus)   data = data.filter(m => String(m.mouStatus)  === this.filterStatus);
+    if (q) data = data.filter(m => Object.values(m).some(v => String(v).toLowerCase().includes(q)));
+    if (this.filterStatus) data = data.filter(m => String(m.mouStatus) === this.filterStatus);
     if (this.filterApproved) data = data.filter(m => String(m.isApproved) === this.filterApproved);
-    if (this.filterUserType) data = data.filter(m => m.userType           === this.filterUserType);
+    if (this.filterUserType) data = data.filter(m => m.userType === this.filterUserType);
 
     return data;
   }
 
   // ── Pagination getters ────────────────────────────────────────────────────
-  get pagedList():    MouRecord[]  { const s = (this.currentPage - 1) * this.pageSize; return this.filteredList.slice(s, s + this.pageSize); }
-  get totalPages():   number       { return Math.max(1, Math.ceil(this.filteredList.length / this.pageSize)); }
-  get pageNumbers():  number[]     { return Array.from({ length: this.totalPages }, (_, i) => i + 1); }
+  get pagedList(): MouRecord[] { const s = (this.currentPage - 1) * this.pageSize; return this.filteredList.slice(s, s + this.pageSize); }
+  get totalPages(): number { return Math.max(1, Math.ceil(this.filteredList.length / this.pageSize)); }
+  get pageNumbers(): number[] { return Array.from({ length: this.totalPages }, (_, i) => i + 1); }
 
   // ── Stat getters ──────────────────────────────────────────────────────────
   // isApproved API values: 'True' = Approved | 'False' = Rejected | 'NA' = Pending
   // mouStatus  API values: '1'    = Active   | '0'    = Expired
-  get statTotal():    number { return this.mouList.length; }
+  get statTotal(): number { return this.mouList.length; }
   get statApproved(): number { return this.mouList.filter(m => m.isApproved === 'True').length; }
-  get statPending():  number { return this.mouList.filter(m => m.isApproved !== 'True' && m.isApproved !== 'False').length; }
+  get statPending(): number { return this.mouList.filter(m => m.isApproved !== 'True' && m.isApproved !== 'False').length; }
   get statRejected(): number { return this.mouList.filter(m => m.isApproved === 'False').length; }
-  get statExpired():  number { return this.mouList.filter(m => m.mouStatus  === '0').length; }
+  get statExpired(): number { return this.mouList.filter(m => m.mouStatus === '0').length; }
 
   // ── Modal: open ───────────────────────────────────────────────────────────
   openAction(action: 'Approve' | 'DisApprove' | 'Delete', row: MouRecord): void {
-    this.pendingAction  = action;
-    this.pendingRow     = row;
+    this.pendingAction = action;
+    this.pendingRow = row;
     this.approvalRemark = '';
     this.modalService.open(this.remarksModal, { size: 'lg', centered: true });
   }
@@ -172,27 +174,27 @@ export class AdminMouComponent implements OnInit, OnDestroy {
 
     if (this.pendingAction === 'Delete') {
       const payload: MouDeletePayload = {
-        action:    'Delete',
-        mouId:     this.pendingRow.mouId ?? '',
-        mouTitle:  this.pendingRow.mouTitle,
-        userId:    this.pendingRow.userEmailId,
+        action: 'Delete',
+        mouId: this.pendingRow.mouId ?? '',
+        mouTitle: this.pendingRow.mouTitle,
+        userId: this.pendingRow.userEmailId,
         loginName: this.adminEmail,          // FIX 5: now always populated from cookie
       };
       this.mouService.deleteMou(payload)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next:  res => this.handleResponse(res, modal, 'MOU deleted successfully.'),
-          error: ()  => this.handleError(),
+          next: res => this.handleResponse(res, modal, 'MOU deleted successfully.'),
+          error: () => this.handleError(),
         });
       return;
     }
 
     const payload: MouApprovePayload = {
-      action:          this.pendingAction,
-      mouId:           this.pendingRow.mouId ?? '',
-      userId:          this.pendingRow.userEmailId,
+      action: this.pendingAction,
+      mouId: this.pendingRow.mouId ?? '',
+      userId: this.pendingRow.userEmailId,
       approvalRemarks: this.approvalRemark,
-      loginName:       this.adminEmail,      // FIX 5: now always populated from cookie
+      loginName: this.adminEmail,      // FIX 5: now always populated from cookie
     };
 
     const call$ = this.pendingAction === 'Approve'
@@ -200,9 +202,9 @@ export class AdminMouComponent implements OnInit, OnDestroy {
       : this.mouService.disapproveMou(payload);
 
     call$.pipe(takeUntil(this.destroy$)).subscribe({
-      next:  res => this.handleResponse(res, modal,
-               this.pendingAction === 'Approve' ? 'MOU Approved.' : 'MOU Disapproved.'),
-      error: ()  => this.handleError(),
+      next: res => this.handleResponse(res, modal,
+        this.pendingAction === 'Approve' ? 'MOU Approved.' : 'MOU Disapproved.'),
+      error: () => this.handleError(),
     });
   }
 
@@ -223,11 +225,11 @@ export class AdminMouComponent implements OnInit, OnDestroy {
 
   // ── Filters ───────────────────────────────────────────────────────────────
   clearFilters(): void {
-    this.searchQuery    = '';
-    this.filterStatus   = '';
+    this.searchQuery = '';
+    this.filterStatus = '';
     this.filterApproved = '';
     this.filterUserType = '';
-    this.currentPage    = 1;
+    this.currentPage = 1;
   }
 
   // ── MOU Status badge (date-based: mouStatus '0' = Expired, '1' = Active) ──
@@ -236,14 +238,14 @@ export class AdminMouComponent implements OnInit, OnDestroy {
 
   // ── Modal label / colour helpers ──────────────────────────────────────────
   actionLabel(): string {
-    if (this.pendingAction === 'Approve')    return 'Approve';
+    if (this.pendingAction === 'Approve') return 'Approve';
     if (this.pendingAction === 'DisApprove') return 'Disapprove';
     return 'Delete';
   }
 
   actionColor(): string {
     if (this.pendingAction === 'Approve') return 'confirm-green';
-    if (this.pendingAction === 'Delete')  return 'confirm-red';
+    if (this.pendingAction === 'Delete') return 'confirm-red';
     return 'confirm-orange';
   }
 
@@ -254,48 +256,48 @@ export class AdminMouComponent implements OnInit, OnDestroy {
 
 
 
-   viewDocument(url: string ): void {
-       const urls = this.serverUrl + url;
-      this.onDownloadFile(urls);
-    }
-  
-  
-    
-     downloadFile(fileName: any): void {
-      const url = this.serverUrl + fileName;
-      this.onDownloadFile(url);
-    }
-  
-  
-    
-       onDownloadFile(remoteUrl: string): void {
-         Swal.fire({ title: 'Downloading...', didOpen: () => { Swal.showLoading(null); }});
-      
-          this.cifWebService.downloadFile(remoteUrl).subscribe({
-            next: (blob: Blob) => {
-              const downloadUrl = window.URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = downloadUrl;
-      
-              const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-              link.download = fileName;
-      
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              window.URL.revokeObjectURL(downloadUrl);
-      
-              Swal.close();
-            },
-            error: async (err) => {
-              Swal.close();
-              if (err.error instanceof Blob) {
-                const errorMsg = JSON.parse(await err.error.text());
-                Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-              } else {
-                Swal.fire('Error', 'Could not connect to the server', 'error');
-              }
-            }
-          });
+  viewDocument(url: string): void {
+    const urls = this.serverUrl + url;
+    this.onDownloadFile(urls);
+  }
+
+
+
+  downloadFile(fileName: any): void {
+    const url = this.serverUrl + fileName;
+    this.onDownloadFile(url);
+  }
+
+
+
+  onDownloadFile(remoteUrl: string): void {
+    Swal.fire({ title: 'Downloading...', didOpen: () => { Swal.showLoading(null); } });
+
+    this.cifWebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          Swal.fire('Error', 'Could not connect to the server', 'error');
         }
+      }
+    });
+  }
 }

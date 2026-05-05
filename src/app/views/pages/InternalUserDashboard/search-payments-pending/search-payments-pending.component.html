@@ -101,7 +101,8 @@
                                                 <button 
                                                     class="btn btn-dark btn-sm ms-2"
                                                     (click)="openPaymentModal(payment)">
-                                                   <i class=" feather icon-dollar-sign ms-1 me-1"></i>
+                                                   <i class=" bi bi-currency-dollar me-1"></i>
+                                                   <!-- <i class=" feather icon-dollar-sign ms-1 me-1"></i> -->
                                                 </button>
 
                                                 
@@ -112,7 +113,8 @@
                                                 <button 
                                                     class="btn btn-dark btn-sm ms-2"
                                                     (click)="openPaymentModal(payment)">
-                                                    <i class=" feather icon-dollar-sign ms-1 me-1"></i>
+                                                    <!-- <i class=" feather icon-dollar-sign ms-1 me-1"></i> -->
+                                                    <i class=" bi bi-currency-dollar ms-1 me-1"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -120,18 +122,22 @@
 
                                           <td>
                                             <ng-container *ngIf="hasProofUploaded(payment.bookingId); else uploadBtn">
-                                                <span class="badge bg-success">
-                                                    <i class="feather icon-check-circle me-1"></i> Uploaded
-                                                </span>
+                                                <span class="badge bg-success mb-2">
+                                                    
+                                                    <i class="bi bi-check-circle me-1"></i> Uploaded 
+                                                    <!-- <i class="feather icon-check-circle me-1"></i> Uploaded -->
+                                                </span><br/>
                                                   <button class="btn btn-sm btn-dark" (click)="downloadFile(payment.receiptProofFile)">
-                                                         <i class=" feather icon-eye ms-1 me-1"></i>
+                                                         <!-- <i class=" feather icon-eye ms-1 me-1"></i> -->
+                                                         <i class=" bi bi-eye ms-1 me-1"></i>
                                                     </button>
                                             </ng-container>
                                             <ng-template #uploadBtn>
                                                 <button 
                                                     class="btn btn-dark btn-sm"
                                                     (click)="openReceiptUploadModal(payment)">
-                                                    <i class="mdi mdi-upload"></i>
+                                                    <i class="bi bi-upload"></i>
+                                                    <!-- <i class="mdi mdi-upload"></i> -->
                                                 </button>
                                             </ng-template>
                                         </td>
@@ -148,7 +154,8 @@
                                             <button 
                                                 class="btn btn-outline-dark btn-sm"
                                                 (click)="paymentReceiptScreen(payment)">
-                                                <i class="mdi mdi-printer"></i>
+                                                <i class="bi bi-printer"></i>
+                                                <!-- <i class="mdi mdi-printer"></i> -->
                                             </button>
                                         </td>
                                     </tr>
@@ -183,7 +190,8 @@
                                     <ul class="pagination mb-0">
                                         <li class="page-item" [class.disabled]="currentPage === 1">
                                             <a class="page-link" (click)="prevPage()" href="javascript:void(0)">
-                                                <i class="mdi mdi-chevron-left"></i>
+                                                <!-- <i class="mdi mdi-chevron-left"></i> -->
+                                                <i class="bi bi-caret-left"></i>
                                             </a>
                                         </li>
                                         <li class="page-item disabled">
@@ -193,7 +201,8 @@
                                         </li>
                                         <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
                                             <a class="page-link" (click)="nextPage()" href="javascript:void(0)">
-                                                <i class="mdi mdi-chevron-right"></i>
+                                                <!-- <i class="mdi mdi-chevron-right"></i> -->
+                                                <i class="bi bi-caret-right"></i>
                                             </a>
                                         </li>
                                     </ul>
@@ -390,7 +399,8 @@
                                 type="submit" 
                                 class="btn btn-primary"
                                 [disabled]="!fileChosen[BookingCase.bookingId]"
-                                (click)="UpdateFileDocument(BookingCase.bookingId)">
+                                  
+                                (click)="UpdateFileDocument(BookingCase.bookingId , modal)">
                                 <i class="mdi mdi-upload me-1"></i> Upload Receipt
                             </button>
                         </div>

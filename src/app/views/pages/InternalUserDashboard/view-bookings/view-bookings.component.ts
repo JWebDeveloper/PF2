@@ -110,41 +110,58 @@ export class ViewBookingsComponent implements OnInit {
   }
   userId:any;userEmail:any;
   ngOnInit(): void {
+   this.LoadPageDetails()
+  }
+  // LoadPageDetails(){
+  //    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
+  //   const GetCookieData = this.cookieService.get('InternalUserAuthData');
+  //   const retrievedCookies = JSON.parse(GetCookieData);
+  //   this.UserRole =
+  //     retrievedCookies.userRole?.length > 0
+  //       ? retrievedCookies.userRole
+  //       : 'Internal User';
+  //   // this.UserId = retrievedCookies.Id;
+  //   this.user_Email = this.UserId = this.userEmail = this.userId= retrievedCookies.EmailId;
+  //   this.MobileNo = retrievedCookies.MobileNo;
+  //   this.supervisorName = retrievedCookies.SupervisorName;
+  //   this.departmentName = retrievedCookies.DepartmentName;
+  //   this.candidateName = retrievedCookies.CandidateName;
+  //   this.getParams();
+  //   this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path();    
+  //   const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;    
+  //    this.ResponseUrl = `${baseUrl}/ViewBookings`;
+  //   this.getBookingDetails();
+  //   this.fetchAllSampleStatus();
+  //   this.fetchPaymentProofDetailsForUser();
+  // }
 
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
-    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+
+  LoadPageDetails() {
+  this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
+  
+  // Refresh User/Cookie context
+  const GetCookieData = this.cookieService.get('InternalUserAuthData');
+  if (GetCookieData) {
     const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole =
-      retrievedCookies.userRole?.length > 0
-        ? retrievedCookies.userRole
-        : 'Internal User';
-    // this.UserId = retrievedCookies.Id;
-    this.user_Email = this.UserId = this.userEmail = this.userId= retrievedCookies.EmailId;
+    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+    this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
     this.MobileNo = retrievedCookies.MobileNo;
     this.supervisorName = retrievedCookies.SupervisorName;
     this.departmentName = retrievedCookies.DepartmentName;
     this.candidateName = retrievedCookies.CandidateName;
-
-
-
-    this.getParams();
-    this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path(); 
-     
-    const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-
-    
-     this.ResponseUrl = `${baseUrl}/ViewBookings`;
- 
-
-
-    
-    
-
-    this.getBookingDetails();
-    this.fetchAllSampleStatus();
-    this.fetchPaymentProofDetailsForUser();
   }
+
+  this.getParams();
   
+  // Logic to handle internal pathing without window.location.origin conflicts
+  const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+  this.ResponseUrl = `${baseUrl}/ViewBookings`;
+
+  // RE-FETCH ALL DATA FROM API
+  this.getBookingDetails();
+  this.fetchAllSampleStatus();
+  this.fetchPaymentProofDetailsForUser();
+}
   getParams(): void {
     this.route.queryParamMap.subscribe(params => {
       this.id = params.get('id');
@@ -517,7 +534,7 @@ export class ViewBookingsComponent implements OnInit {
     };
   }
 
-  UpdateFileDocument(Id: number): void {
+  UpdateFileDocument(Id: number, Model: any): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
 
@@ -528,27 +545,21 @@ export class ViewBookingsComponent implements OnInit {
       formData.append('PaymentReceiptUrl', this.fileName || '');
       formData.append('PaymentReceiptData', this.FileDataX || '');
       formData.append('UserId', this.UserId);
-
       this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
         next: (data: any) => {
           const returnId = data.item1[0]?.returnId;
           const message = data.item1[0]?.msg;
-          
-          if (returnId === 1) {
+
+          if (returnId === 1 || returnId === -1) {
             Swal.fire({
-              title: 'Upload Successful',
-              text: 'Receipt saved successfully!',
-              icon: 'success'
+              title: returnId === 1 ? 'Upload Successful' : 'Receipt Already Exists',
+              text: returnId === 1 ? 'Receipt saved successfully!' : (message || 'A receipt has already been uploaded.'),
+              icon: returnId === 1 ? 'success' : 'warning'
             }).then(() => {
-              window.location.reload();
-            });
-          } else if (returnId === -1) {
-            Swal.fire({
-              title: 'Receipt Already Exists',
-              text: message || 'A receipt has already been uploaded for this booking.',
-              icon: 'warning',
-            }).then(() => {
-              window.location.reload();
+              Model.close();
+              // REFRESH DATA MANUALLY (Avoids IIS 404)
+              this.LoadPageDetails();
+
             });
           } else if (returnId === 0) {
             Swal.fire({
@@ -559,7 +570,6 @@ export class ViewBookingsComponent implements OnInit {
               showConfirmButton: false
             });
           }
-
           this.loadingIndicator = false;
         },
         error: (error: any) => {
@@ -572,7 +582,60 @@ export class ViewBookingsComponent implements OnInit {
           this.loadingIndicator = false;
         }
       });
+      // this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
+      //   next: (data: any) => {
+      //     const returnId = data.item1[0]?.returnId;
+      //     const message = data.item1[0]?.msg;
+          
+      //     if (returnId === 1) {
+      //       Swal.fire({
+      //         title: 'Upload Successful',
+      //         text: 'Receipt saved successfully!',
+      //         icon: 'success'
+      //       }).then(() => {
+      //         window.location.reload();
+
+      //       });
+      //     } else if (returnId === -1) {
+      //       Swal.fire({
+      //         title: 'Receipt Already Exists',
+      //         text: message || 'A receipt has already been uploaded for this booking.',
+      //         icon: 'warning',
+      //       }).then(() => {
+      //         window.location.reload();
+      //       });
+      //     } else if (returnId === 0) {
+      //       Swal.fire({
+      //         title: 'Upload Failed',
+      //         text: message || 'Failed to upload receipt. Please try again.',
+      //         icon: 'error',
+      //         timer: 2000,
+      //         showConfirmButton: false
+      //       });
+      //     }
+
+      //     this.loadingIndicator = false;
+      //   },
+      //   error: (error: any) => {
+      //     Swal.fire({
+      //       title: 'Error',
+      //       text: 'Internal Server error',
+      //       icon: 'error',
+      //       showConfirmButton: false
+      //     });
+      //     this.loadingIndicator = false;
+      //   }
+      // });
     }
   }
 
+
+
+  private refreshData() {
+    
+  const currentUrl = this.router.url;
+  this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    this.router.navigate([currentUrl]);
+  });
+}
 }

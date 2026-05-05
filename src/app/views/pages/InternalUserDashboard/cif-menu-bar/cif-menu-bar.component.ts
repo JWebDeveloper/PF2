@@ -19,6 +19,7 @@ export class CifMenuBarComponent implements OnInit {
   loadingIndicator: boolean = false;
 
   constructor(
+    private routerLink: Router,
     private router: Router,
     private cookieService: CookieService,
     private AuthSession: LoginSessionService,
@@ -69,6 +70,8 @@ export class CifMenuBarComponent implements OnInit {
   VisitUrl(url: string, name: string, id: any, categoryId: any) {
     const targetUrl = url.startsWith('/') ? url : '/' + url;
     this.router.navigate([targetUrl, name, id, categoryId]);
+
+    
   }
 
   goto(path: string) {
@@ -88,23 +91,25 @@ export class CifMenuBarComponent implements OnInit {
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
   }
-
   LogoutUser() {
-    swal.fire({
-      title: 'Logging out...',
-      allowOutsideClick: false,
-      didOpen: () => { },
-    });
+  swal.fire({
+    title: 'Logging out...',
+    allowOutsideClick: false,
+    didOpen: () => { },
+  });
 
-    this.cookieService.delete('InternalUserAuthData', '/');
-    this.AuthSession.clearSession();
+  // 1. Clear Data
+  this.cookieService.delete('InternalUserAuthData', '/');
+  this.AuthSession.clearSession();
 
-    setTimeout(() => {
-      swal.close();
-      this.router.navigate(['Home'], { replaceUrl: true })
-    }); 
-     
-  }  
+  this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
+    // Optional: Force a hard reload to clear all memory/cache
+    window.location.reload();
+    // swal.close();
+  });
+}
+
+ 
   // LogoutUser() {
   //   swal.fire({
   //     title: 'Logging out...',
@@ -207,7 +212,7 @@ export class CifMenuBarComponent implements OnInit {
 //   goto(val: any) {
 //     //this.router.navigateByUrl(val);
 
-this.router.navigateByUrl(val, { skipLocationChange: true });;
+// this.router.navigateByUrl(val, { skipLocationChange: true });;
 //   }
 //   isNavbarCollapsed: boolean = true;
 //   toggleNavbar(): void {

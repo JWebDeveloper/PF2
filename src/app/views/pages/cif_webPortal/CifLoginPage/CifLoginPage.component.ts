@@ -227,9 +227,12 @@ export class CifLoginPageComponent implements OnInit {
     if (passwordchanged != true) {
       // alert(passwordchanged + " " + this.UserData.isPasswordUpdated)
       this.AuthSession.addToSession(this.UserData);
-      this.router.navigateByUrl('/SecurityIssue').then(() => {
-        window.location.reload();
-      });
+       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                      this.router.navigate(['/SecurityIssue']);
+                    });
+      // this.router.navigateByUrl('/SecurityIssue').then(() => {
+      //   window.location.reload();
+      // });
     } else {
       // Show terms and conditions modal
       //     swal.fire({

@@ -34,11 +34,11 @@ import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 export class AdminActionInstrumentsComponent implements OnInit {
 
 
-// Download File approach Added on 23-feb-26
+  // Download File approach Added on 23-feb-26
 
 
- onDownloadFile(remoteUrl: string): void {
-    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
+  onDownloadFile(remoteUrl: string): void {
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
 
     this.CIFwebService.downloadFile(remoteUrl).subscribe({
       next: (blob: Blob) => {
@@ -154,8 +154,8 @@ export class AdminActionInstrumentsComponent implements OnInit {
   }
 
 
-UploadNewExcelSampleSheet:any;
-  
+  UploadNewExcelSampleSheet: any;
+
 
   onFileSelected(event: any): void {
     const reader = new FileReader();
@@ -192,7 +192,7 @@ UploadNewExcelSampleSheet:any;
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
-        this.FileData =this.UploadNewExcelSampleSheet= ssssArray[1];    // base64 payload
+        this.FileData = this.UploadNewExcelSampleSheet = ssssArray[1];    // base64 payload
         this.fileName = validFileName;
         this.uploadEnabled = true;
         // parse and preview Excel
@@ -202,7 +202,7 @@ UploadNewExcelSampleSheet:any;
     }
 
     // normal case
-    this.fileData = this.UploadNewExcelSampleSheet= file;
+    this.fileData = this.UploadNewExcelSampleSheet = file;
     this.fileStatus = true;
 
     // read base64 for upload and parse for preview
@@ -210,7 +210,7 @@ UploadNewExcelSampleSheet:any;
     reader.onload = (ev) => {
       const ssss = reader.result as string;
       const ssssArray = ssss.split(',');
-      this.FileData = this.UploadNewExcelSampleSheet= ssssArray[1]; // base64 payload
+      this.FileData = this.UploadNewExcelSampleSheet = ssssArray[1]; // base64 payload
       this.fileName = file.name;
       this.uploadEnabled = true;
       // parse and preview Excel (pass original File object)
@@ -232,7 +232,7 @@ UploadNewExcelSampleSheet:any;
     }
 
 
-    
+
     // create a unique filename to avoid overwriting existing file on server
     const extIndex = this.fileName.lastIndexOf('.');
     const ext = extIndex >= 0 ? this.fileName.substring(extIndex) : '.xlsx';
@@ -254,7 +254,8 @@ UploadNewExcelSampleSheet:any;
             title: 'Uploaded Successfully!',
             icon: 'success'
           }).then(() => {
-            window.location.reload();
+            this.LoadDetails();
+            // window.location.reload();
           });
         } else {
           swal.fire({
@@ -278,7 +279,7 @@ UploadNewExcelSampleSheet:any;
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('ngSelectComponentStream') ngSelectComponentStream: NgSelectComponent;
   @ViewChild('verticalCenteredModal') verticalCenteredModal: TemplateRef<any>;
-  
+
   @ViewChild('viewDescModal2') viewDescModal2: TemplateRef<any>;
   dataSource: MatTableDataSource<any>;
 
@@ -300,8 +301,8 @@ UploadNewExcelSampleSheet:any;
   BookingCase: any;
   InstrumentData: any[] = [];
   currentPage = 1;
-  itemsPerPage = 10; // 
-  
+  itemsPerPage = 5; // 
+
   // Items per page dropdown options
   itemsPerPageOptions = [
     { label: '5', value: 5 },
@@ -310,10 +311,10 @@ UploadNewExcelSampleSheet:any;
     { label: '20', value: 20 },
     { label: 'All', value: 'all' }
   ];
-  
+
   // Track if 'all' is selected
   isAllSelected = false;
-  
+
   tmpsInstrumentData: any[] = [];
   InstrumentId: any;
   UserRole: any;
@@ -344,6 +345,10 @@ UploadNewExcelSampleSheet:any;
     }
   }
   ngOnInit(): void {
+    this.LoadDetails();
+  }
+
+  LoadDetails() {
     this.getSessionDetails();
     // this.serverUrl = 'http://172.19.2.52/umsweb/CIFDocuments/CIFSampleExcelSheets/'; //172.19.2.52/umsweb/webftp/CIFDocuments/CIFSampleExcelSheets/  ftp://umsftp@172.19.2.52/umsweb/webftp/CIFDocuments/CIFSampleExcelSheets/
 
@@ -390,7 +395,7 @@ UploadNewExcelSampleSheet:any;
               } else if (row.instrumentId) {
                 row.instrumentExcelUrl = 'assets/CifDocumentsTemplates/' + row.instrumentId + '.xlsx';
               } else {
-               row.instrumentExcelUrl = row.excelSheetUrl;
+                row.instrumentExcelUrl = row.excelSheetUrl;
               }
             }
             return row;
@@ -522,7 +527,8 @@ UploadNewExcelSampleSheet:any;
           '',
           'success'
         ).then(() => {
-          window.location.reload();
+          this.LoadDetails();
+          // window.location.reload();
         });
       }
     });
@@ -565,7 +571,8 @@ UploadNewExcelSampleSheet:any;
           await writable.close();
           Swal.fire({ title: 'Replaced', text: `File replaced successfully`, icon: 'success' });
           // reload to reflect changes
-          window.location.reload();
+          this.LoadDetails()
+          // window.location.reload();
         } catch (err) {
           // user cancelled or error
           console.error('Replace failed', err);
@@ -673,7 +680,7 @@ UploadNewExcelSampleSheet:any;
     link.download = fileName;
     link.click();
   }
- 
+
 
 
 
@@ -705,7 +712,7 @@ UploadNewExcelSampleSheet:any;
 
       this.fileDataX = modifiedFile;
       this.fileStatus = true;
-this.readExcelFile(this.fileDataX);
+      this.readExcelFile(this.fileDataX);
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
@@ -720,7 +727,7 @@ this.readExcelFile(this.fileDataX);
     this.fileStatus = true;
 
     if (file) {
-      
+
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
@@ -729,10 +736,10 @@ this.readExcelFile(this.fileDataX);
         this.fileName = file.name;
       };
 
-      
+
     }
   }
 
- 
+
 
 }

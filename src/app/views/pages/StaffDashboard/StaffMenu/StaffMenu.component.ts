@@ -37,9 +37,7 @@ export class StaffMenuComponent implements OnInit {
   }
 
   goto(val: any) {
-    //this.router.navigateByUrl(val);
-
-this.router.navigateByUrl(val, { skipLocationChange: true });;
+    this.router.navigateByUrl(val);
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('StaffUserAuthData');

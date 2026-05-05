@@ -78,7 +78,11 @@ export class newEventsCrudComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        const GetCookieData = this.cookieService.get('authData');
+      this.SetupPage();
+    }
+    SetupPage(): void {
+
+  const GetCookieData = this.cookieService.get('authData');
 
         if (GetCookieData) {
             const retrievedCookies = JSON.parse(GetCookieData);
@@ -89,7 +93,7 @@ export class newEventsCrudComponent implements OnInit {
             this.candidateName = retrievedCookies.CandidateName;
         } else {
             swal.fire({ title: 'Login Failed', icon: 'warning' });
-            this.router.navigate(['/Home']);
+            this.router.navigate(['Home']);
         }
 
         this.initForm();
@@ -199,7 +203,8 @@ export class newEventsCrudComponent implements OnInit {
         this.EventFileName = null;
         this.isFormSubmitted = false;
         this.isLoading = false;
-         window.location.reload();
+        //  window.location.reload();
+        this.SetupPage();
 
     }
 

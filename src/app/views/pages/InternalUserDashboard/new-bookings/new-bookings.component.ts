@@ -85,20 +85,25 @@ export class NewBookingsComponent implements OnInit {
   ) { }
   loadingIndicator: any;
   ngOnInit(): void {
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
-    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+    this.LoadPageDetails();
+  }
+LoadPageDetails(){
+
+   this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
+  
+  // Refresh User/Cookie context
+  const GetCookieData = this.cookieService.get('InternalUserAuthData');
+  if (GetCookieData) {
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole = retrievedCookies.UserRole;
     this.UserId = retrievedCookies.UserRole;
     this.user_Email = retrievedCookies.EmailId;
     this.candidateName = retrievedCookies.CandidateName;
     this.MobileNo = retrievedCookies.MobileNo;
-    // console.log(retrievedCookies);
+  }
     this.getInstrumentData();
     this.loadMyMous();
-  }
-
-
+}
 
   nextStep() {
     if (this.currentStep < 2 && this.formdata.valid) {
@@ -237,7 +242,9 @@ export class NewBookingsComponent implements OnInit {
           title: 'This instrument is under Maintenance. You cannot proceed with this selection.',
           icon: 'error',
         }).then(() => {
-          window.location.reload();
+          // window.location.reload();
+          this.LoadPageDetails();
+          //  this.router.navigate(['NewBookings'], { replaceUrl: true })
         });
         return; // Exit the function to prevent further action
       }
@@ -567,7 +574,9 @@ export class NewBookingsComponent implements OnInit {
             text: 'All records have been uploaded successfully.',
             icon: 'success'
           }).then(() => {
-            this.router.navigateByUrl("ViewBookings");
+            // this.router.navigateByUrl("ViewBookings");
+            this.router.navigate(['ViewBookings'], { replaceUrl: true })
+            
           });
         }
         const elapsed = new Date().getTime() - startTime;

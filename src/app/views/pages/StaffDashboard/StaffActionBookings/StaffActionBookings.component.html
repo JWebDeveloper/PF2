@@ -227,7 +227,7 @@
 
 <ng-template #viewDescModal2 let-modal>
     <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Result Upload Screen </h5>
+        <h2 class="modal-title" id="exampleModalLabel">Result Upload Screen </h2>
         <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
     </div>
     <div class="modal-body">
@@ -240,18 +240,18 @@
                             <table id="dataTableAllClosedRemarks" class="table">
                                 <thead>
                                     <tr>
-                                        <th class=" fs-5 ">Booking Id </th>
-                                        <th class=" fs-5 ">Instrument Name </th>
-                                        <th class=" fs-5 ">Upload File </th>
-                                        <th class=" fs-5 ">Remarks (Any)</th>
-                                        <th class=" fs-5 ">Upload Action </th>
+                                        <th class=" fs-6 ">Booking Id </th>
+                                        <th class=" fs-6 ">Instrument Name </th>
+                                        <th class=" fs-6 ">Upload File </th>
+                                        <th class=" fs-6 ">Remarks (Any)</th>
+                                        <th class=" fs-6 ">Upload Action </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class=" fs-5 p-4 " style="width: 20%;">{{BookingCase.bookingId}} </td>
-                                        <td class=" fs-5 p-4 " style="width: 20%;">{{BookingCase.instrumentName}} </td>
-                                        <td class=" fs-5 ">
+                                        <td class=" fs-6 p-4 " style="width: 20%;">{{BookingCase.bookingId}} </td>
+                                        <td class=" fs-6 p-4 " style="width: 20%;">{{BookingCase.instrumentName}} </td>
+                                        <td class=" fs-6 ">
                                             <input class="w-30" required type="file" id="File" name="File"
                                                 (change)="onFileSelected($event)" accept=".zip, .7z, .rar"
                                                 #fileInput="ngModel" ngModel />
@@ -259,7 +259,7 @@
                                                     and of Max size 5MB </span></div>
 
                                         </td>
-                                        <td class=" fs-5 p-4 " style="width: 20%;">
+                                        <td class=" fs-6 p-4 " style="width: 20%;">
                                             <textarea required name="remarks" [(ngModel)]="Remarks" rows="5" cols="30"
                                                 class="col-12 p-2 form-control" id="remarks" #remarks="ngModel"
                                                 autocomplete="off">

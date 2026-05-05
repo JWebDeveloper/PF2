@@ -1,6 +1,10 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
+import { AuthService } from 'src/app/_services/auth.service';
+import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
+import { StorageService } from 'src/app/_services/storage.service';
 import swal from 'sweetalert2';
 
 @Component({
@@ -20,10 +24,17 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
   constructor(
     private CIFwebService: LpuCIFWebService,
     private ngZone: NgZone,
-    private router: Router
+    private router: Router,
+        private authService: AuthService,
+        private storageService: StorageService,
+        private AuthSession: LoginSessionService,
+        private cookieService: CookieService,
   ) {}
 
   ngOnInit(): void {
+     this.cookieService.delete('InternalUserAuthData');
+    this.AuthSession.clearSession();
+    const startTime = new Date().getTime();
     this.getAllInstruments();
   }
 

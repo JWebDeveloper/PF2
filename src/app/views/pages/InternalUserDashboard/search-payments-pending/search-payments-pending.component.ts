@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import Swal from 'sweetalert2';
@@ -36,43 +36,43 @@ interface ApiResponse {
 })
 export class SearchPaymentsPendingComponent implements OnInit {
 
-  
-       downloadFile(fileName: string): void {
-      const url = this.serverUrl + fileName;
-      this.onDownloadFile(url);
-      // window.open(url, '_blank');
-    }
-  
-       onDownloadFile(remoteUrl: string): void {
-         Swal.fire({ title: 'Downloading...', didOpen: () => { Swal.showLoading(null); }});
-      
-          this.CIFwebService.downloadFile(remoteUrl).subscribe({
-            next: (blob: Blob) => {
-              const downloadUrl = window.URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = downloadUrl;
-      
-              const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-              link.download = fileName;
-      
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              window.URL.revokeObjectURL(downloadUrl);
-      
-              Swal.close();
-            },
-            error: async (err) => {
-              Swal.close();
-              if (err.error instanceof Blob) {
-                const errorMsg = JSON.parse(await err.error.text());
-                Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-              } else {
-                Swal.fire('Error', 'Could not connect to the server', 'error');
-              }
-            }
-          });
+
+  downloadFile(fileName: string): void {
+    const url = this.serverUrl + fileName;
+    this.onDownloadFile(url);
+    // window.open(url, '_blank');
+  }
+
+  onDownloadFile(remoteUrl: string): void {
+    Swal.fire({ title: 'Downloading...', didOpen: () => { Swal.showLoading(null); } });
+
+    this.CIFwebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          Swal.fire('Error', 'Could not connect to the server', 'error');
         }
+      }
+    });
+  }
   // ============================================
   // Template References (matching original template names)
   // ============================================
@@ -155,6 +155,7 @@ export class SearchPaymentsPendingComponent implements OnInit {
   // Constructor
   // ============================================
   constructor(
+      private router: Router,
     private CIFwebService: LpuCIFWebService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
@@ -167,12 +168,17 @@ export class SearchPaymentsPendingComponent implements OnInit {
   // Lifecycle Hooks
   // ============================================
   ngOnInit(): void {
-    this.initializeForm();
+   this.LoadPageDetails();
+  }
+
+
+LoadPageDetails(): void {
+ this.initializeForm();
     this.initializeUserSession();
     this.initializeRouteParams();
     this.getBookingDetails();
-  }
 
+}
   // ============================================
   // Initialization Methods
   // ============================================
@@ -500,7 +506,7 @@ export class SearchPaymentsPendingComponent implements OnInit {
     };
   }
 
-  UpdateFileDocument(Id: number): void {
+  UpdateFileDocument(Id: number, Model: any): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
 
@@ -512,29 +518,21 @@ export class SearchPaymentsPendingComponent implements OnInit {
       formData.append('PaymentReceiptData', this.FileDataX || '');
       formData.append('UserId', this.userId);
 
-      this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
+ this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
         next: (data: any) => {
-          // Check returnId for status: 1 = Success, 0 = Failed, -1 = Already Existed
           const returnId = data.item1[0]?.returnId;
           const message = data.item1[0]?.msg;
-          
-          if (returnId === 1) {
+
+          if (returnId === 1 || returnId === -1) {
             Swal.fire({
-              title: 'Upload Successful',
-              text: 'Receipt saved successfully!',
-              icon: 'success'
+              title: returnId === 1 ? 'Upload Successful' : 'Receipt Already Exists',
+              text: returnId === 1 ? 'Receipt saved successfully!' : (message || 'A receipt has already been uploaded.'),
+              icon: returnId === 1 ? 'success' : 'warning'
             }).then(() => {
-              window.location.reload();
-            });
-          } else if (returnId === -1) {
-            Swal.fire({
-              title: 'Receipt Already Exists',
-              text: message || 'A receipt has already been uploaded for this booking.',
-              icon: 'warning',
-              // timer: 3000,
-              // showConfirmButton: true
-            }).then(() => {
-              window.location.reload();
+              Model.close();
+              // REFRESH DATA MANUALLY (Avoids IIS 404)
+              this.LoadPageDetails();
+
             });
           } else if (returnId === 0) {
             Swal.fire({
@@ -544,18 +542,8 @@ export class SearchPaymentsPendingComponent implements OnInit {
               timer: 2000,
               showConfirmButton: false
             });
-          } else {
-            // Fallback for unexpected response format
-            Swal.fire({
-              title: 'Upload Result',
-              text: message || 'Unknown response from server.',
-              icon: 'info',
-              timer: 2000,
-              showConfirmButton: false
-            });
           }
-
-          this.delayLoading(startTime);
+          this.loadingIndicator = false;
         },
         error: (error: any) => {
           Swal.fire({
@@ -567,6 +555,66 @@ export class SearchPaymentsPendingComponent implements OnInit {
           this.loadingIndicator = false;
         }
       });
+
+
+
+      // this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
+      //   next: (data: any) => {
+      //     // Check returnId for status: 1 = Success, 0 = Failed, -1 = Already Existed
+      //     const returnId = data.item1[0]?.returnId;
+      //     const message = data.item1[0]?.msg;
+          
+      //     if (returnId === 1) {
+      //       Swal.fire({
+      //         title: 'Upload Successful',
+      //         text: 'Receipt saved successfully!',
+      //         icon: 'success'
+      //       }).then(() => {
+      //         // window.location.reload();
+      //          this.router.navigate(['SearchPendingPayments'], { replaceUrl: true })
+      //       });
+      //     } else if (returnId === -1) {
+      //       Swal.fire({
+      //         title: 'Receipt Already Exists',
+      //         text: message || 'A receipt has already been uploaded for this booking.',
+      //         icon: 'warning',
+      //         // timer: 3000,
+      //         // showConfirmButton: true
+      //       }).then(() => {
+      //         // window.location.reload();
+      //         this.router.navigate(['SearchPendingPayments'], { replaceUrl: true })
+      //       });
+      //     } else if (returnId === 0) {
+      //       Swal.fire({
+      //         title: 'Upload Failed',
+      //         text: message || 'Failed to upload receipt. Please try again.',
+      //         icon: 'error',
+      //         timer: 2000,
+      //         showConfirmButton: false
+      //       });
+      //     } else {
+      //       // Fallback for unexpected response format
+      //       Swal.fire({
+      //         title: 'Upload Result',
+      //         text: message || 'Unknown response from server.',
+      //         icon: 'info',
+      //         timer: 2000,
+      //         showConfirmButton: false
+      //       });
+      //     }
+
+      //     this.delayLoading(startTime);
+      //   },
+      //   error: (error: any) => {
+      //     Swal.fire({
+      //       title: 'Error',
+      //       text: 'Internal Server error',
+      //       icon: 'error',
+      //       showConfirmButton: false
+      //     });
+      //     this.loadingIndicator = false;
+      //   }
+      // });
     }
   }
 
