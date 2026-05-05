@@ -1,0 +1,102 @@
+<app-HomePageTopBar (facilitiesClicked)="gotoFacilities()"></app-HomePageTopBar>
+<section class=" d-flex align-items-center ">
+  
+  <div class="container BottomSpace ">
+    <div class="row align-items-center justify-content-between  px-2 py-5 gap-5">
+      
+      <div class="heading-wrapper LoginCard text-center">
+        <h1 class="fs-2 text-maroon">Central Instrumentation Facility - Admin Login</h1>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block text-center bg-dark-yellow">
+        <img src="https://www.lpu.in/lpu-assets/images/cif/login-left.png" class="img-fluid floating-img"
+          alt="CIF Admin Illustration" />
+      </div>
+  
+      <div class="col-md-12 col-lg-5 bg-dark-yellow">
+        <div class="login-div shadow-lg p-4 p-md-5  rounded-4 ">
+          <div class="text-center mb-5">
+            <h2 class="fw-bold text-maroon ">CIF Admin Login</h2>
+            <!-- <p class=" fw-bold mt-4 ">Central Instrumentation Facility</p> -->
+          </div>
+  
+          <form [formGroup]="formdata" (ngSubmit)="OnSubmit()" class="needs-validation">
+  
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="loginid">Login ID</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control border-start-0 ps-3" placeholder="Enter Login ID / Email"
+                  formControlName="Email" id="loginid" />
+              </div>
+              <div *ngIf="submitted || email?.touched" class="text-danger mt-1">
+                <small *ngIf="email?.errors?.['required']">User ID is required.</small>
+              </div>
+            </div>
+  
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="password">Password</label>
+              <div class="input-group position-relative">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control border-start-0 ps-3 pe-5"
+                  placeholder="Enter password" formControlName="password" id="password" />
+                <button type="button" class="btn position-absolute end-0 top-0 h-100 border-0 z-3"
+                  (click)="togglePasswordVisibility()">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+              <div *ngIf="submitted || passwordText?.touched" class="text-danger mt-1">
+                <small *ngIf="passwordText?.errors?.['required']">Password is required.</small>
+              </div>
+            </div>
+  
+            <div class="d-grid">
+              <button type="submit" class="btn btn-maroon btn-lg shadow-sm" [disabled]="formdata.invalid">
+                Sign In
+              </button>
+            </div>
+  
+          </form>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+</section>
+<!-- 
+<section class="section">
+  <div class="container-fluid">
+    <div class="heading-wrapper mb-5 text-center">
+      <h1 class="display-5">Central Instrumentation Facility - Admin Login</h1>
+    </div>
+    <div class="row">
+      <div class="col-md-6 d-none d-lg-block">
+        <img src="https://www.lpu.in/lpu-assets/images/cif/login-left.png" class="img-fluid" alt="Login Image" />
+      </div>
+      <div class="col-md-6 login-div">
+        <div class="container-fluid">
+          <form class="forms-sample" [formGroup]="formdata" (ngSubmit)="OnSubmit()">
+            <div class="mb-4 cif-input-group">
+              <label class="form-label" for="loginid">Login ID</label>
+              <input type="text" class="form-control" placeholder="Enter Login ID/ Email" formControlName="Email" id="loginid" required />
+              <div *ngIf="submitted || email?.touched || email?.errors" class="text-danger">
+                <small *ngIf="email?.errors?.['required']">User  ID is required.</small>
+              </div>
+            </div>
+
+            <div class="mb-4 cif-input-group">
+              <label class="form-label" for="password">Password</label>
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control" placeholder="Enter password" formControlName="password" id="password" required />
+              <i class="input-eye input-eye-slash" (click)="togglePasswordVisibility()"></i>
+              <div *ngIf="submitted || passwordText?.touched || passwordText?.errors" class="text-danger">
+                <small *ngIf="passwordText?.errors?.['required']">Password is required.</small>
+              </div>
+            </div>
+            <div class="">
+              <button type="submit" class="btn btn-primary me-2 mb-2" [disabled]="formdata.invalid">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->

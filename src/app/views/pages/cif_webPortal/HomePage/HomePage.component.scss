@@ -1,0 +1,374 @@
+/* ------ Promo Banner Styles ------ */
+.promo-banner {
+  width: 7rem !important;
+  position: relative;
+}
+.imgSize{
+  height:12rem !important;
+  width: 18rem !important;
+}
+/* Blinking Animation */
+.blinking-text {
+  animation: blink 1s ease-in-out infinite alternate;
+}
+
+@keyframes blink {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Optional "NEW" badge bounce */
+.badge {
+  animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+
+.section {
+    padding: 60px 0;
+  }
+  
+  .bg-dark-yellow {
+    background-color: #f8c51c;
+  }
+  
+  .heading-wraper .main-head h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+
+.img-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+.spinner-border {
+  z-index: 10;
+}
+
+.full-screen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Styles for Upcoming events
+#eventsCarousel .card {
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+#eventsCarousel .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+}
+
+#eventsCarousel img {
+  height: 200px;
+  object-fit: cover;
+}
+
+#eventsCarousel .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#eventsCarousel .card-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+#eventsCarousel .btn-primary {
+  border-radius: 25px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+}
+
+.custom-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.custom-spinner-overlay img {
+  width: 20rem;
+  height: 20rem;
+}
+
+.custom-spinner-content p {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 0 5px #d8d8d8;
+  font-family: "Segoe UI", sans-serif;
+  margin-top: 10px;
+}
+
+// ✅ FIX #2: Smooth fade-in for the facilities grid.
+//    Because all images are pre-cached via fetch() before *ngIf renders the DOM,
+//    every <img> loads from the browser cache instantly — the entire grid
+//    appears at once with this gentle animation instead of popping in abruptly.
+
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.instrument-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Keeps layout stable before image pops in */
+    background-color: #f0f0f0; /* Subtle placeholder color */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.instrument-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.link-container a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.link-container a.inactive {
+    color: #6c757d;
+    pointer-events: none;
+} 
+/* Responsive layout for instrument list */
+#InstrumentDetailsData {
+  /* use grid to ensure predictable columns across breakpoints */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns on large screens (matches col-md-3) */
+  gap: 1rem; /* small gap between items; margins inside items are preserved */
+  align-items: start;
+
+  /* ensure each bootstrap column behaves well as a grid item */
+  > .col-md-3 {
+    /* let inner margins/padding remain, but make the element fill the grid cell */
+    width: 100%;
+    max-width: 100%;
+    display: block;
+  }
+
+  img.img-fluid {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain; /* preserve image aspect while fitting */
+  }
+
+  /* instrument name link: allow wrapping and full width click area */
+  #InstrumentsPage a {
+    display: block;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Tablet: 3 columns for medium-wide screens (e.g., 768px - 1024px) */
+@media (max-width: 1024px) {
+  #InstrumentDetailsData { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Small tablets / large phones: 2 columns */
+@media (max-width: 768px) {
+  #InstrumentDetailsData { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 480px) {
+  #InstrumentDetailsData { grid-template-columns: 1fr; }
+}
+
+ 
+// .promo-banner {
+ 
+//   width: 7rem !important;
+ 
+//   position: relative;
+ 
+// }
+
+// /
+// .blinking-text {
+//   animation: blink 1s ease-in-out infinite alternate;
+// }
+
+// @keyframes blink {
+//   0% { opacity: 1; transform: scale(1); }
+//   100% { opacity: 0.8; transform: scale(1.05); }  
+// }
+
+// .badge {
+//   animation: bounce 0.5s infinite alternate;
+// }
+
+// @keyframes bounce {
+//   0% { transform: translateY(0); }
+//   100% { transform: translateY(-3px); }
+// }
+
+
+// .section {
+//     padding: 60px 0;
+//   }
+  
+//   .bg-dark-yellow {
+//     background-color: #f8c51c; 
+//   }
+  
+//   .heading-wraper .main-head h2 {
+//     font-size: 2rem;
+//     font-weight: bold;
+//     color: #333;
+//     margin-bottom: 30px;
+//   }
+   
+// .img-container {
+//   position: relative;
+//   width: 100%;
+//   height: auto;
+// }
+// .spinner-border {
+//   z-index: 10;
+// }
+
+// .full-screen-loader {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: rgba(255, 255, 255, 0.95);
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 9999;
+// }
+
+// .spinner {
+//   border: 4px solid #f3f3f3;
+//   border-top: 4px solid #3498db;
+//   border-radius: 50%;
+//   width: 40px;
+//   height: 40px;
+//   animation: spin 1s linear infinite;
+// }
+
+// @keyframes spin {
+//   0% { transform: rotate(0deg); }
+//   100% { transform: rotate(360deg); }
+// }
+
+ 
+// #eventsCarousel .card {
+//   border-radius: 20px;
+//   transition: all 0.3s ease-in-out;
+// }
+
+// #eventsCarousel .card:hover {
+//   transform: translateY(-5px);
+//   box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+// }
+
+// #eventsCarousel img {
+//   height: 200px;
+//   object-fit: cover;
+// }
+
+// #eventsCarousel .card-title {
+//   font-size: 1rem;
+//   font-weight: 600;
+// }
+
+// #eventsCarousel .card-text {
+//   font-size: 0.9rem;
+//   color: #6c757d;
+// }
+
+// #eventsCarousel .btn-primary {
+//   border-radius: 25px;
+//   padding: 6px 16px;
+//   font-size: 0.85rem;
+// }
+
+
+
+
+//  .custom-spinner-overlay {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: rgba(0,0,0,0.5); 
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 2000; 
+// }
+
+// .custom-spinner-overlay img {
+//   width: 20rem;
+//   height: 20rem;
+// }
+// .custom-spinner-content p {
+//   color: #fff;
+//   font-size: 18px;
+//   font-weight: 700;
+//   text-shadow: 0 0 5px #d8d8d8;
+//   font-family: "Segoe UI", sans-serif;
+//   margin-top: 10px; 
+// } 

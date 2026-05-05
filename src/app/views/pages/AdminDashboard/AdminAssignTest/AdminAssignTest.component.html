@@ -1,0 +1,453 @@
+<app-AdminDashboard></app-AdminDashboard>
+<div *ngIf="loadingIndicator" class="fullscreen-loader d-none">
+    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+        </div>
+    </div>
+</div>
+<div class="row" *ngIf="AllBookingTestsData.length > 0; else NoData">
+    <div class="col-12 stretch-card">
+        <div class="card">
+            <hr />
+            <div class="row d-flex justify-content-center">
+                <h2 class="fs-1 text-center">Assign Test Page</h2>
+            </div>
+            <hr />
+            <div class="card-body">
+                <div class="row d-flex justify-content-center align-items-center mt-4 mb-2">
+                    <div class="col-sm-4 col-3 text-end">
+
+                        <button (click)="exportToExcel()" class="btn btn-dark"
+                            [disabled]="tmpsAllBookingTestsData.length == 0">
+                            Export to Excel
+                        </button>
+
+                    </div>
+
+
+                    <div class="col-sm-4 col-3  mb-4 mt-3 text-center">
+                        <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
+                            class="form-control w-50 " placeholder="Search Your Text Here" aria-label="Search"
+                            aria-describedby="basic-addon1" />
+                    </div>
+                    <div class="col-md-4 col-3 mb-4 mt-3">
+                        <button (click)="toggleAdvancedSearch()" class="btn btn-dark w-50">
+                            {{ showAdvancedSearch ? 'Hide Advanced' : 'Advanced Search' }}
+                        </button>
+                    </div>
+
+
+
+
+                </div>
+                <hr />
+                <div *ngIf="showAdvancedSearch"
+                    class="row mb-3 p-2 d-flex justify-content-center align-items-center bg-light rounded">
+
+
+
+                    <div class="col-6 col-md-3 mb-3 mb-md-0"> Select Payment Type
+                        <ng-select [(ngModel)]="selectedStatus" (change)="filterData()" [items]="statusOptions"
+                            bindLabel="label" bindValue="value" [clearable]="false" [searchable]="false"
+                            class="custom-filter w-100">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span
+                                    [ngStyle]="{'color': item.value === 'success' ? '#28a745' :  item.value === 'failure' ? '#dc3545' :  item.value === 'null' ? '#ffc107' : '#666'}">
+                                    ●
+                                </span>
+                                <span class="ms-1">{{ item.label }}</span>
+                            </ng-template>
+
+                            <ng-template ng-label-tmp let-item="item">
+                                <span class="fw-bold" style="color: #444;">{{ item.label }}</span>
+                            </ng-template>
+
+                        </ng-select>
+
+                        <!-- <ng-select [(ngModel)]="selectedStatus" [items]="statusOptions"
+                            (ngModelChange)="checkSearchCriteria()" bindLabel="label" bindValue="value"
+                            placeholder="-- Select Status --" class="w-100"
+                            [disabled]="tmpsAllBookingTestsData.length == 0">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span *ngIf="item.value === ''">-- All Payments--</span>
+                                <span *ngIf="item.value === 'success'">Paid</span>
+                                <span *ngIf="item.value === 'failure'">Failure</span>
+                                <span *ngIf="item.value === 'null'">Pending</span>
+                            </ng-template>
+
+                            <ng-template ng-label-tmp let-item="item">
+                                <span *ngIf="item.value === ''">-- All Payemnts--</span>
+                                <span *ngIf="item.value === 'success'">Success</span>
+                                <span *ngIf="item.value === 'failure'">Failure</span>
+                                <span *ngIf="item.value === 'null'">Pending</span>
+                            </ng-template>
+                        </ng-select> -->
+                    </div>
+
+                    <div class="col-6 col-md-3 mb-3 mb-md-0"> Select Test Type
+                        <ng-select [(ngModel)]="IsAssigned" [items]="assignedOptions"
+                            (ngModelChange)="checkSearchCriteria()" bindLabel="label" bindValue="value"
+                            [clearable]="false" [searchable]="false" class="custom-filter w-100">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span
+                                    [ngStyle]="{'color': item.value === 'Assigned' ? '#28a745' :  item.value === 'Pending' ? '#dc3545' :  item.value === 'null' ? '#ffc107' : '#666'}">
+                                    ●
+                                </span>
+                                <span class="ms-1">{{ item.label }}</span>
+                            </ng-template>
+
+                            <ng-template ng-label-tmp let-item="item">
+                                <span class="fw-bold" style="color: #444;">{{ item.label }}</span>
+                            </ng-template>
+
+                        </ng-select>
+                        <!-- <ng-select [(ngModel)]="IsAssigned" [items]="assignedOptions"
+                            (ngModelChange)="checkSearchCriteria()" bindLabel="label" bindValue="value"
+                            placeholder="-- Select --" class="w-100" [disabled]="tmpsAllBookingTestsData.length == 0">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span *ngIf="item.value === ''">-- All Tests--</span>
+                                <span *ngIf="item.value === 'Assigned'">All Assigned</span>
+                                <span *ngIf="item.value === 'Pending'">Not Assigned </span>
+                            </ng-template>
+
+                            <ng-template ng-label-tmp let-item="item">
+                                <span *ngIf="item.value === ''">-- All Tests--</span>
+                                <span *ngIf="item.value === 'Assigned'">All Assigned</span>
+                                <span *ngIf="item.value === 'Pending'">Not Assigned </span>
+                            </ng-template>
+                        </ng-select> -->
+                    </div>
+
+
+
+                    <div class="row d-flex justify-content-center align-items-center mt-5">
+                        <div class="col-6 col-md-3 mt-2">
+                            <button (click)="applyAdvancedSearch()" class="btn btn-dark w-100"
+                                [disabled]="!hasAnySearchCriteria" [class.btn-disabled]="!hasAnySearchCriteria">
+                                Apply Filters
+                            </button>
+                        </div>
+
+                        <div class="col-6 col-md-3 mt-2">
+                            <button (click)="resetAdvancedSearch()" class="btn btn-dark w-100">
+                                Reset Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-4 p-2 ">
+                    <span class="fs-3 themeClr" *ngIf="hasAnySearchCriteria || searchQuery">
+                        Search Result :- <span class="text-muted">Found {{ tmpsAllBookingTestsData.length }}
+                            Records</span>
+                    </span>
+                </div>
+                <!-- Top Pagination and Controls -->
+                <div class="row d-flex justify-content-center align-items-center mb-3"
+                    *ngIf="tmpsAllBookingTestsData.length > 0">
+                    <div class="col-md-4 text-end">
+                        <span class="text-dark fs-5 fw-bolder me-4"
+                            style="border:1px solid #ef7d00; padding: 8px 12px;">
+                            Records: {{ getTotalRecords() }}
+                        </span>
+                    </div>
+                    <div class="col-md-4 text-start">
+                        <span class="text-dark fs-5 fw-bolder me-4"
+                            style="border:1px solid #ef7d00; padding: 8px 12px;">Items per page:</span>
+                        <select class="form-select d-inline-block ms-2"
+                            style="width: auto; border:1px solid #ef7d00; padding: 8px 12px;"
+                            [value]="isAllSelected ? 'all' : itemsPerPage" (change)="onItemsPerPageChange($event)">
+                            <option *ngFor="let option of itemsPerPageOptions" [value]="option.value">
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="pagination">
+                            <a class="btn lpu-btn m-3" (click)="prevPage()" [class.disabled]="currentPage === 1">
+                                Prev
+                                <!-- <i class="mdi mdi-chevron-left fs-4"></i> -->
+                            </a>
+                            <span class="fs-5 mt-4">{{ currentPage }} / {{ getTotalPages() }}</span>
+                            <a class="btn lpu-btn m-3" (click)="nextPage()"
+                                [class.disabled]="currentPage === getTotalPages()">
+                                Next
+                                <!-- <i class="mdi mdi-chevron-right fs-4"></i> -->
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <ng-container *ngIf="tmpsAllBookingTestsData.length > 0; else noRecords">
+                    <div class="table-responsive bg-dark-yellow mt-4 mb-4">
+                        <table id="AdminAssignTest" #table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="form-label fw-bolder">Booking Id</th>
+                                    <!-- <th class="form-label fw-bolder">Id</th> -->
+                                    <th class="form-label fw-bolder">Instrument Name</th>
+                                    <th class="form-label fw-bolder">Sample Count</th>
+                                    <th class="form-label fw-bolder">Total Charges</th>
+                                    <th class="form-label fw-bolder">Request Sheet</th>
+                                    <th class="form-label fw-bolder">Request Date</th>
+                                    <th class="form-label fw-bolder">Candidate Id</th>
+                                    <th class="form-label fw-bolder">Candidate Name</th>
+                                    <th class="form-label fw-bolder">Organisation Name</th>
+                                    <th class="form-label fw-bolder">User Type</th>
+                                    <th class="form-label fw-bolder">Payment Status</th>
+                                    <th class="form-label fw-bolder">Payment Date</th>
+                                    <th class="form-label fw-bolder">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container
+                                    *ngFor="let AllBookingTestsDataRow of getCurrentPageData(); let i = index">
+                                    <tr>
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.newBookingId }}</td>
+                                        <!-- <td class="fw-bold">{{ AllBookingTestsDataRow.recordId }}</td> -->
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.instrumentName }}</td>
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.noOfSamples }}</td>
+                                        <td class="fw-bold">
+                                            {{
+                                            AllBookingTestsDataRow?.totalCharges &&
+                                            AllBookingTestsDataRow?.totalCharges != 'null'
+                                            ? (AllBookingTestsDataRow?.totalCharges | currency: 'INR': 'symbol')
+                                            : 'NA'
+                                            }}
+                                        </td>
+
+                                        <ng-container *ngIf="AllBookingTestsDataRow.fileName; else NoFile">
+                                            <td>
+                                                <button class="btn-dark btn ms-3"
+                                                    (click)="downloadFile(AllBookingTestsDataRow.fileName)">
+                                                    <i class="bi bi-download"></i>
+                                                </button>
+                                            </td>
+                                        </ng-container>
+                                        <ng-template #NoFile>
+                                            <td class="ms-4">
+                                                <span class="badge text-bg-info ms-3 fs-5">N/A</span>
+                                            </td>
+                                        </ng-template>
+
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.bookingRequestDate }}</td>
+                                        <td class="fw-bold">
+                                            {{
+                                            AllBookingTestsDataRow.userEmailId?.length > 0
+                                            ? AllBookingTestsDataRow.userEmailId
+                                            : 'Internal User'
+                                            }}
+                                        </td>
+                                        <td class="fw-bold">
+                                            {{
+                                            AllBookingTestsDataRow.candidateName?.length < 1 ? 'Internal User' :
+                                                AllBookingTestsDataRow.candidateName }} </td>
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.organisationName }}</td>
+                                        <td class="fw-bold">{{ AllBookingTestsDataRow.userRole }}</td>
+                                        <td>
+                                            <span class="badge"
+                                                [ngClass]="{
+                          'bg-success': AllBookingTestsDataRow?.paymentStatus == 'success',
+                          'bg-danger': AllBookingTestsDataRow?.paymentStatus == 'failure',
+                          'bg-warning text-dark': !AllBookingTestsDataRow?.paymentStatus || AllBookingTestsDataRow?.paymentStatus == 'null' }">
+                                                {{
+                                                AllBookingTestsDataRow?.paymentStatus == 'success'
+                                                ? 'Paid'
+                                                : AllBookingTestsDataRow?.paymentStatus == 'failure'
+                                                ? 'Failed'
+                                                : 'Pending'
+                                                }}
+                                            </span>
+                                        </td>
+                                        <td class="fw-bold">
+                                            {{
+                                            AllBookingTestsDataRow?.paymentDate && AllBookingTestsDataRow?.paymentDate
+                                            != 'null'
+                                            ? AllBookingTestsDataRow?.paymentDate
+                                            : '-NA-'
+                                            }}
+                                        </td>
+                                        <ng-container
+                                            *ngIf="AllBookingTestsDataRow.assignedUserId?.length<=0; else Assigned">
+                                            <td class="fw-bold"
+                                                *ngIf=" AllBookingTestsDataRow?.paymentStatus == 'success'; else NA">
+                                                <button class="btn btn-dark"
+                                                    (click)="openPaymentModal(AllBookingTestsDataRow)">
+                                                    <!-- Assign Staff -->
+                                                    <i class="bi bi-tools"></i>
+                                                </button>
+                                            </td>
+                                            <ng-template #NA>
+                                                <td> <span class="badge bg-success">NA</span> </td>
+                                            </ng-template>
+                                        </ng-container>
+                                        <ng-template #Assigned>
+                                            <td class="ms-4"
+                                                *ngIf=" AllBookingTestsDataRow?.paymentStatus == 'success'; else NA">
+                                                <button class="btn btn-primary "
+                                                    (click)="openEditModal(AllBookingTestsDataRow)">
+                                                    Modify Staff
+                                                    <!-- <i class="bi bi-pencil-square"></i>  -->
+                                                </button> <br />
+                                                <span class="badge text-bg-info m-2 fs-5">Assinged to : -
+                                                    {{AllBookingTestsDataRow.assignedUserId}}</span><br />
+                                            </td>
+                                            <ng-template #NA>
+                                                <td> <span class="badge bg-success">NA</span> </td>
+                                            </ng-template>
+                                        </ng-template>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                        <div class="row" *ngIf="tmpsAllBookingTestsData.length > 0">
+                            <div class="col-sm-3 pagination d-flex justify-content-center align-items-center mt-3">
+                                <a class="btn lpu-btn me-3" (click)="prevPage()" [class.disabled]="currentPage === 1">
+                                    Prev
+                                    <!-- <i class="mdi mdi-chevron-left fs-4"></i> -->
+                                </a>
+                                <span class="fs-5">{{ currentPage }} / {{ getTotalPages() }}</span>
+                                <a class="btn lpu-btn ms-3" (click)="nextPage()"
+                                    [class.disabled]="currentPage === getTotalPages()">
+                                    Next
+                                    <!-- <i class="mdi mdi-chevron-right fs-4"></i> -->
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-template #noRecords>
+                    <p class="fs-2 text-center">No Grid Data Available.</p>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #NoData>
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center">
+                <h3 class="text-center fs-2 m-5 pt-5">No Record!</h3>
+                <div class="row mt-4 mb-4">
+                    <div class="col-sm-12 text-center">
+                        <div class="mb-3 p-4">
+                            <label class="fw-bold fs-4">No Booking Found.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Assign Test Modal -->
+<ng-template #viewDescModal2 let-modal>
+    <div class="modal-header">
+        <h2 class="modal-title fs-2" id="exampleModalLabel">Assign Test</h2>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm">
+                            <table id="dataTableAllClosedRemarks" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="fs-5 text-dark">Booking Id</th>
+                                        <th class="fs-5 text-dark">Instrument Name</th>
+                                        <th class="fs-5 text-dark">Assign To</th>
+                                        <th class="fs-5 text-dark">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fs-5 p-4" style="width: 20%;">{{ BookingCase.newBookingId }}</td>
+                                        <td class="fs-5 p-4" style="width: 20%;">{{ BookingCase.instrumentName }}</td>
+                                        <td class="fs-5 p-4" style="width: 20%;">
+                                            <select id="staffName" (change)="onActivitySelected($event)"
+                                                class="col-12 p-2 form-control" required [(ngModel)]="AssignedTo"
+                                                name="staffName" #AssignedToModel="ngModel">
+                                                <option value="" selected>Select Staff</option>
+                                                <option *ngFor="let session of AllCifUserList" [value]="session.uid">
+                                                    {{ session.uiD_Name }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-dark me-2"
+                                                (click)="VerifyData(BookingCase)" [disabled]="!AssignedTo">
+                                                Assign
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #editEventModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Reassign Test Form</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm">
+                            <table id="dataTableAllClosedRemarks" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="fs-5 text-dark">Booking Id</th>
+                                        <th class="fs-5 text-dark">Instrument Name</th>
+                                        <th class="fs-5 text-dark">Assign To</th>
+                                        <th class="fs-5 text-dark">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fs-5 p-4" style="width: 20%;">{{ this.editEvent['recordId'] }}</td>
+                                        <td class="fs-5 p-4" style="width: 20%;">{{ this.editEvent['instrumentName'] }}
+                                        </td>
+                                        <td class="fs-5 p-4" style="width: 20%;"> {{this.editEvent['assignedUserId']}}
+                                            <select id="staffName" (change)="onActivitySelected($event)"
+                                                class="col-12 p-2 form-control" required [(ngModel)]="AssignedToNew"
+                                                name="staffNameNew" #AssignedToModel="ngModel">
+                                                <option value="" selected>Select Staff</option>
+                                                <option *ngFor="let session of AllCifUserList" [value]="session.uid">
+                                                    {{ session.uiD_Name }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-dark me-2"
+                                                (click)="ReAssginStaff(editEvent)" [disabled]="!AssignedTo">
+                                                Assign New Staff
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    </div>
+
+</ng-template>

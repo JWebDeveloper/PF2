@@ -1,0 +1,118 @@
+<section class="section "  *ngIf="UpcomingchunkedEvents.length>0;">
+    <div class="container mb-4">
+        <div class="heading-wraper">
+            <div class="main-head d-flex align-items-center justify-content-between">
+                <h2 class="mb-0">Upcoming Events</h2>
+
+                <!-- <div class="slider-custom-nav">
+                    <button class="single-prev-arrow custom-prev-arrow prev_custom-nav" (click)="prev()"
+                        aria-label="Previous slide">
+                        <img src="https://www.lpu.in/lpu-assets/images/icons/vector-left.svg" alt="prev" />
+                    </button>
+
+                    <button class="single-next-arrow custom-next-arrow next_custom-nav" (click)="next()"
+                        aria-label="Next slide">
+                        <img src="https://www.lpu.in/lpu-assets/images/icons/vector-right.svg" alt="next" />
+                    </button>
+                </div> -->
+            </div>
+        </div>
+        <div  *ngIf="UpcomingchunkedEvents.length>0; else ErrorCard">
+            <ngb-carousel #ngbCarousel [interval]="autoSlideInterval" [pauseOnHover]="true" [wrap]="true"
+                [showNavigationArrows]="false" [showNavigationIndicators]="false">
+                <ng-template ngbSlide *ngFor="let event of UpcomingchunkedEvents; let i = index"
+                    id="{{ 'slide-' + i }}">
+                    <div class="slider-item event-card mb-4 bg-dark-yellow">
+                        <div class="col" *ngFor="let event of event">
+                            <div class="row">
+                                <div class="col-md-12 text-start">
+                                    <h4 class="font-primary">{{ event.eventName }}</h4>
+                                    <div class="misc-smfont mt-3"><b>Date:</b> {{ event.eventDate }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ngb-carousel>
+        </div>
+    </div>
+</section>
+<ng-template #ErrorCard>
+    <div class="text-center">
+        
+        <div class="slider-item event-card mb-4 bg-dark-yellow">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="text-center mt-4 font-primary">No event is scheduled yet.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+</ng-template>
+
+<!--  
+<section class="section bg-dark-yellow">
+    <div class="container">
+        <div class="heading-wraper">
+            <div class="main-head">
+                <h2><span>Upcoming Events</span></h2>
+            </div>
+        </div>
+
+        <div class="marquee-wrapper">
+            <div class="marquee">
+                <div class="event-item" *ngFor="let event of allEvents">
+                    <article class="event-card">
+                        <div class="event-info">
+                            <strong>{{ event.eventName }}</strong>
+                            <div>{{ event.eventDate }}</div>
+                            <div>{{ event.eventDetails }}</div>
+                        </div>
+
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>  -->
+
+
+
+<section class="section bg-dark-yellow">
+    <div class="container">
+        <div class="heading-wraper">
+            <div class="main-head">
+                <h2> Events & Happenings </h2>
+
+                <div class="inner-testi-slider-nav">
+                    <button id="prev_event_slide" class="inner-testi-prev-arrow" (click)="carousel.prev()">
+                        <img src="https://www.lpu.in/lpu-assets/images/icons/vector-left.svg" />
+                    </button>
+                    <button id="next_event_slide" class="inner-testi-next-arrow" (click)="carousel.next()">
+                        <img src="https://www.lpu.in/lpu-assets/images/icons/vector-right.svg" />
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <ngb-carousel #carousel [interval]="15000" [pauseOnHover]="true" [showNavigationArrows]="false"
+            [showNavigationIndicators]="true">
+            <ng-template ngbSlide *ngFor="let group of chunkedEvents">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 text-center justify-content-center">
+                    <div class="col" *ngFor="let event of group">
+                        <img [src]="ServerUrl + event.imageUrl" [alt]="event.eventName" class="img-fluid" />
+                        <div class="mt-4 mb-2">
+                            <strong class="d-block">{{ event.eventName }}</strong>
+                            {{ event.eventDetails }}
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ngb-carousel>
+
+        <p *ngIf="chunkedEvents.length === 0" class="text-center mt-4 text-muted">
+            No Happenings events available at the moment.
+        </p>
+    </div>
+</section>

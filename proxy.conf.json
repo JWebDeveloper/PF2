@@ -1,0 +1,18 @@
+{
+  "/api/header": {
+    "target": "https://includepages.lpu.in",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/header": "/newlpu/header.php"
+    }
+  },
+  "/api/footer": {
+    "target": "https://includepages.lpu.in",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/footer": "/newlpu/footer.php"
+    }
+  }
+}

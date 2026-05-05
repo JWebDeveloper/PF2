@@ -1,0 +1,22 @@
+<!-- Use an iframe to load the remote header page directly (avoids CORS and preserves remote scripts/styles) -->
+<div class="remote-header-iframe-wrapper" style="width:100%;">
+  <iframe *ngIf="iframeVisible"
+    #remoteFrame
+    id="remoteHeaderFrame"
+    src="https://includepages.lpu.in/newlpu/header.php"
+    width="100%"
+    height="220"
+    style="border:0; display:block;"
+    loading="eager"
+    title="LPU Remote Header">
+  </iframe>
+
+  <!-- Fallback container: shown when iframe is hidden or blocked -->
+  <div *ngIf="showHtmlContainer" class="remote-header-html-container">
+    <div *ngIf="trustedHeaderHtml; else loadingHtml" [innerHTML]="trustedHeaderHtml"></div>
+    <ng-template #loadingHtml>
+      <!-- small fallback if HTML not yet loaded -->
+      <div style="padding:8px;text-align:center;color:#666">Loading header...</div>
+    </ng-template>
+  </div>
+</div>

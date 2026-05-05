@@ -1,0 +1,278 @@
+<app-AdminDashboard></app-AdminDashboard>
+ 
+
+<div *ngIf="loadingIndicator" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+         
+        </div>
+    </div>
+</div>
+
+
+<div class="row" *ngIf="InstrumentData.length > 0 ;else NoData">
+    <div class="col-12 stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mt-2 d-flex justify-content-center">
+                    <div class="col-sm-4">
+                        <div class="mb-3">
+                            <button (click)="exportToExcel()" class="btn btn-dark"
+                                [disabled]="tmpsInstrumentData.length==0">Export to
+                                Excel</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mb-3 text-start">
+                            <Label class="fs-3 fw-bolder">Instruments Details</Label>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3 text-start">
+                     
+                        <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text" class="form-control"
+                            placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
+                    </div>
+                </div>
+                <ng-container *ngIf="tmpsInstrumentData.length > 0; else noRecords">
+                    <div class="table-responsive mt-4 mb-4">
+                        <table id="InstrumentDataTable" #table>
+                            <thead>
+                                <tr>
+                                    <th class="form-label ">Instrument Id</th>
+                                    <th class="form-label ">Instrument Name</th>
+                                    <th class="form-label ">Instrument Excel Sheet</th>
+                                     
+                                    <th class="form-label ">Status</th>
+                                    <th class="form-label ">Action </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let InstrumentDataRow of getCurrentPageData(); let i = index">
+                                    <tr>
+                                        <td class="fw-bold "> {{InstrumentDataRow.instrumentId}}</td>
+                                        <td class="fw-bold "> {{InstrumentDataRow.instrumentName}}</td>
+                                        <td class="fw-bold ">
+
+                                           
+                                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(this.serverUrl+InstrumentDataRow.sampleExcelSheetUrl)" [disabled]="InstrumentDataRow.sampleExcelSheetUrl<1"> 
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                             <ng-template #noExcel> <span class="text-danger ms-2"> No Excel Uploaded
+                                                </span>
+                                            </ng-template>
+                                         </td>
+                                         <td class="fw-bold">
+                                            <ng-container *ngIf="InstrumentDataRow.isActive===true; else unavailable">
+                                                <span class="text-success ">Available</span>
+                                            </ng-container>
+                                            <ng-template #unavailable>
+                                                <span class="text-danger">Unavailable</span>
+                                            </ng-template>
+                                        </td>
+                                        <td class="fw-bold ">
+                                            <button class="btn btn-danger btn-sm me-2" (click)="OpenModalWindow(InstrumentDataRow)"> 
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                            <button class="btn btn-warning btn-sm m-3" (click)="OpenReplaceModal(InstrumentDataRow)">
+                                                Replace Excel Sheet
+    
+                                                <i class="bi bi-upload fs-4 m-2 "></i>
+                                            </button>
+                                         </td>
+
+                                         
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+
+                        </table>
+                        <div class="pagination">
+                            <a class="" (click)="prevPage()" [class.disabled]="currentPage === 1"> <i
+                                    class="mdi mdi-chevron-left  fs-2"> </i> </a>
+                            <span class=" p-2">{{ currentPage }} / {{ getTotalPages() }}</span>
+                            <a class="" (click)="nextPage()" [class.disabled]="currentPage === getTotalPages()"><i
+                                    class="mdi mdi-chevron-right  fs-2"> </i></a>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noRecords>
+                    <p class="fs-2  text-center ">No Instrument Available.</p>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #NoData>
+    <div class="text-center">
+        <h3 class="text-center fs-2 m-5  pt-5 "> No Record ! </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4  ">No Instrument Found.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #viewDescModal2 let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Excel Document Replace Screen </h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm">
+                            <table id="dataTableAllClosedRemarks" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class=" fs-5 ">Instrument Id </th>
+                                        <th class=" fs-5 ">Instrument Name </th>
+                                        <th class=" fs-5 ">Existing File </th>
+                                        <th class=" fs-5 ">Upload File </th>
+                                        <th class=" fs-5 ">Upload Action </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <form>
+
+                                    </form>
+                                    <tr>
+                                        <td class=" fs-5 p-4 " style="width: 20%;">{{BookingCase.instrumentId}} </td>
+                                        <td class=" fs-5 p-4 " style="width: 20%;">{{BookingCase.instrumentName}} </td>
+                                        <td class=" fs-5 p-4 " style="width: 20%;">
+                                            <button class="btn btn-secondary ms-3" (click)="onDownloadFile(this.serverUrl+BookingCase.sampleExcelSheetUrl)" [disabled]="BookingCase.sampleExcelSheetUrl<1"> 
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                            
+                                            </td>
+
+                                        
+                                        <td class=" fs-5 ">
+                                              <input class="form-control" [(ngModel)]="fileNamesX" type="file" id="File"
+                                            name="file" (change)="onFileXSelected($event, this.InstrumentId)"
+                                            accept=".xls, .xlsx" />
+                                 
+                                            <div class="col- mt-2"><span class=" themeClr"> Allowed Documents format XLS/XLSX
+                                                    and of Max size 1MB </span></div>
+
+                                        </td>
+                                        <td><button type="submit" class="btn btn-primary me-2"
+                                                (click)="VerifyData(BookingCase);">Replace Sheet</button></td>
+
+
+
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+        <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
+            <div class="col-md-12 stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let header of uploadedDataForDisplay[0]">{{ header }}</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of uploadedDataForDisplay.slice(1); let rowIndex = index">
+                                        <td *ngFor="let cell of row; let cellIndex = index"
+                                            [ngClass]="{'text-danger': isError(rowIndex + 1, cellIndex)}">{{ cell }}
+                                        </td>
+                                        <td>
+                                            <span *ngIf="validationErrors[rowIndex + 1]" class="text-danger">
+                                                {{ validationErrors[rowIndex + 1] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                   
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #viewDescModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Instrument Image Modify</h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <label for="InstrumentId" class="form-label">{{this.InstrumentTitles}}</label>
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <form id="UpdateImage">
+                    <div class="row p-3 m-3">
+
+                        <div class="row mb-4">
+                            <div class="col-3">
+                                <label for="userName" class="col-12 col-form-label">Instrument Id</label>
+                                <label for="InstrumentId" class="form-label">{{this.InstrumentId}}</label>
+
+                            </div>
+                            <div class="col-3">
+                                <div class="col-12">
+                                    <label for="userName" class="col-12 col-form-label">Instrument Status </label>
+                                    <input type="checkbox" id="StatusInstrument" name="StatusInstrument"
+                                        [(ngModel)]="StatusInstrument" (change)="ChangeStatus($event)" />
+                                    <div *ngIf="isForm1Submitted && form1.file.errors?.required"
+                                        class="invalid-feedback">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <label for="userName" class="col-12 col-form-label">Instrument Image:</label>
+                                <div class="col-12">
+                                    <input class="form-control" [(ngModel)]="fileNamesX" type="file" id="File"
+                                        name="file" (change)="onFileXSelected($event, this.InstrumentId)"
+                                        accept=".png, .jpg, .jpeg" />
+                                    <div *ngIf="isForm1Submitted && form1.file.errors?.required"
+                                        class="invalid-feedback">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3 text-end">
+                                <label class="col-12 col-form-label"> Action Button </label>
+                                <div class="col-12"><button type="submit" [disabled]="!fileChosen[this.InstrumentId]"
+                                        class="btn btn-primary" (click)="UpdateFileDocument(this.InstrumentId);">Upload
+                                        Image </button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</ng-template>
