@@ -36,7 +36,7 @@ export class LpuCIFWebService {
     return (error: any): Observable<T> => {
       console.error(`${operation} failed:`, error);
       // Return the fallback value with user-friendly error message to prevent UI crashes
-      const userFriendlyMessage = 'Data Server Connection error , Try again later';
+      const userFriendlyMessage = '';
 
       // For array fallbacks, return the empty array with error flag
       if (Array.isArray(fallbackValue)) {
@@ -753,7 +753,7 @@ export class LpuCIFWebService {
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
       AUTH_API_LOCAL + 'api/LpuCIF/GetUserDataIdWise', loginData, { headers }
-    ).pipe(catchError(this.handleError('GetAuthoriseUserData', { success: false, message: 'Data Server Connection error , Try again later' })));
+    ).pipe(catchError(this.handleError('GetAuthoriseUserData', { success: false, message: 'Error' })));
   }
 
   // New Logic for Internal user login
@@ -763,7 +763,7 @@ export class LpuCIFWebService {
       .set('Authorization', 'Bearer ' + token)
     return this.http.post(
       AUTH_API_LOCAL + 'api/LpuCIF/CreateCIFUserAccount', newUserData, { headers }
-    ).pipe(catchError(this.handleError('NewUserRecord', { success: false, message: 'Data Server Connection error , Try again later' })));
+    ).pipe(catchError(this.handleError('NewUserRecord', { success: false, message: 'Error' })));
   }
 
   NewUserSignUp(newUserData: FormData): Observable<any> {

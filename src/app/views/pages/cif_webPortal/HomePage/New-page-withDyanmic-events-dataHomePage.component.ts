@@ -289,7 +289,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
         // Check if response has error flag from service
         if (response && response.error) {
           this.serverError = true;
-          this.errorMessage = response.message || 'Data Server Connection error , Try again later';
+          this.errorMessage = response.message || 'Error';
           this.loadingIndicator = false;
           this.GetAllEventDetails();
           return;
@@ -312,7 +312,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
       error: err => {
         this.loadingIndicator = false;
         this.serverError = true;
-        this.errorMessage = 'Data Server Connection error , Try again later';
+        this.errorMessage = 'Error';
         console.error(err);
       }
     });
@@ -425,7 +425,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
         // Check if response has error flag from service
         if (response && response.error) {
           this.serverError = true;
-          this.errorMessage = response.message || 'Data Server Connection error , Try again later';
+          this.errorMessage = response.message || 'Error';
           this.loadingIndicator = false;
           return;
         }
@@ -447,7 +447,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
       error: err => {
         this.loadingIndicator = false;
         this.serverError = true;
-        this.errorMessage = 'Data Server Connection error , Try again later';
+        this.errorMessage = 'Error';
         console.error(err);
         // Fallback to static events and chunk them
         this.events = this.Staticevents;

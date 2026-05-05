@@ -346,7 +346,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
         });
 
         this.serverError = true;
-        this.errorMessage = 'Data Server Connection error , Try again later';
+        this.errorMessage = 'Error';
         // console.error(err);
       }
     });

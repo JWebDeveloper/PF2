@@ -133,7 +133,7 @@ export class CifLoginPageComponent implements OnInit {
           this.serverConnectionError = true;
           this.loginError =
             response.message ||
-            'Data Server Connection error , Try again later';
+            'Error';
           this.isLoginFailed = true;
           this.formdata.reset();
           this.formdata.patchValue({ UserRoleS: '' });
@@ -606,7 +606,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
             true,
           ); // Initialize loading states
           this.serverConnectionError = true;
-          this.loginError = 'Data Server Connection error , Try again later';
+          this.loginError = 'Error';
         }
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(2500 - elapsed, 0); // wait at least 5s
@@ -626,7 +626,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
         ); // Initialize loading states
         this.loadingIndicator = false;
         this.serverConnectionError = true;
-        this.loginError = 'Data Server Connection error , Try again later';
+        this.loginError = 'Error';
         console.error(err);
       },
     });
