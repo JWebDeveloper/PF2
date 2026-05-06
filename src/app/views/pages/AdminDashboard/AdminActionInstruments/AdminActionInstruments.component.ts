@@ -23,7 +23,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { DOCUMENT } from '@angular/common';
-
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 
 @Component({
@@ -327,7 +327,7 @@ export class AdminActionInstrumentsComponent implements OnInit {
   serverUrl: any; // added on 22-*Nov-25
   constructor(
     private CIFwebService: LpuCIFWebService, private mouDocumentsService: MouDocumentsService,
-    private storageService: StorageService,
+    private storageService: StorageService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private authService: AuthService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT) document: Document,
@@ -350,7 +350,7 @@ export class AdminActionInstrumentsComponent implements OnInit {
 
   LoadDetails() {
     this.getSessionDetails();
-    // this.serverUrl = 'http://172.19.2.52/umsweb/CIFDocuments/CIFSampleExcelSheets/'; //172.19.2.52/umsweb/webftp/CIFDocuments/CIFSampleExcelSheets/  ftp://umsftp@172.19.2.52/umsweb/webftp/CIFDocuments/CIFSampleExcelSheets/
+  
 
     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
     const GetCookieData = this.cookieService.get('authData');
@@ -382,7 +382,8 @@ export class AdminActionInstrumentsComponent implements OnInit {
   GetAllInstruments() {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllInstruments().subscribe({
+    this.CIFwebServiceNew.GetAllInstruments().subscribe({
+    // this.CIFwebService.GetAllInstruments().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           const mapped = (response.item1 || []).map((it: any) => {

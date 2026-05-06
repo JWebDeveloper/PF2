@@ -23,7 +23,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { DOCUMENT } from '@angular/common';
-
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-UpdateInstrumentPrice',
@@ -72,7 +72,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
 
 
   constructor(
-    private CIFwebService: LpuCIFWebService, private LpuCIFWebInstrumentService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,
 
     private formBuilder: FormBuilder,
@@ -130,7 +130,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
     const startTime = new Date().getTime();
 
 
-    this.LpuCIFWebInstrumentService.GetAllInstruments().subscribe((response) => {
+    this.CIFwebServiceNew.GetAllInstruments().subscribe((response) => {
       if (response.item1 && response.item1.length > 0) {
         this.AllInstrumentsDetails = response.item1;
         this.TempAllInstrumentsDetails = this.AllInstrumentsDetails;
@@ -309,7 +309,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
       formData.append('FilePath', this.fileName);
       formData.append('File', this.FileDataX);
 
-      this.LpuCIFWebInstrumentService.CIFInstrumentUpdateDetails(formData).subscribe({
+      this.CIFwebService.CIFInstrumentUpdateDetails(formData).subscribe({
         next: (data: any) => {
           const result = data.item1[0]['msg'];
           if (result === 'ok') {

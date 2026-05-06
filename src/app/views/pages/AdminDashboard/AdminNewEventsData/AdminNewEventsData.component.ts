@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import Swal from 'sweetalert2';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
-
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 @Component({
   selector: 'app-AdminNewEventsData',
   templateUrl: './AdminNewEventsData.component.html',
@@ -17,7 +17,7 @@ export class AdminNewEventsDataComponent implements OnInit {
   fileStatus: boolean = false; fileData: any; uploadEnabled: boolean = false;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private fb: FormBuilder,
     private modalService: NgbModal,
     private AuthSession: LoginSessionService,
@@ -235,7 +235,8 @@ export class AdminNewEventsDataComponent implements OnInit {
   GetAllEventDetails(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllEventDetails().subscribe({
+    this.CIFwebServiceNew.GetAllEventDetails().subscribe({
+    // this.CIFwebService.GetAllEventDetails().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.events = response.item1;

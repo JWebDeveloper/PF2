@@ -208,6 +208,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { DOCUMENT } from '@angular/common';
 
 import swal from 'sweetalert2';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 @Component({
   selector: 'app-HomePage',
   templateUrl: './New-Page-WithDynamicEVentsDetails-HomePage.component.html',
@@ -233,7 +234,7 @@ export class HomePageComponent implements OnInit {
   events: any = [];
   constructor(
     private CIFwebService: LpuCIFWebService,
-    private fb: FormBuilder, private cdRef: ChangeDetectorRef,
+    private fb: FormBuilder, private cdRef: ChangeDetectorRef,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     @Inject(DOCUMENT) document: Document,
     private router: Router, private route: ActivatedRoute) { }
 
@@ -284,7 +285,8 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
   getAllInstruments(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllInstrumentsData().subscribe({
+    this.CIFwebServiceNew.GetAllInstrumentsData().subscribe({
+    // this.CIFwebService.GetAllInstrumentsData().subscribe({
       next: response => {
         // Check if response has error flag from service
         if (response && response.error) {
@@ -420,7 +422,8 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
   GetAllEventDetails(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllEventDetails().subscribe({
+    this.CIFwebServiceNew.GetAllEventDetails().subscribe({
+    // this.CIFwebService.GetAllEventDetails().subscribe({
       next: response => {
         // Check if response has error flag from service
         if (response && response.error) {

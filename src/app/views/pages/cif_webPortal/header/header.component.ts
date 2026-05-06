@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { AssetLoaderService } from 'src/app/_services/asset-load.service';
 import * as $ from 'jquery';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 // CORS proxy services - these allow bypassing CORS restrictions
 const CORS_PROXIES = [
   'https://api.allorigins.win/raw?url=',
@@ -24,7 +25,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   private scriptsExecuted = false;  // ← GUARD FLAG
   @ViewChild('headerDiv', { static: true }) headerDiv!: ElementRef;
   constructor(
-    private http: HttpClient,
+    private http: HttpClient,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private sanitizer: DomSanitizer,
     private cdRef: ChangeDetectorRef,
    private CIFwebService: LpuCIFWebService,
@@ -37,7 +38,8 @@ ngOnInit() {
     this.loadHeader();
   }
   loadHeader() {
-    this.CIFwebService.getLpuHeader().subscribe(async (res) => {
+    this.CIFwebServiceNew.getLpuHeader().subscribe(async (res) => {
+    // this.CIFwebService.getLpuHeader().subscribe(async (res) => {
 
 
       // load css

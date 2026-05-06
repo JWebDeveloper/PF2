@@ -9,6 +9,7 @@ import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-internalUser-login',
@@ -49,7 +50,7 @@ export class InternalUserLoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private authService: AuthService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private CIFwebService: LpuCIFWebService,
     private AuthSession: LoginSessionService,
@@ -160,7 +161,7 @@ export class InternalUserLoginComponent implements OnInit {
 
           const UserCookies = JSON.stringify(userCookiesData);
           // this.cookieService.set('authData', UserCookies);
-          const expirationMinutes = 45; // Set expiration time in minutes updated on 28-Jan-26
+          const expirationMinutes = 20; // Set expiration time in minutes updated on 28-Jan-26
           const expirationDate = new Date();
           expirationDate.setMinutes(expirationDate.getMinutes() + expirationMinutes); // Set expiration time
           this.cookieService.set(
@@ -215,7 +216,8 @@ export class InternalUserLoginComponent implements OnInit {
     formData.append("Address", 'Internal User');
     formData.append("PasswordText", btoa(this.SecretKey));
 
-    this.CIFwebService.NewUserRecord(formData).subscribe({
+    this.CIFwebServiceNew.NewUserRecord(formData).subscribe({
+    // this.CIFwebService.NewUserRecord(formData).subscribe({
       next: (data) => {
         // Check if response has error flag from service
         if (data && data.error) {

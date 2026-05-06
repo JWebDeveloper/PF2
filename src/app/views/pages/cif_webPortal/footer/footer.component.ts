@@ -5,6 +5,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { AssetLoaderService } from 'src/app/_services/asset-load.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 // CORS proxy services - these allow bypassing CORS restrictions
 const CORS_PROXIES = [
@@ -21,7 +22,7 @@ export class FooterComponent implements OnInit, AfterViewInit {
   showGotoTop = false;
   @ViewChild('footerDiv', { static: true }) footerDiv!: ElementRef;
   constructor(
-    private http: HttpClient,
+    private http: HttpClient,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private sanitizer: DomSanitizer,
       private CIFwebService: LpuCIFWebService,
         private assetLoader: AssetLoaderService,
@@ -34,7 +35,8 @@ export class FooterComponent implements OnInit, AfterViewInit {
   }
 
   loadFooter() {
-    this.CIFwebService.getLpuFooter().subscribe(res => {
+    this.CIFwebServiceNew.getLpuFooter().subscribe(res => {
+    // this.CIFwebService.getLpuFooter().subscribe(res => {
 
       // load css
       res.css.forEach((css: string) => this.assetLoader.loadCss(css));

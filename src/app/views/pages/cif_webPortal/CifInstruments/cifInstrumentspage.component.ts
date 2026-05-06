@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 
 @Component({
@@ -363,7 +364,7 @@ faqs = [
   @ViewChild('chargesModal') chargesModal!: ElementRef;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private modalService: NgbModal,
     private router: Router,
     private route: ActivatedRoute,
@@ -382,19 +383,21 @@ faqs = [
     });
   }
 
-  // ✅ Accordion toggle function
+  
   toggleAccordion(faq: any): void {
-    // console.log("Clicked:", faq.question, "Current state:", faq.isOpen);
+   
     this.faqs.forEach(f => {
       if (f !== faq) f.isOpen = false;
     });
     faq.isOpen = !faq.isOpen;
-    // console.log("New state:", faq.isOpen);
+    
   }
   
   // Existing methods
   getAllInstruments(): void {
-    this.CIFwebService.GetAllInstrumentsData().subscribe({
+    this.CIFwebServiceNew.GetAllInstrumentsData().subscribe({
+    // this.CIFwebService.GetAllInstrumentsData().subscribe({
+    // this.CIFwebService.GetAllInstrumentsData().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.cifInstrumentsDataData = response.item1;
@@ -407,7 +410,8 @@ faqs = [
 
   fetchSpecifications(categoryId: number, id: number): void {
     this.InstrumentId = id;
-    this.CIFwebService.fetchSpecifications().subscribe({
+    this.CIFwebServiceNew.fetchSpecifications().subscribe({
+    // this.CIFwebService.fetchSpecifications().subscribe({
       next: (response: any) => {
         if (response.item1?.length > 0) {
           const instrument = this.cifInstrumentsDataData.find(x => x.id == this.InstrumentId);
@@ -433,7 +437,8 @@ faqs = [
   }
 
   getChargesDetails(Id: number): void {
-    this.CIFwebService.GetChargesDetails(Id).subscribe({
+    this.CIFwebServiceNew.GetChargesDetails(Id).subscribe({
+    // this.CIFwebService.GetChargesDetails(Id).subscribe({
       next: response => {
         if (response.item1?.length > 0) {
           this.cifInstrumentsCharges = response.item1;

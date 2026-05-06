@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from 'src/app/_services/auth.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import swal from 'sweetalert2';
@@ -22,7 +23,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebServiceNewService,
     private ngZone: NgZone,
     private router: Router,
         private authService: AuthService,

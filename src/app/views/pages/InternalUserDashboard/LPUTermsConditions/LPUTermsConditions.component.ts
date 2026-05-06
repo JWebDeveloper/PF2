@@ -9,6 +9,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { DOCUMENT } from '@angular/common';
 
 import swal from 'sweetalert2';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 @Component({
   selector: 'app-LPUTermsConditions',
   templateUrl: './LPUTermsConditions.component.html',
@@ -30,7 +31,7 @@ export class LPUTermsConditionsComponent implements OnInit {
   loadingStates: boolean[] = [];  ServerUrl: any;   isLoading: boolean = true;  loadedCount: number = 0;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT) document: Document,
     public formBuilder: UntypedFormBuilder,
@@ -229,7 +230,8 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
   getAllInstruments(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllInstrumentsData().subscribe({
+    this.CIFwebServiceNew.GetAllInstrumentsData().subscribe({
+    // this.CIFwebService.GetAllInstrumentsData().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentsDataData = response.item1;

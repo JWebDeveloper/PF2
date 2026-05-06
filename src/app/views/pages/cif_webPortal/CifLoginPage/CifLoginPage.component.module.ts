@@ -8,6 +8,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgbCarousel, NgbCarouselModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomePageTopBarModule } from '../HomePage/HomePageTopBar/HomePageTopBar.module';
 import { ArchwizardModule } from 'angular-archwizard';
+import { UpcomingEventsModule } from '../UpcomingEvents/UpcomingEvents.module';
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
     NgxDatatableModule,
     ArchwizardModule,
      NgbCarouselModule    ,
+    UpcomingEventsModule
   ],
   // declarations: [CifLoginPageComponent]
 })

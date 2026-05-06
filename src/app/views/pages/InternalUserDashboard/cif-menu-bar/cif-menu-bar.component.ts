@@ -24,10 +24,7 @@ export class CifMenuBarComponent implements OnInit {
     private cookieService: CookieService,
     private AuthSession: LoginSessionService,
   ) {
-    const cookieData = this.cookieService.get('InternalUserAuthData');
-    if (!cookieData || cookieData.trim().length === 0) {
-      this.router.navigate(['/Home']);
-    }
+   
   }
 
   ngOnInit(): void {
@@ -42,6 +39,9 @@ export class CifMenuBarComponent implements OnInit {
         this.UserRole = parsed.UserRole;
         this.user_Email = parsed.EmailId;
         this.candidateName = parsed.CandidateName;
+      }
+      else{
+        this.LogoutUser();
       }
     } catch (error) {
       console.error('Error parsing user session', error);
@@ -79,54 +79,28 @@ export class CifMenuBarComponent implements OnInit {
     const targetPath = path.startsWith('/') ? path : '/' + path;
     this.router.navigate([targetPath]);
   }
-  // VisitUrl(url: string, name: string, id: any, categoryId: any) {
-  //   this.router.navigate([url, name, id, categoryId]);
-  // }
-
-  // goto(path: string) {
-  //   this.isNavbarCollapsed = true;
-  //   this.router.navigate([path]);
-  // }
+ 
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
   }
-  LogoutUser() {
+LogoutUser() {
   swal.fire({
     title: 'Logging out...',
     allowOutsideClick: false,
     didOpen: () => { },
   });
 
-  // 1. Clear Data
   this.cookieService.delete('InternalUserAuthData', '/');
   this.AuthSession.clearSession();
 
   this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
-    // Optional: Force a hard reload to clear all memory/cache
     window.location.reload();
-    // swal.close();
   });
 }
 
  
-  // LogoutUser() {
-  //   swal.fire({
-  //     title: 'Logging out...',
-  //     allowOutsideClick: false,
-  //     didOpen: () => { },
-  //   });
-
-  //   this.cookieService.delete('InternalUserAuthData', '/');
-  //   this.AuthSession.clearSession();
-
-  //   setTimeout(() => {
-  //     swal.close();
-  //     this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
-  //       // window.location.reload();
-  //     });
-  //   }, 500);
-  // }
+ 
 
   CheckUser(): boolean {
     return String(this.UserRole) === '400000';

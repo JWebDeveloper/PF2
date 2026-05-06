@@ -12,6 +12,7 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { ColumnMode } from '@swimlane/ngx-datatable';
 import { DOCUMENT } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 interface EventDetail {
     eventId: any;
@@ -36,7 +37,7 @@ interface EventDetail {
 export class UpcomingEventsDetailsComponent implements OnInit {
 
     constructor(
-        private CIFwebService: LpuCIFWebService,
+        private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
         private storageService: StorageService,
         private authService: AuthService,
         private fb: FormBuilder,
@@ -59,20 +60,7 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
     serverUrl: any;
     EventId: any;
 
-
-    // ngOnInit(): void {
-    //     this.GetAllEventDetails();
-    //     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/'
-
-    //     this.route.paramMap.subscribe((params) => {
-    //         this.EventId = Number(params.get('id'));
-    //         if (this.EventId) {
-    //             this.fetchSpecifications(this.EventId);
-    //         }
-    //     });
-
-
-    // }
+ 
     ngOnInit(): void {
   this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/'
   
@@ -93,7 +81,8 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
 GetAllEventDetails(): Promise<void> {
   this.loadingIndicator = true;
   return new Promise((resolve, reject) => {
-    this.CIFwebService.GetAllEventDetails().subscribe({
+    this.CIFwebServiceNew.GetAllEventDetails().subscribe({
+    // this.CIFwebService.GetAllEventDetails().subscribe({
       next: (response) => {
         // Check if response has error flag from service
         if (response && response.error) {

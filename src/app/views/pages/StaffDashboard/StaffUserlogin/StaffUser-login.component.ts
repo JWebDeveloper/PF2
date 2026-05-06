@@ -8,6 +8,7 @@ import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-StaffUserlogin',
@@ -29,7 +30,7 @@ export class StaffUserLoginComponent implements OnInit {
   ErrMessage: any='';
   serverConnectionError = false;
   constructor(
-    private fb: FormBuilder,      private authService: AuthService,     private storageService: StorageService,     private CIFwebService: LpuCIFWebService,
+    private fb: FormBuilder,  private CIFwebServiceNew: LpuCIFWebServiceNewService,    private authService: AuthService,     private storageService: StorageService,     private CIFwebService: LpuCIFWebService,
     private AuthSession: LoginSessionService,     private router: Router,     private route: ActivatedRoute,      private cookieService: CookieService,     private mouDocumentsService: MouDocumentsService,
   ) { }
 
@@ -141,7 +142,7 @@ export class StaffUserLoginComponent implements OnInit {
 
             const UserCookies = JSON.stringify(userCookiesData);
             // this.cookieService.set('StaffUserAuthData', UserCookies);
-            const expirationMinutes = 25; // Set expiration time in minutes
+            const expirationMinutes = 35; // Set expiration time in minutes
             const expirationDate = new Date();
             expirationDate.setMinutes(expirationDate.getMinutes() + expirationMinutes); // Set expiration time
             this.cookieService.set(
@@ -196,7 +197,8 @@ export class StaffUserLoginComponent implements OnInit {
     formData.append("Address", 'Internal User');
     formData.append("PasswordText", btoa(this.SecretKey));
 
-    this.CIFwebService.NewUserRecord(formData).subscribe({
+    this.CIFwebServiceNew.NewUserRecord(formData).subscribe({
+    // this.CIFwebService.NewUserRecord(formData).subscribe({
       next: (data) => {
         // Check if response has error flag from service
         if (data && data.error) {

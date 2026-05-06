@@ -11,7 +11,7 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 // import { MOUCrudOperation } from 'src/app/_services/mou-crud-operation.service';
-
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 import {
   MOUCrudOperation,
   MouRecord,
@@ -80,6 +80,7 @@ export class NewBookingsComponent implements OnInit {
   })
   constructor(
     private CIFwebService: LpuCIFWebService, private readonly mouService: MOUCrudOperation,
+    private CIFwebServiceNew: LpuCIFWebServiceNewService,
     public formBuilder: UntypedFormBuilder,
     private router: Router, private cookieService: CookieService
   ) { }
@@ -120,11 +121,11 @@ LoadPageDetails(){
   getDurationData(AnalysisId: any) {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAnalysisData(AnalysisId, this.UserId).subscribe({
+    // this.CIFwebService.GetAnalysisData(AnalysisId, this.UserId).subscribe({
+    this.CIFwebServiceNew.GetAnalysisData(AnalysisId, this.UserId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentsDuration = response.item1;
-          // console.log(JSON.stringify(this.InstrumentsDuration));
         }
         else {
           this.InstrumentsDuration = [];
@@ -145,19 +146,16 @@ LoadPageDetails(){
   getInstrumentData() {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetInstrumentsDetails().subscribe({
+    this.CIFwebServiceNew.GetInstrumentsDetails().subscribe({
+    // this.CIFwebService.GetInstrumentsDetails().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentData = response.item1;
-          // this.InstrumentDataInactive = response.item1.filter((instrument: any) => instrument.isActive === 'false');
-          // console.log("All Instruments " +JSON.stringify(this.InstrumentData))
           this.InstrumentDataInactive = response.item1.filter((instrument: any) => instrument.isActive === false);
-          // Concatenate all instrument names separated by commas
           this.concatenatedInstrumentNames = this.InstrumentDataInactive
             .map((instrument: any) => instrument.instrumentName)
             .join(' | ');
           this.InActiveInstrumentIds = this.InstrumentDataInactive.map((instrument: any) => instrument.instrumentId).join(' | ');
-          // console.log("Inactive Instruments " +JSON.stringify(this.InstrumentDataInactive))
         }
         else {
           this.InstrumentData = [];
@@ -177,21 +175,6 @@ LoadPageDetails(){
 
   mouList: MouRecord[] = [];
   currentPage: any = '';
-
-  // loadMyMous(): void {
-  //   this.mouService.viewMyMous(this.user_Email )   
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: res => {
-  //         this.mouList    = res.item1 ?? [];   
-  //         console.log(JSON.stringify(this.mouList) + ' mou lists ')  
-  //         this.currentPage = 1;                  
-  //       },
-  //       error: () => {
-  //       },
-  //     });
-  // }
-
 
   loadMyMous(): void {
     this.mouService.viewMyMous(this.user_Email)
@@ -287,7 +270,8 @@ LoadPageDetails(){
   GetInstrumentIDWiseAnalysisDetails(selectedId: number) {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAnalysisDetails(selectedId).subscribe({
+    this.CIFwebServiceNew.GetAnalysisDetails(selectedId).subscribe({
+    // this.CIFwebService.GetAnalysisDetails(selectedId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.AnalysisData = response.item1;
@@ -320,12 +304,10 @@ LoadPageDetails(){
 
 
     if (selectedAnalysisId !== 'Select') {
-      this.selectedDuration = selectedTypeName; // Set the selected duration (typeName)
-
-      // Fetch price using both analysisId and selected typeName
-
-      // alert(this.UserRole + 'user role ' )
-      this.CIFwebService.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
+      this.selectedDuration = selectedTypeName; 
+       
+      this.CIFwebServiceNew.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
+      // this.CIFwebService.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
         next: response => {
           if (response.item1 && response.item1.length > 0) {
             // Find the correct entry that matches the selected typeName

@@ -13,6 +13,7 @@ import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import Swal from 'sweetalert2';
 import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-register-page',
@@ -30,7 +31,7 @@ export class RegisterPageComponent implements OnInit {
   sessionData: any[] = [];
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     private AuthSession: LoginSessionService,
@@ -95,7 +96,8 @@ export class RegisterPageComponent implements OnInit {
 
       var result;
   
-    this.CIFwebService.NewUserRecord(formData).subscribe({
+    this.CIFwebServiceNew.NewUserRecord(formData).subscribe({
+    // this.CIFwebService.NewUserRecord(formData).subscribe({
       next: (data) => {
         let result = data.item1[0]['msg'];
         let errorCode = data.item1[0]['returnId'];

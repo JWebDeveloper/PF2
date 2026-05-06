@@ -209,7 +209,7 @@ const routes: Routes = [
   },
   {
     path: "AllCIFEvents",
-    loadChildren: () => import('./views/pages/AdminDashboard/AdminActionCifEvents/AdminActionCifEvents.mdoule').then(m => m.AdminActionInstrumentsModule),
+    loadChildren: () => import('./views/pages/AdminDashboard/AdminActionCifEvents/AdminActionCifEvents.mdoule').then(m => m.AdminActionCifEventsModule),
   },
   {
     path: "AdminLoginX",

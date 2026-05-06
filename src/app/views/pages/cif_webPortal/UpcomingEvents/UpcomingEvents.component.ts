@@ -9,6 +9,7 @@ import { EventModel } from 'src/app/_model/Event.model';
 import { catchError, finalize, of, tap } from 'rxjs';
 import Swal from 'sweetalert2';
 import swal from 'sweetalert2';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
     selector: 'app-UpcomingEvents',
@@ -30,7 +31,7 @@ export class UpcomingEventsComponent implements OnInit {
     }
 
     constructor(
-        private CIFwebService: LpuCIFWebService,
+        private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
         private fb: FormBuilder,
         private router: Router, private route: ActivatedRoute) { }
 
@@ -74,6 +75,7 @@ export class UpcomingEventsComponent implements OnInit {
 
 
         this.CIFwebService.EventsCrudOperation(formData, 'View').pipe(
+        // this.CIFwebService.EventsCrudOperation(formData, 'View').pipe(
             tap((response: any) => {
                 if (response?.item1?.length > 0) {
                     this.events = response.item1 as EventModel[];
@@ -88,11 +90,7 @@ export class UpcomingEventsComponent implements OnInit {
                 return of(null);
             }),
             finalize(() => {
-                // const elapsed = Date.now() - startTime;
-                // const remaining = Math.max(MIN_LOADING_TIME - elapsed, 0);
-                // setTimeout(() => this.isLoading = false, remaining);
-
-                // REQ #3: rebuild carousel chunks (Happenings-only) after data loads
+               
                 this.updateChunks();
             })
         ).subscribe();

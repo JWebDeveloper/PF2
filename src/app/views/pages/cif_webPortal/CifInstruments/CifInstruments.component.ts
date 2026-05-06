@@ -14,6 +14,8 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { DOCUMENT } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
+
 interface FAQ {
   question: string;
   isOpen: boolean;
@@ -74,7 +76,7 @@ export class CifInstrumentsComponent implements OnInit {
   tmpscifInstrumentsCharges: any;
   Name: any;
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebServiceNewService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     private fb: FormBuilder,
@@ -271,7 +273,7 @@ export class CifInstrumentsComponent implements OnInit {
   getAllInstruments(): void {
     // this.loadingIndicator = true;
     // const startTime = new Date().getTime();
-    this.CIFwebService.GetAllInstrumentsData().subscribe({
+    this.CIFwebServiceNew.GetAllInstrumentsData().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentsDataData = response.item1;

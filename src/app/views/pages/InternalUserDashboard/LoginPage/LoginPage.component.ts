@@ -12,6 +12,7 @@ import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-LoginPage',
@@ -39,7 +40,7 @@ export class LoginPageNComponent implements OnInit {
 
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     public formBuilder: UntypedFormBuilder,
@@ -199,12 +200,12 @@ export class LoginPageNComponent implements OnInit {
               }).then((result) => {
                 if (result.isConfirmed) {
                   this.AuthSession.addToSession(this.UserData);
-                //   this.router.navigateByUrl('/NewBookings').then(() => {
-                //  //   window.location.reload();
-                //   });
-                  this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                      this.router.navigate(['/NewBookings']);
-                    });
+                  //   this.router.navigateByUrl('/NewBookings').then(() => {
+                  //  //   window.location.reload();
+                  //   });
+                  this.router.navigateByUrl('NewBookings', { skipLocationChange: false }).then(() => {
+                    this.router.navigate(['NewBookings']);
+                  });
                 } else {
                   swal.fire({
                     title: 'Agreement Required',
@@ -304,9 +305,14 @@ export class LoginPageNComponent implements OnInit {
               }).then((result) => {
                 if (result.isConfirmed) {
                   this.AuthSession.addToSession(this.UserData);
-                  this.router.navigateByUrl('/NewBookings').then(() => {
-                   // window.location.reload();
+
+                  this.router.navigateByUrl('NewBookings', { skipLocationChange: false }).then(() => {
+                    this.router.navigate(['NewBookings']);
                   });
+
+                  // this.router.navigateByUrl('/NewBookings').then(() => {
+                  //  // window.location.reload();
+                  // });
                 } else {
                   swal.fire({
                     title: 'Agreement Required',
@@ -403,7 +409,8 @@ export class LoginPageNComponent implements OnInit {
     //   console.log(key, value);
     // });
     return new Promise<void>((resolve, reject) => {
-      this.CIFwebService.NewUserRecord(formData).subscribe({
+      this.CIFwebServiceNew.NewUserRecord(formData).subscribe({
+        // this.CIFwebService.NewUserRecord(formData).subscribe({
         next: (data) => {
           // Check if response has error flag from service
           if (data && data.error) {
@@ -437,25 +444,11 @@ export class LoginPageNComponent implements OnInit {
 
   VisitUrl(Id: any, name: any, Sufix: any) {
     this.router.navigate([Id, name, Sufix]);
-    // this.router.navigateByUrl(Id + '/' + name + '/' + Sufix).then(() => {
-    //  // window.location.reload();
-    // });
+
   }
 
-  // LogoutUser() {
-  //       this.cookieService.delete('InternalUserAuthData', '/');
-  //       this.AuthSession.clearSession();
-    
-  //       setTimeout(() => {
-  //         swal.close();
-  //         this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
-  //           // window.location.reload();
-  //         });
-  //       }, 500);
-  // }
 
 
-  
   LogoutUser() {
     swal.fire({
       title: 'Logging out...',

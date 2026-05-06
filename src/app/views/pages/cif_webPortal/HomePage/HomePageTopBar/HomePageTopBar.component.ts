@@ -7,6 +7,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { DOCUMENT } from '@angular/common';
 
 import swal from 'sweetalert2';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-HomePageTopBar',
@@ -23,7 +24,7 @@ export class HomePageTopBarComponent implements OnInit {
   }
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private fb: FormBuilder,
     private router: Router, private route: ActivatedRoute) { }
 
@@ -134,7 +135,8 @@ export class HomePageTopBarComponent implements OnInit {
   GetAllEventDetails(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllEventDetails().subscribe({
+    this.CIFwebServiceNew.GetAllEventDetails().subscribe({
+    // this.CIFwebService.GetAllEventDetails().subscribe({
       next: response => {
         // Check if response has error flag from service
         if (response && response.error) {

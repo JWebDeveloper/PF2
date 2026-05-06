@@ -12,6 +12,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
+
 
 @Component({
   selector: 'app-AdminActionInstruments',
@@ -54,7 +56,7 @@ export class AdminActionCifEvents implements OnInit {
   candidateName: any;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private modalService: NgbModal, private fb: FormBuilder,
     private AuthSession: LoginSessionService,
     private cookieService: CookieService) { }
@@ -97,7 +99,8 @@ export class AdminActionCifEvents implements OnInit {
   GetAllEventDetails(): void {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllEventDetails().subscribe({
+    this.CIFwebServiceNew.GetAllEventDetails().subscribe({
+    // this.CIFwebService.GetAllEventDetails().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentData = response.item1;

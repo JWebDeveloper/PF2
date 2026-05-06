@@ -40,6 +40,7 @@ import { NgbCarouselModule } from "@ng-bootstrap/ng-bootstrap";
 import { StaticHeaderComponent } from './views/pages/cif_webPortal/atop-header/atop-header';
 import { StaticFooterComponent } from './views/pages/cif_webPortal/footer/staticFooter';
 import { SafeHtmlPipe } from './safe-html.pipe';
+import { UpcomingEventsModule } from "./views/pages/cif_webPortal/UpcomingEvents/UpcomingEvents.module";
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { SafeHtmlPipe } from './safe-html.pipe';
     CifInstrumentsModule,
     CifRegisterPageModule,
     HomePageTopBarModule,
-    NgbCarouselModule
+    NgbCarouselModule,
+    UpcomingEventsModule
 ],
   providers: [
     httpInterceptorProviders,

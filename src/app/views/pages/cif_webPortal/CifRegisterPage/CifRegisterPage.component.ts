@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import swal from 'sweetalert2';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-CifRegisterPage',
@@ -16,7 +17,7 @@ export class CifRegisterPageComponent implements OnInit {
   loadingIndicator = false;
   serverConnectionError = false;
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebServiceNewService,
     private fb: FormBuilder,
     private router: Router,
   ) {}
