@@ -403,15 +403,19 @@ export class ViewBookingAdminComponent implements OnInit {
                 Swal.fire({
                     title: 'Uploaded Successfully!',
                     icon: 'success'
-                }).then(() => {
-                    window.location.reload();
+                }).then(() => {                    
+                  this.router.navigateByUrl('ViewBookingAdmin', { skipLocationChange: true }).then(() => {
+                    this.router.navigate(['/ViewBookingAdmin']);
+                  });
                 });
             } else {
                 Swal.fire({
                     title: 'Already Uploaded Results for this Test',
                     icon: 'error'
                 }).then(() => {
-                    window.location.reload();
+                                      this.router.navigateByUrl('ViewBookingAdmin', { skipLocationChange: true }).then(() => {
+                    this.router.navigate(['/ViewBookingAdmin']);
+                  });
                 });
             }
         },

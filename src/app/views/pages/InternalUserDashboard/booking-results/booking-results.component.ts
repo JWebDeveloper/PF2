@@ -236,7 +236,7 @@ export class BookingResultsComponent implements OnInit {
               icon: 'error'
             }).then(() => {
                  this.LoadPageDetails();
-              // window.location.reload();
+               
             });
           }
         }

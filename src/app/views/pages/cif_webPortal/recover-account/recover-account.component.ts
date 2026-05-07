@@ -132,14 +132,18 @@ export class RecoverAccountComponent implements OnInit {
                 title: 'Unable to Update Details Try Again Later ',
                 icon: 'error'
               }).then(() => {
-                window.location.reload();
+                 this.router.navigateByUrl('recoverAccount', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/recoverAccount']);
+    });
               });
             } else {
               swal.fire({
                 title: 'Something Went Wrong, Try again later',
                 icon: 'error'
               }).then(() => {
-                window.location.reload();
+                    this.router.navigateByUrl('recoverAccount', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/recoverAccount']);
+    });
               });
             }
           },
@@ -149,7 +153,9 @@ export class RecoverAccountComponent implements OnInit {
               text: 'Failed to Update.',
               icon: 'error'
             }).then(() => {
-              window.location.reload();
+                  this.router.navigateByUrl('recoverAccount', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/recoverAccount']);
+    });
             });
           },
           complete: () => {

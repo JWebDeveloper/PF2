@@ -57,7 +57,9 @@ export class ChangePasswordsComponent implements OnInit {
                 text: 'You will be logeed out ',
                 icon: 'success'
               }).then(() => {
-                this.router.navigateByUrl('cifWebPortal');
+                this.router.navigateByUrl('/Home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/Home']);
+                });
                 // this.router.navigate(['/cifWebPortal']);
               });
             } else if (result === 'Failed') {
@@ -65,14 +67,18 @@ export class ChangePasswordsComponent implements OnInit {
                 title: 'Unable to Update Details Try Again Later ',
                 icon: 'error'
               }).then(() => {
-                window.location.reload();
+               this.router.navigateByUrl('/Home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/Home']);
+                });
               });
             } else {
               swal.fire({
                 title: 'Something Went Wrong, Try again later',
                 icon: 'error'
               }).then(() => {
-                window.location.reload();
+               this.router.navigateByUrl('/Home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/Home']);
+                });
               });
             }
       
@@ -83,7 +89,9 @@ export class ChangePasswordsComponent implements OnInit {
               text: 'Failed to Update.',
               icon: 'error'
             }).then(() => {
-              window.location.reload();
+              this.router.navigateByUrl('/Home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/Home']);
+                });
             });
           },
           complete: () => {
@@ -95,7 +103,9 @@ export class ChangePasswordsComponent implements OnInit {
           title: 'Invalid Details provided, Try Later!',
           icon: 'error'
         }).then(() => {
-          window.location.reload();
+          this.router.navigateByUrl('/Home', { skipLocationChange: true }).then(() => {
+                  this.router.navigate(['/Home']);
+                });
         });
       }
 
