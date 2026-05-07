@@ -95,10 +95,8 @@ export class CifMenuBarComponent implements OnInit {
 
     this.cookieService.delete('InternalUserAuthData', '/');
     this.AuthSession.clearSession();
-
-    this.router.navigateByUrl('Home', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/Home']);
-    });
+    this.router.navigate(['/Home']);
+    // window.location.href = '/Home';
 
   }
 

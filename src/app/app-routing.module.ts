@@ -306,9 +306,9 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top' })],
   exports: [RouterModule],
-  providers: [
-    { provide: APP_BASE_HREF, useValue: '/cif/' },
-    { provide: LocationStrategy, useClass: PathLocationStrategy }
-  ],
+  // providers: [
+  //   { provide: APP_BASE_HREF, useValue: '/cif/' },
+  //   { provide: LocationStrategy, useClass: PathLocationStrategy }
+  // ],
 })
 export class AppRoutingModule { }
