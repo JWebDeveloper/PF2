@@ -7,6 +7,7 @@ import swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { UntypedFormBuilder } from '@angular/forms';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 
 
@@ -27,7 +28,7 @@ export class UserProfile implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private cookieService: CookieService,
+    private cookieService: CookieService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private CIFwebService: LpuCIFWebService,
     private routerLink: Router,
     private router: Router,
@@ -66,7 +67,7 @@ export class UserProfile implements OnInit {
     }
     const retrievedCookies = JSON.parse(GetCookieData);
 
-    this.CIFwebService.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
+    this.CIFwebServiceNew.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
       next: (data) => {
         this.UserDetails = data.item1[0];
         // console.log('User  Details:', JSON.stringify( this.UserDetails));

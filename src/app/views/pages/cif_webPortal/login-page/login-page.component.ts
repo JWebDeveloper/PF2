@@ -13,7 +13,7 @@ import swal from 'sweetalert2';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
@@ -44,7 +44,7 @@ export class LoginPageComponent implements OnInit {
   SecretKey: any;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService,  private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     public formBuilder: UntypedFormBuilder,
@@ -53,7 +53,6 @@ export class LoginPageComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cookieService: CookieService,
-    private mouDocumentsService: MouDocumentsService
   ) {}
 
   ngOnInit(): void {
@@ -140,7 +139,7 @@ export class LoginPageComponent implements OnInit {
     fd.append('PasswordText', Key);
     fd.append('UserRole', Role?.toString() ?? '');
 
-    this.CIFwebService.GetAuthoriseUserData(fd).subscribe({
+    this.CIFwebServiceNew.GetAuthoriseUserData(fd).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.UserData = response.item1;
@@ -206,8 +205,8 @@ export class LoginPageComponent implements OnInit {
     this.formdata.reset();
   }
 
-  GetEmployeeDetails() {
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+    GetEmployeeDetails(UserId:any) {
+    this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
       next: (response) => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;

@@ -72,7 +72,7 @@ export class NewBookingsComponent implements OnInit {
     AnalysisId: new FormControl('Select', Validators.required),
     Duration: new FormControl('Select', Validators.required),
     Charges: new FormControl('', Validators.required),
-    NoOfSample: new FormControl('', Validators.required),
+    NoOfSample: new FormControl('', [Validators.required, Validators.min(1)]),
     TotalAmount: new FormControl('', Validators.required),
     Remarks: new FormControl('', Validators.required),
     ExcelData: new FormControl('', Validators.required),
@@ -88,23 +88,23 @@ export class NewBookingsComponent implements OnInit {
   ngOnInit(): void {
     this.LoadPageDetails();
   }
-LoadPageDetails(){
+  LoadPageDetails() {
 
-   this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
-  
-  // Refresh User/Cookie context
-  const GetCookieData = this.cookieService.get('InternalUserAuthData');
-  if (GetCookieData) {
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
-    this.MobileNo = retrievedCookies.MobileNo;
-  }
+    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
+
+    // Refresh User/Cookie context
+    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+    if (GetCookieData) {
+      const retrievedCookies = JSON.parse(GetCookieData);
+      this.UserRole = retrievedCookies.UserRole;
+      this.UserId = retrievedCookies.UserRole;
+      this.user_Email = retrievedCookies.EmailId;
+      this.candidateName = retrievedCookies.CandidateName;
+      this.MobileNo = retrievedCookies.MobileNo;
+    }
     this.getInstrumentData();
     this.loadMyMous();
-}
+  }
 
   nextStep() {
     if (this.currentStep < 2 && this.formdata.valid) {
@@ -147,7 +147,7 @@ LoadPageDetails(){
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
     this.CIFwebServiceNew.GetInstrumentsDetails().subscribe({
-    // this.CIFwebService.GetInstrumentsDetails().subscribe({
+      // this.CIFwebService.GetInstrumentsDetails().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.InstrumentData = response.item1;
@@ -271,7 +271,7 @@ LoadPageDetails(){
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
     this.CIFwebServiceNew.GetAnalysisDetails(selectedId).subscribe({
-    // this.CIFwebService.GetAnalysisDetails(selectedId).subscribe({
+      // this.CIFwebService.GetAnalysisDetails(selectedId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.AnalysisData = response.item1;
@@ -304,10 +304,10 @@ LoadPageDetails(){
 
 
     if (selectedAnalysisId !== 'Select') {
-      this.selectedDuration = selectedTypeName; 
-       
+      this.selectedDuration = selectedTypeName;
+
       this.CIFwebServiceNew.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
-      // this.CIFwebService.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
+        // this.CIFwebService.GetDuationAndPrice(selectedAnalysisId, this.UserRole, this.selectedDuration).subscribe({
         next: response => {
           if (response.item1 && response.item1.length > 0) {
             // Find the correct entry that matches the selected typeName
@@ -558,7 +558,7 @@ LoadPageDetails(){
           }).then(() => {
             // this.router.navigateByUrl("ViewBookings");
             this.router.navigate(['ViewBookings'], { replaceUrl: true })
-            
+
           });
         }
         const elapsed = new Date().getTime() - startTime;

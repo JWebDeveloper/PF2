@@ -12,8 +12,7 @@ import Swal from 'sweetalert2';
 import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
-import { Console } from 'console';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 
 @Component({
@@ -44,14 +43,13 @@ export class RecoverAccountComponent implements OnInit {
   userDetails: any = null; // This will hold the user details fetched from the API
   
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     private AuthSession: LoginSessionService,
     private router: Router,
     private route: ActivatedRoute,
     private cookieService: CookieService,
-    private mouDocumentsService: MouDocumentsService,
     private fb: FormBuilder, private http: HttpClient) {
     // Step 1: Email form
     this.emailFormGroup = this.fb.group({
@@ -77,7 +75,7 @@ export class RecoverAccountComponent implements OnInit {
   // Step 1: Check user email
   checkEmail() {
     const email = this.emailFormGroup.get('email')?.value;
-      this.CIFwebService.CIFGetUserDetails(email).subscribe(
+      this.CIFwebServiceNew.CIFGetUserDetails(email).subscribe(
       (response: any) => {
         if (response.item1 && response.item1.length > 0 ) {
           this.userDetails = response.item1;
@@ -118,7 +116,7 @@ export class RecoverAccountComponent implements OnInit {
         // formData.forEach((value, key) => {
         //   console.log(`${key}: ${value}`);
         // });
-        this.CIFwebService.CIFUpdateUserDetails(formData).subscribe({
+        this.CIFwebServiceNew.CIFUpdateUserDetails(formData).subscribe({
           next: (data: any) => {
             const result = data.item1[0]['msg'];
             if (result === 'Success') {

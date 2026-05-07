@@ -7,7 +7,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class StaffUserLoginComponent implements OnInit {
   serverConnectionError = false;
   constructor(
     private fb: FormBuilder,  private CIFwebServiceNew: LpuCIFWebServiceNewService,    private authService: AuthService,     private storageService: StorageService,     private CIFwebService: LpuCIFWebService,
-    private AuthSession: LoginSessionService,     private router: Router,     private route: ActivatedRoute,      private cookieService: CookieService,     private mouDocumentsService: MouDocumentsService,
+    private AuthSession: LoginSessionService,     private router: Router,     private route: ActivatedRoute,      private cookieService: CookieService,    
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +74,8 @@ export class StaffUserLoginComponent implements OnInit {
     this.authService.loginInternalUser(atob(encodedEmail), atob(encodedPassword)).subscribe({
       next: data => {
         this.storageService.saveUser(data.token);
-        this.GetEmployeeDetails();
+        // this.GetEmployeeDetails();
+         this.GetEmployeeDetails(encodedEmail);
       },
       error: err => {
         this.handleLoginFailure(err);
@@ -82,8 +83,10 @@ export class StaffUserLoginComponent implements OnInit {
     });
   }
 
-  GetEmployeeDetails(): void {
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+  // GetEmployeeDetails(): void {
+  //   this.mouDocumentsService.GetEmployeeDetails().subscribe({
+    GetEmployeeDetails(UserId:any) {
+    this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.EmployeeDetails = response.item1;

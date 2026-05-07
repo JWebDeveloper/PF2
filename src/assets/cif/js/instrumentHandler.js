@@ -1,7 +1,8 @@
 $(document).ready(function() {
    // var apiUrl = 'https://localhost:7125/api/LpuCIF/GetAllInstruments'; 
    // var Apitoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiIzMTMwOSIsIkRlcGFydG1lbnROYW1lIjoiTi9BIiwiUm9sbElkIjoiNTAiLCJlbWFpbElkIjoialhYWEBYWFhYLmNvbSIsIk5BTUUiOiJKYXRpbmRlciBLdW1hciIsImlzQWN0aXZlIjoiVHJ1ZSIsIlVuaXF1ZWlkIjoiZmMyYWIyOGItM2JhYi00ZjZjLTlhNzEtMjU5Njk2MGVjNmQwIiwiSXNQYXJlbnQiOiJGYWxzZSIsIlVzZXJUeXBlIjoiTi9BIiwiU3BlY2lhbEJsb2NrIjoiTi9BIiwibmJmIjoxNzI0OTg5MTIxLCJleHAiOjE3MjUwNzU1MjAsImlhdCI6MTcyNDk4OTEyMSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzEyNS8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyJ9.Wz3Nu0SVF7_YV5GkpzZHB97BVjqwyKYieirBi3ySxEU';
-    var apiUrl = 'https://projectsapi.lpu.in/api/LpuCIF/';  //https://localhost:7125/
+    // var apiUrl = 'https://projectsapi.lpu.in/api/LpuCIF/';  //https://localhost:7125/
+    var apiUrl = 'https://webapi.lpu.in/cif/api/LpuCIF/';  //https://localhost:7125/
     var Apitoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiIyNTg5OSIsIkRlcGFydG1lbnROYW1lIjoiTi9BIiwiUm9sbElkIjoiNTAiLCJlbWFpbElkIjoiamF0aW4uMjU4OTlAbHB1LmNvLmluIiwiTkFNRSI6IkphdGluIFNhcnBhbCIsImlzQWN0aXZlIjoiVHJ1ZSIsIlVuaXF1ZWlkIjoiYmRmYWU4MWQtMDUxNy00M2ZjLWFjMzctZjM0ZDExODRmZjY3IiwiSXNQYXJlbnQiOiJGYWxzZSIsIlVzZXJUeXBlIjoiTi9BIiwiU3BlY2lhbEJsb2NrIjoiTi9BIiwibmJmIjoxNzIxODgxODU1LCJleHAiOjE3NTM0MTc4NTUsImlhdCI6MTcyMTg4MTg1NSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzEyNS8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyJ9.K8Pswv0q8MtTJ_QHOyX2TSksR6x888AdYVCqd5f1tTI';
     $.ajax({
         url: apiUrl + 'GetAllInstruments',

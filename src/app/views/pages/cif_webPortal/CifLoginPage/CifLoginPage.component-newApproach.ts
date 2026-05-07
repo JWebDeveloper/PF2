@@ -16,7 +16,7 @@
 // import { DataTable } from "simple-datatables";
 // import * as XLSX from 'xlsx';
 // import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-// import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
 // import { HomePageTopBarModule } from "../HomePage/HomePageTopBar/HomePageTopBar.module";
 
 // @Component({
@@ -47,7 +47,7 @@
 //     private router: Router,
 //     private route: ActivatedRoute,
 //     private cookieService: CookieService,
-//     private mouDocumentsService: MouDocumentsService
+
 //   ) { }
 
 //   ngOnInit(): void {

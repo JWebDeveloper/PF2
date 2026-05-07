@@ -147,7 +147,10 @@ export class CifLoginPageComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.Email = response.item1[0].email;
           this.UserData = response.item1;
-          this.createToken(this.Email, response);
+          
+        //  this.createToken(this.Email, response);
+           this.setUserData(response);
+
           this.formdata.reset();
           this.submitted = false;
           this.loginError = null;
@@ -204,6 +207,9 @@ export class CifLoginPageComponent implements OnInit {
   }
 
   setUserData(response: any): void {
+    // alert(JSON.stringify(response)+ 'test response');
+    this.storageService.saveUser(response.item1[0].token);
+        // this.setUserData(response);
     const user = response.item1[0];
     this.UserData = response.item1;
     const userCookiesData = {

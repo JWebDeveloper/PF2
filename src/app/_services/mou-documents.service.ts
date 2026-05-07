@@ -4,11 +4,14 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { StorageService } from './storage.service';
-const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+
+const AUTH_API =  'https://webapi.lpu.in/cif/';
+// const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
-// const AUTH_API = 'https://localhost:7125/';
-// const AUTH_API_LOCAL = 'https://localhost:7125/';
-// const AUTH_API_LOCALS = 'https://localhost:7125/';
+// const AUTH_API = 'https://localhost:7135/';
+// const AUTH_API =  'https://webapi.lpu.in/cif/';
+// const AUTH_API_LOCAL = 'https://localhost:7135/';
+// const AUTH_API_LOCALS = 'https://localhost:7135/';
 @Injectable({
   providedIn: 'root'
 })
@@ -18,6 +21,7 @@ const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 export class MouDocumentsService {
   FileData: string;
   fileName: string;
+
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
   // private Localtoken = environment.authToken;
@@ -45,7 +49,6 @@ export class MouDocumentsService {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
    .set('Authorization', 'Bearer ' + token)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetEmployeeDetails',

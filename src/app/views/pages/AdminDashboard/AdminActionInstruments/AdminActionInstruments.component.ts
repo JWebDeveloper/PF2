@@ -24,7 +24,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { DOCUMENT } from '@angular/common';
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
 
 @Component({
   selector: 'app-AdminActionInstruments',
@@ -326,7 +326,7 @@ export class AdminActionInstrumentsComponent implements OnInit {
 
   serverUrl: any; // added on 22-*Nov-25
   constructor(
-    private CIFwebService: LpuCIFWebService, private mouDocumentsService: MouDocumentsService,
+    private CIFwebService: LpuCIFWebService,  
     private storageService: StorageService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private authService: AuthService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,

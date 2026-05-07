@@ -7,7 +7,8 @@ import { EventModel } from '../_model/Event.model';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
 // const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API = 'https://localhost:7125/';
+const AUTH_API = 'https://webapi.lpu.in/cif/';
+// const AUTH_API = 'https://localhost:7125/';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +46,7 @@ export class LpuCIFWebServiceNewService {
     };
   }
 
-  private authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiJDSUYiLCJuYmYiOjE3NzA4Njk4NjMsImV4cCI6MTgwMjQwNTg2MywiaWF0IjoxNzcwODY5ODYzLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMjUvIn0.x7GIMap1-qxhY9UDL3HOluXig80_PjVZ5HEcGjZ_Hao';
+  
 
 
   folderUrl = 'https://files.lpu.in/umsweb/webftp/CIFDocuments/';
@@ -55,8 +56,18 @@ export class LpuCIFWebServiceNewService {
   }
 
 
-
+  CIFGetUserDetails(UserEmailId: string): Observable<any> {
+     return this.http.get<any>(AUTH_API + `api/LpuCIFHeaderFooter/CIFGetUserDetails?EmailId=` + UserEmailId,      
+    )
+  }
   
+    CIFUpdateUserDetails(UpdateUserData: FormData): Observable<any> {
+     
+    return this.http.post(
+      AUTH_API + 'api/LpuCIFHeaderFooter/CIFChangePasswordDetails', UpdateUserData
+    )
+  }
+
 // home page  
   getAllInstruments(): Observable<any> {
     return this.http.get<any>(`${AUTH_API}api/LpuCIFHeaderFooter/GetAllInstruments`);
@@ -71,12 +82,12 @@ export class LpuCIFWebServiceNewService {
     return this.http.get<any>(`${AUTH_API}api/LpuCIFHeaderFooter/GetAllSpecifications`);
   }
   getLpuHeader(): Observable<any> {
-    // return this.http.get('https://localhost:7125/api/LpuCIFHeaderFooter/GetLpuHeader');
+    
     return this.http.get(AUTH_API + 'api/LpuCIFHeaderFooter/GetLpuHeader');
   }
 
   getLpuFooter(): Observable<any> {
-    // return this.http.get('https://localhost:7125/api/LpuCIFHeaderFooter/GetLpuFooter');
+    
     return this.http.get(AUTH_API + 'api/LpuCIFHeaderFooter/GetLpuFooter');
   }
 

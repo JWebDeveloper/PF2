@@ -11,7 +11,7 @@ import swal from 'sweetalert2';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class LoginPageNComponent implements OnInit {
   gotoFacilities() {
     this.facilitiesSection.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
-
+//GetInternalUserDetails
 
   registrationNumber: any; regdId: any; DriveDropDown: any; showNoDataFoundMessage: boolean; UserData: any; isLoginFailed: boolean;
   EmployeeDetails: any; EmployeeName: any; EmployeeCode: any; Department: any; DepartmentName: any; loadingIndicator: boolean; CandidateName: any;
@@ -41,14 +41,14 @@ export class LoginPageNComponent implements OnInit {
 
   constructor(
     private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
-    private storageService: StorageService,
+    private storageService: StorageService, 
     private authService: AuthService,
     public formBuilder: UntypedFormBuilder,
     private fb: FormBuilder,
     private AuthSession: LoginSessionService,
     private router: Router, private route: ActivatedRoute,
     private cookieService: CookieService,
-    private mouDocumentsService: MouDocumentsService,
+    
   ) { }
 
   ngOnInit(): void {
@@ -99,7 +99,7 @@ export class LoginPageNComponent implements OnInit {
       this.authService.loginInternalUser(id, key).subscribe({
         next: data => {
           this.storageService.saveUser(data.token);
-          this.GetEmployeeDetails();
+          this.GetEmployeeDetails(id);
         },
         error: _err => {
           this.LoginFailed(_err);
@@ -235,8 +235,9 @@ export class LoginPageNComponent implements OnInit {
     });
   }
 
-  GetEmployeeDetails() {
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+  GetEmployeeDetails(UserId:any) {
+    this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
+    // this.mouDocumentsService.GetEmployeeDetails().subscribe({
       next: response => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;

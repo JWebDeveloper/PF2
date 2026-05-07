@@ -10,7 +10,7 @@ import swal from 'sweetalert2';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-LoginPage',
@@ -37,8 +37,7 @@ export class LoginPageNComponent implements OnInit {
     private fb: FormBuilder,
     private AuthSession: LoginSessionService,
     private router: Router, private route: ActivatedRoute,
-    private cookieService: CookieService,
-    private mouDocumentsService: MouDocumentsService,
+    private cookieService: CookieService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
   ) { }
 
   ngOnInit(): void {
@@ -89,7 +88,7 @@ export class LoginPageNComponent implements OnInit {
       this.authService.loginInternalUser(id, key).subscribe({
         next: data => {
           this.storageService.saveUser(data.token);
-          this.GetEmployeeDetails();
+          this.GetEmployeeDetails(id);
         },
         error: _err => {
           this.LoginFailed(_err);
@@ -245,8 +244,8 @@ export class LoginPageNComponent implements OnInit {
     });
     this.formdata.reset();
   }
-  GetEmployeeDetails() {
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+    GetEmployeeDetails(UserId:any) {
+    this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
       next: response => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
@@ -376,7 +375,7 @@ export class LoginPageNComponent implements OnInit {
     //   console.log(key, value);
     // });
     return new Promise<void>((resolve, reject) => {
-      this.CIFwebService.NewUserRecord(formData).subscribe({
+      this.CIFwebServiceNew.NewUserRecord(formData).subscribe({
         next: (data) => {
           let result = data.item1[0]['msg'];
           let errorCode = data.item1[0]['returnId'];

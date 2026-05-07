@@ -16,7 +16,8 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { DOCUMENT } from '@angular/common';
-import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-ViewBookingAdmin',
@@ -63,7 +64,7 @@ export class ViewBookingAdminComponent implements OnInit {
   ];
    
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,
@@ -71,7 +72,7 @@ export class ViewBookingAdminComponent implements OnInit {
     private modalService: NgbModal,
     private AuthSession: LoginSessionService,
     private router: Router, private route: ActivatedRoute,
-    private cookieService: CookieService,  private mouDocumentsService: MouDocumentsService,) { }
+    private cookieService: CookieService,) { }
   user_Email: any;
   sessionData: any[] = [];
   getSessionDetails() {
@@ -100,7 +101,8 @@ export class ViewBookingAdminComponent implements OnInit {
     this.authService.loginTemp(id).subscribe({
       next: data => {
         this.storageService.saveUser(data);
-        this.GetEmployeeDetails();
+        
+         this.GetEmployeeDetails(id);
         this.GetAllUPloadedResults();
       },
       error: _err => {
@@ -122,9 +124,8 @@ export class ViewBookingAdminComponent implements OnInit {
     }
   }
 
-  GetEmployeeDetails(): void {
-   // debugger
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+    GetEmployeeDetails(UserId:any) {
+    this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
       next: response => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;

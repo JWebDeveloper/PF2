@@ -2,16 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service'; // For setting full cookies post-reset
- 
+
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import swal from 'sweetalert2';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 
- 
+
 import { AuthService } from 'src/app/_services/auth.service';
 
 
 import { UntypedFormBuilder } from '@angular/forms';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 interface UserDetails {
   candidateName?: string;
@@ -46,14 +47,14 @@ export class SecurePasswordChangeComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
   securityMessage = 'For security reasons, you must update your password before continuing.';
-  UserEmail:any;
+  UserEmail: any;
   constructor(
-    private fb: FormBuilder,
+    private fb: FormBuilder, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private authService: AuthService,
     private CIFwebService: LpuCIFWebService,
     private router: Router,
     private cookieService: CookieService,
-    private authSession: LoginSessionService ,
+    private authSession: LoginSessionService,
     private routerLink: Router,
     private AuthSession: LoginSessionService,
   ) {
@@ -72,7 +73,7 @@ export class SecurePasswordChangeComponent implements OnInit {
     const input = document.getElementById(field) as HTMLInputElement;
     input.type = input.type === 'password' ? 'text' : 'password';
   }
-  
+
   ngOnInit(): void {
     this.loadUserDetails();
   }
@@ -81,12 +82,12 @@ export class SecurePasswordChangeComponent implements OnInit {
 
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     if (!GetCookieData) {
-      
+
       return;
     }
     const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserEmail=retrievedCookies.EmailId;
-    this.CIFwebService.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
+    this.UserEmail = retrievedCookies.EmailId;
+    this.CIFwebServiceNew.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
       next: (data: ApiResponse) => {
         this.userDetails = data.item1[0]; // As per your snippet
         this.resetForm.patchValue({
@@ -143,7 +144,7 @@ export class SecurePasswordChangeComponent implements OnInit {
       this.errorMessage = 'Invalid details. Please try again.';
     }
 
- 
+
   }
 
   onSubmit(): void {
@@ -156,58 +157,58 @@ export class SecurePasswordChangeComponent implements OnInit {
     this.errorMessage = null;
     const { newPassword } = this.resetForm.value;
     const formData = new FormData();
-     formData.append('UserId', this.UserEmail);
-     formData.append('Password', newPassword);
-         
-            this.CIFwebService.CIFUpdateUserDetails(formData).subscribe({
-              next: (data: any) => {
-                const result = data.item1[0]['msg'];
-                if (result === 'Success') {
-                  swal.fire({
-                    title: 'Details Updated Successfully!',
-                    text: 'You will be logeed out ',
-                    icon: 'success'
-                  }).then(() => {
-                    this.LogoutUser();
-                    // this.router.navigateByUrl('Home');
-                    // this.router.navigate(['/cifWebPortal']);
-                  });
-                } else if (result === 'Failed') {
-                  swal.fire({
-                    title: 'Unable to Update Details Try Again Later ',
-                    icon: 'error'
-                  }).then(() => {
-                    this.LogoutUser();
-                    // this.router.navigateByUrl('Home');
-                    // window.location.reload();
-                  });
-                } else {
-                  swal.fire({
-                    title: 'Something Went Wrong, Try again later',
-                    icon: 'error'
-                  }).then(() => {
-                    this.LogoutUser();
-                    // this.router.navigateByUrl('Home');
-                    // window.location.reload();
-                  });
-                }
-          
-              },
-              error: (error: any) => {
-                swal.fire({
-                  title: 'Error',
-                  text: 'Failed to Update.',
-                  icon: 'error'
-                }).then(() => {
-                  this.LogoutUser();
-                  // this.router.navigateByUrl('Home');
-                  // window.location.reload();
-                });
-              },
-              complete: () => {
-              }
-            });
-   
+    formData.append('UserId', this.UserEmail);
+    formData.append('Password', newPassword);
+
+    this.CIFwebServiceNew.CIFUpdateUserDetails(formData).subscribe({
+      next: (data: any) => {
+        const result = data.item1[0]['msg'];
+        if (result === 'Success') {
+          swal.fire({
+            title: 'Details Updated Successfully!',
+            text: 'You will be logeed out ',
+            icon: 'success'
+          }).then(() => {
+            this.LogoutUser();
+            // this.router.navigateByUrl('Home');
+            // this.router.navigate(['/cifWebPortal']);
+          });
+        } else if (result === 'Failed') {
+          swal.fire({
+            title: 'Unable to Update Details Try Again Later ',
+            icon: 'error'
+          }).then(() => {
+            this.LogoutUser();
+            // this.router.navigateByUrl('Home');
+            // window.location.reload();
+          });
+        } else {
+          swal.fire({
+            title: 'Something Went Wrong, Try again later',
+            icon: 'error'
+          }).then(() => {
+            this.LogoutUser();
+            // this.router.navigateByUrl('Home');
+            // window.location.reload();
+          });
+        }
+
+      },
+      error: (error: any) => {
+        swal.fire({
+          title: 'Error',
+          text: 'Failed to Update.',
+          icon: 'error'
+        }).then(() => {
+          this.LogoutUser();
+          // this.router.navigateByUrl('Home');
+          // window.location.reload();
+        });
+      },
+      complete: () => {
+      }
+    });
+
   }
 
   // Custom validator: Password match
@@ -230,19 +231,19 @@ export class SecurePasswordChangeComponent implements OnInit {
   }
 
 
-    LogoutUser() {
-      swal.fire({
-        title: 'Logging out...',
-        allowOutsideClick: false,
-        didOpen: () => { },
-      });
-  
-      // 1. Clear Data
-      this.cookieService.delete('InternalUserAuthData', '/');
-      this.AuthSession.clearSession();
-  
-      this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
-        window.location.reload();
-      });
-    }
+  LogoutUser() {
+    swal.fire({
+      title: 'Logging out...',
+      allowOutsideClick: false,
+      didOpen: () => { },
+    });
+
+    // 1. Clear Data
+    this.cookieService.delete('InternalUserAuthData', '/');
+    this.AuthSession.clearSession();
+
+    this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
+      window.location.reload();
+    });
+  }
 }

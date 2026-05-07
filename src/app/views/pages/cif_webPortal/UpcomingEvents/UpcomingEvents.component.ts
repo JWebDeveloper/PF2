@@ -74,11 +74,12 @@ export class UpcomingEventsComponent implements OnInit {
         formData.append('Action', 'View');
 
 
-        this.CIFwebService.EventsCrudOperation(formData, 'View').pipe(
+        this.CIFwebServiceNew.GetAllEventDetails().pipe(
         // this.CIFwebService.EventsCrudOperation(formData, 'View').pipe(
             tap((response: any) => {
                 if (response?.item1?.length > 0) {
-                    this.events = response.item1 as EventModel[];
+                    this.events = response.item1 
+                    // this.events = response.item1 as EventModel[];
                 } else {
                     this.events = [];
                 }

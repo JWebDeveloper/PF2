@@ -12,7 +12,7 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
   styleUrls: ['./cif-menu-bar.component.scss'],
 })
 export class CifMenuBarComponent implements OnInit {
-  UserRole: any;
+  UserRole: any; supervisorName: any; departmentName: any;
   user_Email: any;
   candidateName: any;
   isNavbarCollapsed: boolean = true;
@@ -24,7 +24,7 @@ export class CifMenuBarComponent implements OnInit {
     private cookieService: CookieService,
     private AuthSession: LoginSessionService,
   ) {
-   
+    
   }
 
   ngOnInit(): void {
@@ -39,6 +39,8 @@ export class CifMenuBarComponent implements OnInit {
         this.UserRole = parsed.UserRole;
         this.user_Email = parsed.EmailId;
         this.candidateName = parsed.CandidateName;
+        this.supervisorName = parsed.SupervisorName;
+        this.departmentName = parsed.DepartmentName;
       }
       else{
         this.LogoutUser();
@@ -84,20 +86,21 @@ export class CifMenuBarComponent implements OnInit {
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
   }
-LogoutUser() {
-  swal.fire({
-    title: 'Logging out...',
-    allowOutsideClick: false,
-    didOpen: () => { },
-  });
+  LogoutUser() {
+    swal.fire({
+      title: 'Logging out...',
+      allowOutsideClick: false,
+      didOpen: () => { },
+    });
 
-  this.cookieService.delete('InternalUserAuthData', '/');
-  this.AuthSession.clearSession();
+    this.cookieService.delete('InternalUserAuthData', '/');
+    this.AuthSession.clearSession();
 
-  this.router.navigate(['Home'], { replaceUrl: true }).then(() => {
-    window.location.reload();
-  });
-}
+    this.router.navigateByUrl('Home', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/Home']);
+    });
+
+  }
 
  
  

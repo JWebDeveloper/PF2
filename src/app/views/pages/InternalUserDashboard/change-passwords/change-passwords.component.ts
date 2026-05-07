@@ -13,6 +13,7 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
 
 
 import { DOCUMENT } from '@angular/common';
+import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
 @Component({
   selector: 'app-change-passwords',
@@ -47,7 +48,7 @@ export class ChangePasswordsComponent implements OnInit {
         formData.append('UserId', this.UserId);
         formData.append('Password', newPassword);
      
-        this.CIFwebService.CIFUpdateUserDetails(formData).subscribe({
+        this.CIFwebServiceNew.CIFUpdateUserDetails(formData).subscribe({
           next: (data: any) => {
             const result = data.item1[0]['msg'];
             if (result === 'Success') {
@@ -124,7 +125,7 @@ export class ChangePasswordsComponent implements OnInit {
   loadingIndicator = true;
 
   constructor(
-    private CIFwebService: LpuCIFWebService,
+    private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
     private authService: AuthService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,

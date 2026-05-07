@@ -15,7 +15,7 @@
 // import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 // import { LoginSessionService } from 'src/app/_services/login-session.service';
 // import { CookieService } from 'ngx-cookie-service';
-// import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+
 
 // @Component({
 //   selector: 'app-LoginPage',
@@ -54,7 +54,7 @@
 //     private AuthSession: LoginSessionService,
 //     private router: Router, private route: ActivatedRoute,
 //     private cookieService: CookieService,
-//     private mouDocumentsService: MouDocumentsService,
+
 //   ) { }
 
 //   ngOnInit(): void {
