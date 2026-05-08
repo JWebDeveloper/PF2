@@ -158,7 +158,7 @@ const routes: Routes = [
 
 
   {
-    path: "SearchBookings", component: SearchBookingsComponent,
+    path: "SearchBookings", 
     loadChildren: () => import('./views/pages/InternalUserDashboard/search-bookings/search-bookings.module').then(m => m.SearchBookingsModule),
   },
 
@@ -298,17 +298,14 @@ const routes: Routes = [
     pathMatch: 'full'
   }
 
-
-
-
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top' })],
   exports: [RouterModule],
-  // providers: [
-  //   { provide: APP_BASE_HREF, useValue: '/cif/' },
-  //   { provide: LocationStrategy, useClass: PathLocationStrategy }
-  // ],
+  providers: [
+    { provide: APP_BASE_HREF, useValue: '/cif/' }, 
+    { provide: LocationStrategy, useClass: PathLocationStrategy }
+  ],
 })
+ 
 export class AppRoutingModule { }
