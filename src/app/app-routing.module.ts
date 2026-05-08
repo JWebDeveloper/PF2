@@ -273,7 +273,7 @@ const routes: Routes = [
   },
 
   {
-    path: "MyTestDataXXXXXXXXXXXX/:loginName",
+    path: "MyTestData/:loginName",
     loadChildren: () => import('./views/pages/AdminDashboard/ViewBookingAdmin/ViewBookingAdmin.module').then(m => m.ViewBookingAdminModule),
    
   },
