@@ -19,7 +19,6 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./views/pages/cif_webPortal/HomePage/FixedHomePageComponent.module').then(m => m.FixedHomePageComponentModule),
     // loadChildren: () => import('./views/pages/cif_webPortal/HomePage/HomePage.module').then(m => m.HomePageModule),
-    // loadChildren: () => import('./views/pages/cif_webPortal/HomePage/HomePage.module').then(m => m.HomePageModule),
   },
   {
     path: 'Home',
@@ -299,13 +298,12 @@ const routes: Routes = [
   }
 
 ];
+
+
 @NgModule({
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top' })],
-  exports: [RouterModule],
-  providers: [
-    { provide: APP_BASE_HREF, useValue: '/cif/' }, 
-    { provide: LocationStrategy, useClass: PathLocationStrategy }
-  ],
+  exports: [RouterModule]
 })
+ 
  
 export class AppRoutingModule { }
