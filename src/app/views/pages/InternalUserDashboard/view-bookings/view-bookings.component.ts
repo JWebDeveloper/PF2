@@ -408,7 +408,9 @@ export class ViewBookingsComponent implements OnInit {
 
   downloadFile(fileName: string): void {
     const url = this.serverUrl + fileName;
-    window.open(url, '_blank');
+
+    this.onDownloadFile(url);
+    // window.open(url, '_blank');
   }
   ToGetSampleforId: any;
   ToGetSampleforInstrumentId: any;
@@ -638,4 +640,36 @@ export class ViewBookingsComponent implements OnInit {
     this.router.navigate([currentUrl]);
   });
 }
+
+
+  onDownloadFile(remoteUrl: string): void {
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+
+    this.CIFwebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
 }

@@ -92,7 +92,7 @@ export class AdminAssignTestComponent implements OnInit {
         this.user_Email = parsed.EmailId || '';
         this.candidateName = parsed.CandidateName || '';
       } catch (err) {
-        console.error('Error parsing authData cookie:', err);
+        // console.error('Error parsing authData cookie:', err);
         swal.fire('Session Error', 'Invalid session data. Please login again.', 'error');
         this.router.navigate(['/Home']);
       }
@@ -304,9 +304,41 @@ export class AdminAssignTestComponent implements OnInit {
 
   downloadFile(fileName: string): void {
     const url = this.serverUrl + fileName;
-    window.open(url, '_blank');
+   
+       this.onDownloadFile(url);
   }
 
+  
+      onDownloadFile(remoteUrl: string): void {
+        swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+    
+        this.CIFwebService.downloadFile(remoteUrl).subscribe({
+          next: (blob: Blob) => {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+    
+            const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+            link.download = fileName;
+    
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+    
+            swal.close();
+          },
+          error: async (err) => {
+            swal.close();
+            if (err.error instanceof Blob) {
+              const errorMsg = JSON.parse(await err.error.text());
+              swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+            } else {
+              swal.fire('Error', 'Could not connect to the server', 'error');
+            }
+          }
+        });
+      }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     if (this.dataSource) {
