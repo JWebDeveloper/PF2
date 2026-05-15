@@ -411,11 +411,50 @@ export class newEventsCrudComponent implements OnInit {
     onViewFile(filePath: string | null): void {
         if (filePath) {
             window.open(`${this.ServerUrl}${filePath}`, '_blank');
+            // this.onDownloadFile(`${this.ServerUrl}${filePath}`);
         } else {
             Swal.fire({ title: 'No File', text: 'No file path available for this event.', icon: 'info' });
         }
     }
 
+    
+      downloadFile(fileName: string): void {
+        const url = this.ServerUrl + fileName;
+       
+           this.onDownloadFile(url);
+      }
+    
+      
+          onDownloadFile(remoteUrl: string): void {
+            swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+        
+            this.CIFwebService.downloadFile(remoteUrl).subscribe({
+              next: (blob: Blob) => {
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+        
+                const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+                link.download = fileName;
+        
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(downloadUrl);
+        
+                swal.close();
+              },
+              error: async (err) => {
+                swal.close();
+                if (err.error instanceof Blob) {
+                  const errorMsg = JSON.parse(await err.error.text());
+                  swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+                } else {
+                  swal.fire('Error', 'Could not connect to the server', 'error');
+                }
+              }
+            });
+          }
     // --- Search & Pagination ---
 
     private filterAndPaginate(): void {

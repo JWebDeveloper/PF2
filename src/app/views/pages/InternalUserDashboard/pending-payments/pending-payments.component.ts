@@ -77,19 +77,12 @@ export class PendingPaymentsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    // this.getParams();
-    // "https://devums.lpu.in/app/cif/";
-    // this.ResponseUrl = window.location.origin + this.location.path();
-    // this.ResponseUrl = window.location.href;
     this.ResponseUrl = '/ResponsePayments';
-    // alert(this.ResponseUrl)
     if (this.ResponseUrl.startsWith('https://devums.lpu.in/app')) {
-      this.ResponseUrl = "https://devums.lpu.in/app/cif/" + 'PendingPayments';
+      this.ResponseUrl = "https://lpu.in/cif/" + 'PendingPayments';
     }
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
     
-    // Add your desired endpoint
-    // this.ResponseUrl = "https://lpu.in/cif/cifDemo/PendingPayments";//   
     this.ResponseUrl = `${baseUrl}/PendingPayments`;
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     const retrievedCookies = JSON.parse(GetCookieData);
@@ -104,7 +97,6 @@ export class PendingPaymentsComponent implements OnInit {
   }
   id: any; status: any; type: any; transactionNo: any; hashedValue: any; course: any; keyNote: any;
   getParams(): void {
-    // const params = this.route.snapshot.params;
     this.route.queryParamMap.subscribe(params => {
       this.id = params.get('id');
       this.status = params.get('status');
@@ -126,19 +118,16 @@ export class PendingPaymentsComponent implements OnInit {
       this.CIFwebService.GetDecodePaymentStatusDetails(formData).subscribe({
         next: data => {
           result = data;
-          // console.log("return encoded "+JSON.stringify(result));
 
           if (result.status == 'failure') {
             Swal.fire({
               title: 'Payment Failed ',
-              // text: 'Payment URL not found!',
               icon: 'error',
             });
           }
           else {
             Swal.fire({
               title: 'Payment Made Successfully',
-              // text: 'Payment URL not found!',
               icon: 'success',
             });
           }
@@ -171,9 +160,6 @@ export class PendingPaymentsComponent implements OnInit {
           this.columns = this.columns.filter((item: any) => item !== 'userEmailId' && item !== 'instrumentId' && item !== 'id' && item !== 'candidateName' && item !== 'mobileNo' && item !== 'facultyCode' && item !== 'createdBy');
           this.columns.push()
           this.loadingIndicator = false;
-
-
-          // console.log("PaymentDetails  Data  " + JSON.stringify(this.PaymentDetails))
         }
         else {
           this.PaymentDetails = [];
