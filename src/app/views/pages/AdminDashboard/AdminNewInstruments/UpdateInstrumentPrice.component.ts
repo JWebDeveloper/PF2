@@ -184,13 +184,32 @@ export class UpdateInstrumentPriceComponent implements OnInit {
     });
   }
 
-  onSelectFile(a: any) {
-    let aa = a;
-    window.open(aa.imageUrl, '_blank');
+  onSelectFile(row: any): void {
+    const url = this.resolveCifFileUrl(row?.imageUrl);
+    if (url) {
+      this.onDownloadFile(url);
+    }
   }
-  onSelectSampleExcelFile(a: any) {
-    let aa = a;
-    window.open(aa.excelSheetUrl, '_blank');
+
+  onSelectSampleExcelFile(row: any): void {
+    const url = this.resolveCifFileUrl(row?.excelSheetUrl);
+    if (url) {
+      this.onDownloadFile(url);
+    }
+  }
+
+  onDownloadFile(remoteUrl: string): void {
+    this.CIFwebService.downloadCifDocument(remoteUrl);
+  }
+
+  private resolveCifFileUrl(fileRef: string | null | undefined): string {
+    if (!fileRef?.trim()) {
+      return '';
+    }
+    const trimmed = fileRef.trim();
+    return /^https?:\/\//i.test(trimmed)
+      ? trimmed
+      : `https://files.lpu.in/umsweb/CIFDocuments/${trimmed.replace(/^\//, '')}`;
   }
 
 

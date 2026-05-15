@@ -235,7 +235,7 @@ export class NewBookingsComponent implements OnInit {
       // Set the selected instrument values and proceed
       this.selectedId = selectedInstrumentId;
       this.InstrumentId = this.selectedId;
-      this.testClick(this.SampleExcelSheet.sampleExcelSheetUrl);
+      this.downloadFile(this.SampleExcelSheet.sampleExcelSheetUrl);
       this.Message = "A Format File is being Downloaded. You need to fill and upload this Excel sheet to send your requirements!";
       swal.fire({
         title: this.Message,
@@ -406,12 +406,12 @@ export class NewBookingsComponent implements OnInit {
     });
   }
 
-  testClick(a: any) {
-    let aa = a;
-    const fileName = this.serverUrl + `${a}.xlsx`;
-    // console.log(fileName + "  *** **  File Name ")
-    this.onDownloadFile(fileName);
-    // window.open(fileName, '_blank');
+  downloadFile(fileName: string): void {
+    if (!fileName) {
+      swal.fire('Error', 'Sample format file is not available', 'error');
+      return;
+    }
+    this.onDownloadFile(this.serverUrl + fileName);
   }
   DownloadFormat(a: any) {
     this.SampleExcelSheet = this.InstrumentData?.find(instrument => instrument.instrumentId === a);
@@ -432,39 +432,12 @@ export class NewBookingsComponent implements OnInit {
       // Set the selected instrument values and proceed
       this.selectedId = a;
       this.InstrumentId = this.selectedId;
-      this.testClick(this.SampleExcelSheet.sampleExcelSheetUrl);
+      this.downloadFile(this.SampleExcelSheet.sampleExcelSheetUrl);
     }
   }
 
   onDownloadFile(remoteUrl: string): void {
-    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
-
-    this.CIFwebService.downloadFile(remoteUrl).subscribe({
-      next: (blob: Blob) => {
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-
-        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-        link.download = fileName;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(downloadUrl);
-
-        swal.close();
-      },
-      error: async (err) => {
-        swal.close();
-        if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-        } else {
-          swal.fire('Error', 'Could not connect to the server', 'error');
-        }
-      }
-    });
+    this.CIFwebService.downloadCifDocument(remoteUrl);
   }
 
   goToDetails() {

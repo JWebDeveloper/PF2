@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 import { StorageService } from './storage.service';
 import { EventModel } from '../_model/Event.model';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
@@ -202,11 +203,99 @@ export class LpuCIFWebService {
 
 
   
+  /** Strip host from a files.lpu.in URL → umsweb/CIFDocuments/... relative path. */
+  private toRelativeFilePath(fileUrl: string): string {
+    let path = (fileUrl || '').trim();
+    if (!path) {
+      return '';
+    }
+    if (/^https?:\/\//i.test(path)) {
+      try {
+        path = decodeURIComponent(new URL(path).pathname);
+      } catch {
+        path = path.replace(/^https?:\/\/[^/]+\/?/i, '');
+      }
+    }
+    return path.replace(/^\/+/, '');
+  }
+
+  /**
+   * CIFDownloadFiles expects a server-relative path in fileName (no https:// URL).
+   */
+  private buildDownloadPayload(fileUrl: string): { fileName: string; folderPath: string } {
+    return { fileName: this.toRelativeFilePath(fileUrl), folderPath: '' };
+  }
+
+  /** Sample sheets and other public CIF documents are served directly from files.lpu.in. */
+  isPublicCifFileUrl(fileUrl: string): boolean {
+    return /^https:\/\/files\.lpu\.in\/umsweb\/CIFDocuments\//i.test((fileUrl || '').trim());
+  }
+
+  triggerBrowserDownload(url: string, fallbackName = 'Document'): void {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = url.split('/').pop()?.split('?')[0] || fallbackName;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  /** Download via public URL or CIFDownloadFiles API (used by all dashboard pages). */
+  downloadCifDocument(remoteUrl: string): void {
+    const url = (remoteUrl || '').trim();
+    if (!url) {
+      Swal.fire('Error', 'File URL is missing', 'error');
+      return;
+    }
+    if (this.isPublicCifFileUrl(url)) {
+      this.triggerBrowserDownload(url);
+      return;
+    }
+
+    Swal.fire({
+      title: 'Downloading...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(null); },
+    });
+
+    this.downloadFile(url).subscribe({
+      next: async (blob: Blob) => {
+        if (blob.type === 'application/json' || blob.type === 'application/problem+json') {
+          const errorMsg = JSON.parse(await blob.text());
+          Swal.fire('Error', errorMsg.message || errorMsg.title || 'Download failed', 'error');
+          return;
+        }
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = url.split('/').pop()?.split('?')[0] || 'Document.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (this.isPublicCifFileUrl(url)) {
+          this.triggerBrowserDownload(url);
+          return;
+        }
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          Swal.fire('Error', errorMsg.message || errorMsg.title || 'Download failed', 'error');
+        } else {
+          Swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      },
+    });
+  }
+
   downloadFile(fileUrl: string): Observable<Blob> {
-    const payload = {
-      fileName: fileUrl,
-      folderPath: ""
-    };
+    const payload = this.buildDownloadPayload(fileUrl);
     const token = this.storageService.getUser();
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

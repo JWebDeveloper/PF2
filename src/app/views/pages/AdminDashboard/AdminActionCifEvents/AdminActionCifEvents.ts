@@ -224,10 +224,17 @@ export class AdminActionCifEvents implements OnInit {
   }
 
   // 6-sep-25
-  onSelectFile(a: any) {
-    let aa = a;
-    // alert(JSON.stringify(a))
-    window.open(this.serverUrl + aa.imageUrl, '_blank');
+  onSelectFile(row: any): void {
+    const fileRef = row?.imageUrl;
+    if (!fileRef) {
+      return;
+    }
+    const url = /^https?:\/\//i.test(fileRef) ? fileRef : this.serverUrl + fileRef.replace(/^\//, '');
+    this.onDownloadFile(url);
+  }
+
+  onDownloadFile(remoteUrl: string): void {
+    this.CIFwebService.downloadCifDocument(remoteUrl);
   }
 
   // 8 sept-25
