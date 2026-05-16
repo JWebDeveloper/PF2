@@ -112,29 +112,7 @@ export class ViewBookingsComponent implements OnInit {
   ngOnInit(): void {
    this.LoadPageDetails()
   }
-  // LoadPageDetails(){
-  //    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
-  //   const GetCookieData = this.cookieService.get('InternalUserAuthData');
-  //   const retrievedCookies = JSON.parse(GetCookieData);
-  //   this.UserRole =
-  //     retrievedCookies.userRole?.length > 0
-  //       ? retrievedCookies.userRole
-  //       : 'Internal User';
-  //   // this.UserId = retrievedCookies.Id;
-  //   this.user_Email = this.UserId = this.userEmail = this.userId= retrievedCookies.EmailId;
-  //   this.MobileNo = retrievedCookies.MobileNo;
-  //   this.supervisorName = retrievedCookies.SupervisorName;
-  //   this.departmentName = retrievedCookies.DepartmentName;
-  //   this.candidateName = retrievedCookies.CandidateName;
-  //   this.getParams();
-  //   this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path();    
-  //   const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;    
-  //    this.ResponseUrl = `${baseUrl}/ViewBookings`;
-  //   this.getBookingDetails();
-  //   this.fetchAllSampleStatus();
-  //   this.fetchPaymentProofDetailsForUser();
-  // }
-
+ 
 
   LoadPageDetails() {
   this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
@@ -155,7 +133,7 @@ export class ViewBookingsComponent implements OnInit {
   
   // Logic to handle internal pathing without window.location.origin conflicts
   const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-  this.ResponseUrl = `${baseUrl}/ViewBookings`;
+  this.ResponseUrl = `${baseUrl}/#/ViewBookings`;
 
   // RE-FETCH ALL DATA FROM API
   this.getBookingDetails();

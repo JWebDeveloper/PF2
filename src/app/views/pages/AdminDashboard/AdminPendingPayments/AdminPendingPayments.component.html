@@ -134,10 +134,9 @@
                                         <td class="fw-bold ">{{AllPaymentDataRow.userRole}} </td>
                                         <td class="fw-bold ">{{AllPaymentDataRow.userEmailId}} </td>
                                         <td class="fw-bold "> {{AllPaymentDataRow.noOfSamples}}</td>
-                                        <td class="fw-bold ">{{ AllPaymentDataRow.requestDate }}</td>
-                                        <td class="fw-bold"> {{AllPaymentDataRow?.amount &&
-                                            AllPaymentDataRow.amount!='null'
-                                            ? (AllPaymentDataRow.amount | currency:'INR':'symbol'): 'NA'}}</td>
+                                        <td class="fw-bold ">{{ AllPaymentDataRow.bookingRequestDate }}</td>
+                                        <td class="fw-bold"> {{AllPaymentDataRow?.totalCharges && AllPaymentDataRow.totalCharges!='null' ? (AllPaymentDataRow.totalCharges | currency:'INR':'symbol'): 'NA'}}</td>
+                                        <!-- <td class="fw-bold"> {{AllPaymentDataRow?.amount && AllPaymentDataRow.amount!='null' ? (AllPaymentDataRow.amount | currency:'INR':'symbol'): 'NA'}}</td> -->
 
                                         <td>
                                             <span class="badge" [ngClass]="{

@@ -77,20 +77,14 @@ export class PendingPaymentsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    // this.getParams();
-    // "https://devums.lpu.in/app/cif/";
-    // this.ResponseUrl = window.location.origin + this.location.path();
-    // this.ResponseUrl = window.location.href;
+    
     this.ResponseUrl = '/ResponsePayments';
-    // alert(this.ResponseUrl)
-    if (this.ResponseUrl.startsWith('https://devums.lpu.in/app')) {
-      this.ResponseUrl = "https://devums.lpu.in/app/cif/" + 'PendingPayments';
-    }
+  
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
     
     // Add your desired endpoint
     // this.ResponseUrl = "https://lpu.in/cif/cifDemo/PendingPayments";//   
-    this.ResponseUrl = `${baseUrl}/PendingPayments`;
+    this.ResponseUrl = `${baseUrl}/#/PendingPayments`;
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';

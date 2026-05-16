@@ -55,7 +55,7 @@ export class AdminPendingPaymentsComponent implements OnInit {
   AllPaymentData: any[] = [];
 
   currentPage = 1;
-  itemsPerPage = 10; //
+  itemsPerPage = 15; //
   
   // Items per page dropdown options
   itemsPerPageOptions = [
@@ -63,7 +63,7 @@ export class AdminPendingPaymentsComponent implements OnInit {
     { label: '10', value: 10 },
     { label: '15', value: 15 },
     { label: '20', value: 20 },
-    { label: 'All', value: 'all' }
+    // { label: 'All', value: 'all' }
   ];
   
   // Track if 'all' is selected
@@ -117,7 +117,8 @@ export class AdminPendingPaymentsComponent implements OnInit {
   getAllPaymentDetails() {
     this.loadingIndicator = true;
     const startTime = new Date().getTime();
-    this.CIFwebService.GetAllPaymentDetails().subscribe({
+    // this.CIFwebService.GetAllPaymentDetails().subscribe({
+    this.CIFwebService.GetAllBookingTests().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.AllPaymentData = response.item1;

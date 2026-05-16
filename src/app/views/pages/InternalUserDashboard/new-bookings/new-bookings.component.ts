@@ -408,7 +408,7 @@ export class NewBookingsComponent implements OnInit {
 
   testClick(a: any) {
     let aa = a;
-    const fileName = this.serverUrl + `${a}.xlsx`;
+    const fileName = this.serverUrl + `${a}`;
     // console.log(fileName + "  *** **  File Name ")
     this.onDownloadFile(fileName);
     // window.open(fileName, '_blank');

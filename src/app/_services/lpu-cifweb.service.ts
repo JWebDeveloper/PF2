@@ -9,9 +9,7 @@ import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
 // const AUTH_API =  'https://localhost:7125/';
 // const AUTH_API_LOCAL =  'https://localhost:7125/';
-// const AUTH_API_LOCALS =  'https://localhost:7125/';;
-// const AUTH_API = 'https://localhost:7125/';
-// const AUTH_API = 'https://localhost:7125/';
+// const AUTH_API_LOCALS =  'https://localhost:7125/';
 const AUTH_API =  'https://webapi.lpu.in/cif/';
 const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';
 const AUTH_API_LOCALS = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';

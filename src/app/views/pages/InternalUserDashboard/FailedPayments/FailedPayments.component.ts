@@ -334,15 +334,15 @@ export class FailedPaymentsComponent implements OnInit {
       }
     });
 
-    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
-    this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
-    if (this.ResponseUrl.startsWith('https://devums.lpu.in/app/cif/')) {
-      this.ResponseUrl = "https://devums.lpu.in/app/cif/FailedPayments";
-    }
+    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/'; 
+    // this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
+    // if (this.ResponseUrl.startsWith('https://devums.lpu.in/app/cif/')) {
+    //   this.ResponseUrl = "https://devums.lpu.in/app/cif/FailedPayments";
+    // }
 
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
 
-    this.ResponseUrl = `${baseUrl}/FailedPayments`;
+    this.ResponseUrl = `${baseUrl}/#/FailedPayments`;
 
 
     this.getBookingDetails()
@@ -606,7 +606,10 @@ export class FailedPaymentsComponent implements OnInit {
 
   getParams(): void {
     // const params = this.route.snapshot.params;
-    this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
+     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+
+    this.ResponseUrl = `${baseUrl}/#/FailedPayments`;
+    // this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
     this.route.queryParamMap.subscribe(params => {
       this.id = params.get('id');
       this.status = params.get('status');

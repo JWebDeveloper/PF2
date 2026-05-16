@@ -93,13 +93,13 @@ export class ViewBookingsComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getParams();
-    this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path(); 
+    // this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path(); 
     // start code added on 9-aug-25
     // Build dynamic base URL from current location
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
 
     // Add your desired endpoint
-     this.ResponseUrl = `${baseUrl}/ViewBookings`;
+     this.ResponseUrl = `${baseUrl}/#/ViewBookings`;
     // alert(this.ResponseUrl);
 
     // // alert(this.ResponseUrl)

@@ -204,7 +204,7 @@ LoadPageDetails(): void {
 
     // Set response URL
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-    this.responseUrl = `${baseUrl}/SearchPendingPayments`;
+    this.responseUrl = `${baseUrl}/#/SearchPendingPayments`;
 
     this.fetchPaymentProofDetailsForUser();
   }

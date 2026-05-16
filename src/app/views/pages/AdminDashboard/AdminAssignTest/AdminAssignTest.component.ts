@@ -31,7 +31,7 @@ export class AdminAssignTestComponent implements OnInit {
   headHtmlData: any[] = [];
 
   currentPage = 1;
-  itemsPerPage = 5;
+  itemsPerPage = 15;
   searchQuery: string = '';
 
   // Items per page dropdown options
@@ -40,7 +40,7 @@ export class AdminAssignTestComponent implements OnInit {
     { label: '10', value: 10 },
     { label: '15', value: 15 },
     { label: '20', value: 20 },
-    { label: 'All', value: 'all' }
+    // { label: 'All', value: 'all' }
   ];
 
   // Track if 'all' is selected

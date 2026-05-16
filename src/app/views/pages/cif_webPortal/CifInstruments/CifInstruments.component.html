@@ -43,9 +43,9 @@
                             <a routerLink="/Login" class="lpu-btn">Login/Register</a>
                         </div>
                         <div class="call-action gap-3 d-none">
-                            <div *ngIf="isInstrumentActive"
+                            <div *ngIf="isInstrumentActive" 
                                 [ngClass]="{'alert-danger': !isInstrumentActive, 'alert-success': isInstrumentActive}"
-                                class="alert" id="InstrumentStatus">
+                                class="alert d-none" id="InstrumentStatus">
                                 <strong>{{ isInstrumentActive ? 'Instrument is Active' : 'Instrument is Inactive'
                                     }}</strong>
                             </div>

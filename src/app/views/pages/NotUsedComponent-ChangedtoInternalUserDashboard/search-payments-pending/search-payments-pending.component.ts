@@ -94,15 +94,15 @@ export class SearchPaymentsPendingComponent implements OnInit {
       }
     });
     this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
-    this.ResponseUrl = window.location.href;// + this.location.path() ;//"https://devums.lpu.in/app/cif/";
-    if (this.ResponseUrl.startsWith('https://devums.lpu.in/app/cif/')) {
-      this.ResponseUrl = "https://devums.lpu.in/app/cif/";
-    } 
+    // this.ResponseUrl = window.location.href;// + this.location.path() ;//"https://devums.lpu.in/app/cif/";
+    // if (this.ResponseUrl.startsWith('https://devums.lpu.in/app/cif/')) {
+    //   this.ResponseUrl = "https://devums.lpu.in/app/cif/";
+    // } 
 
     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
     
      // Add your desired endpoint
-    this.ResponseUrl = `${baseUrl}/SearchPendingPayments`;
+    this.ResponseUrl = `${baseUrl}/#/SearchPendingPayments`;
 
     const GetCookieData = this.cookieService.get('authData');
     const retrievedCookies = JSON.parse(GetCookieData);
