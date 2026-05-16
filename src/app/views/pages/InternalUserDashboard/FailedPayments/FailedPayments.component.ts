@@ -9,6 +9,7 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { ColumnMode } from '@swimlane/ngx-datatable';
 import { forkJoin } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from 'src/environments/environment.prod';
 
 const FILE_SIZE_LIMIT = 5148576; // 5MB in bytes
 
@@ -307,24 +308,18 @@ export class FailedPaymentsComponent implements OnInit {
     private formBuilder: FormBuilder) { }
   user_Email: any;
   sessionData: any[] = [];
- 
+
   ngOnInit(): void {
 
-    
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.UserId = this.userId= this.user_Email = retrievedCookies.EmailId;
+    this.UserId = this.userId = this.user_Email = retrievedCookies.EmailId;
     this.MobileNo = retrievedCookies.MobileNo;
     this.supervisorName = retrievedCookies.SupervisorName;
     this.departmentName = retrievedCookies.DepartmentName;
     this.candidateName = retrievedCookies.CandidateName;
     this.UserRole = retrievedCookies.UserRole;
-     
-
-
-
-
 
     this.initializeForm();
     this.route.queryParamMap.subscribe((params) => {
@@ -340,15 +335,67 @@ export class FailedPaymentsComponent implements OnInit {
     //   this.ResponseUrl = "https://devums.lpu.in/app/cif/FailedPayments";
     // }
 
-    const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+    let path = window.location.pathname;
 
-    this.ResponseUrl = `${baseUrl}/#/FailedPayments`;
-
-
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+    // const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+    const baseUrl = `${window.location.origin}${path}`;
+    this.ResponseUrl = `${baseUrl}#/FailedPayments`;
     this.getBookingDetails()
   }
 
-  // searchQuery: string = ''; // Property to store the search query
+ 
+
+  getParams(): void {
+    // const params = this.route.snapshot.params;
+    //  const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+    // this.ResponseUrl = `${baseUrl}/#/FailedPayments`;
+    // this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
+
+      // this.ResponseUrl = `${environment.URL}FailedPayments`;
+      this.route.queryParamMap.subscribe(params => {
+      this.id = params.get('id');
+      this.status = params.get('status');
+      this.type = params.get('type');
+      this.transactionNo = params.get('transactionNo');
+      this.hashedValue = params.get('hashedValue');
+      this.course = params.get('Course');
+      this.keyNote = params.get('KeyNote');
+      const formData = new FormData();
+      formData.append('Id', this.id);
+      formData.append('Status', this.status);
+      formData.append('Type', this.type);
+      formData.append('TransactionNo', this.transactionNo);
+      formData.append('Course', this.course);
+      formData.append('KeyNote', this.keyNote);
+      formData.append('HashedValue', this.hashedValue);
+
+      var result;
+      this.CIFwebService.GetDecodePaymentStatusDetails(formData).subscribe({
+        next: data => {
+          result = data;
+          // console.log("return encoded "+JSON.stringify(result));
+
+          if (result?.status == 'failure') {
+            Swal.fire({
+              title: 'Payment Failed ',
+              // text: 'Payment URL not found!',
+              icon: 'error',
+            });
+          }
+          else if (result?.status == 'success') {
+            Swal.fire({
+              title: 'Payment Made Successfully',
+              // text: 'Payment URL not found!',
+              icon: 'success',
+            });
+          }
+        },
+      });
+    });
+  }
 
   search() {
     const query = this.searchQuery.toLowerCase();
@@ -603,54 +650,6 @@ export class FailedPaymentsComponent implements OnInit {
 
 
 
-
-  getParams(): void {
-    // const params = this.route.snapshot.params;
-     const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-
-    this.ResponseUrl = `${baseUrl}/#/FailedPayments`;
-    // this.ResponseUrl = window.location.href;// + '/FailedPayments'; 
-    this.route.queryParamMap.subscribe(params => {
-      this.id = params.get('id');
-      this.status = params.get('status');
-      this.type = params.get('type');
-      this.transactionNo = params.get('transactionNo');
-      this.hashedValue = params.get('hashedValue');
-      this.course = params.get('Course');
-      this.keyNote = params.get('KeyNote');
-      const formData = new FormData();
-      formData.append('Id', this.id);
-      formData.append('Status', this.status);
-      formData.append('Type', this.type);
-      formData.append('TransactionNo', this.transactionNo);
-      formData.append('Course', this.course);
-      formData.append('KeyNote', this.keyNote);
-      formData.append('HashedValue', this.hashedValue);
-
-      var result;
-      this.CIFwebService.GetDecodePaymentStatusDetails(formData).subscribe({
-        next: data => {
-          result = data;
-          // console.log("return encoded "+JSON.stringify(result));
-
-          if (result?.status == 'failure') {
-            Swal.fire({
-              title: 'Payment Failed ',
-              // text: 'Payment URL not found!',
-              icon: 'error',
-            });
-          }
-          else if (result?.status == 'success') {
-            Swal.fire({
-              title: 'Payment Made Successfully',
-              // text: 'Payment URL not found!',
-              icon: 'success',
-            });
-          }
-        },
-      });
-    });
-  }
 
   openPaymentModal(a: any) {
     this.BookingCase = a;

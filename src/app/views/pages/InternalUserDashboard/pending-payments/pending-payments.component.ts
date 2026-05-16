@@ -77,15 +77,7 @@ export class PendingPaymentsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    
-    this.ResponseUrl = '/ResponsePayments';
-  
-    const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-    
-    // Add your desired endpoint
-    // this.ResponseUrl = "https://lpu.in/cif/cifDemo/PendingPayments";//   
-    this.ResponseUrl = `${baseUrl}/#/PendingPayments`;
-    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+   const GetCookieData = this.cookieService.get('InternalUserAuthData');
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
     this.UserId = retrievedCookies.Id;
@@ -94,6 +86,23 @@ export class PendingPaymentsComponent implements OnInit {
     this.supervisorName = retrievedCookies.SupervisorName;
     this.departmentName = retrievedCookies.DepartmentName;
     this.candidateName = retrievedCookies.CandidateName;
+     
+    this.route.queryParamMap.subscribe((params) => {
+      const queryParamLength = params.keys.length;
+      if (queryParamLength > 0) {
+        this.getParams();
+      }
+    });
+ 
+    let path = window.location.pathname;
+
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+    const baseUrl = `${window.location.origin}${path}`;
+    
+    this.ResponseUrl = `${baseUrl}/#/PendingPayments`;
+ 
     this.getUserPaymentDetails(this.user_Email);
   }
   id: any; status: any; type: any; transactionNo: any; hashedValue: any; course: any; keyNote: any;

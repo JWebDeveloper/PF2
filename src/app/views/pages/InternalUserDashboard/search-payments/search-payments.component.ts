@@ -47,10 +47,10 @@ export class SearchPaymentsComponent implements OnInit {
 
   constructor(
     private CIFwebService: LpuCIFWebService,
-    
+
     private modalService: NgbModal,
     private AuthSession: LoginSessionService,
-    
+
     private cookieService: CookieService) { }
   user_Email: any;
   sessionData: any[] = [];
@@ -60,7 +60,7 @@ export class SearchPaymentsComponent implements OnInit {
       this.user_Email = session[0]['userEmail']
     }
   }
-  userEmail:any; userId:any; supervisorName: any; MobileNo: any;departmentName:any; candidateName:any;
+  userEmail: any; userId: any; supervisorName: any; MobileNo: any; departmentName: any; candidateName: any;
   ngOnInit(): void {
     // this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
     // const GetCookieData = this.cookieService.get('InternalUserAuthData');
@@ -69,7 +69,7 @@ export class SearchPaymentsComponent implements OnInit {
     // this.UserId = retrievedCookies.EmailId;
 
 
-     this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
+    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     const retrievedCookies = JSON.parse(GetCookieData);
     this.UserRole =
@@ -77,7 +77,7 @@ export class SearchPaymentsComponent implements OnInit {
         ? retrievedCookies.userRole
         : 'Internal User';
     // this.UserId = retrievedCookies.Id;
-    this.user_Email = this.UserId = this.userEmail = this.userId= retrievedCookies.EmailId;
+    this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
     this.MobileNo = retrievedCookies.MobileNo;
     this.supervisorName = retrievedCookies.SupervisorName;
     this.departmentName = retrievedCookies.DepartmentName;
@@ -110,7 +110,7 @@ export class SearchPaymentsComponent implements OnInit {
   }
   getBookingDetails() {
 
-     this.loadingIndicator = true;
+    this.loadingIndicator = true;
     const startTime = new Date().getTime();
     this.CIFwebService.GetUserPaymentStatusDetails(this.UserId).subscribe({
       next: response => {
@@ -119,14 +119,14 @@ export class SearchPaymentsComponent implements OnInit {
           this.dataSource = response.item1;
           this.tmpsBookingStatusData = response.item1.filter((item: { paymentStatus: any }) =>
             // item.paymentStatus == null ||             item.paymentStatus?.toLowerCase().includes('failure')
-          item.paymentStatus?.toLowerCase() == 'success' && item.paymentStatus != 'null'
+            item.paymentStatus?.toLowerCase() == 'success' && item.paymentStatus != 'null'
           );
           // this.BookingStatusData = this.tmpsBookingStatusData = response.item1;//.filter((item: { paymentStatus: any }) => item.paymentStatus == null);
           if (this.tmpsBookingStatusData.length > 0) {
             this.headHtmlData = this.tmpsBookingStatusData[0];
             this.columns = Object.keys(this.tmpsBookingStatusData[0]);
             this.columns = this.columns.filter((item: any) => item !== 'ResultFile' && item !== 'userId' && item !== 'id' && item !== 'analysisId');
-            this.columns.push()            
+            this.columns.push()
           }
         }
         else {
@@ -134,7 +134,7 @@ export class SearchPaymentsComponent implements OnInit {
         }
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(1500 - elapsed, 0); // wait at least 5s
-    
+
         setTimeout(() => {
           this.loadingIndicator = false;
         }, remainingDelay);
@@ -143,7 +143,7 @@ export class SearchPaymentsComponent implements OnInit {
         console.log(err)
       }
     });
-   
+
   }
 
   getTotalPages() {

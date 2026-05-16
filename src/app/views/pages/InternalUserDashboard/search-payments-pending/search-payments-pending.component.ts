@@ -155,30 +155,30 @@ export class SearchPaymentsPendingComponent implements OnInit {
   // Constructor
   // ============================================
   constructor(
-      private router: Router,
+    private router: Router,
     private CIFwebService: LpuCIFWebService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private authSession: LoginSessionService,
     private route: ActivatedRoute,
     private cookieService: CookieService
-  ) {}
+  ) { }
 
   // ============================================
   // Lifecycle Hooks
   // ============================================
   ngOnInit(): void {
-   this.LoadPageDetails();
+    this.LoadPageDetails();
   }
 
 
-LoadPageDetails(): void {
- this.initializeForm();
+  LoadPageDetails(): void {
+    this.initializeForm();
     this.initializeUserSession();
     this.initializeRouteParams();
     this.getBookingDetails();
 
-}
+  }
   // ============================================
   // Initialization Methods
   // ============================================
@@ -195,7 +195,7 @@ LoadPageDetails(): void {
 
     // Use proper property names from cookie - match original code's property access
     this.userRole = retrievedCookies.UserRole || 'Internal User';
-    this.userId =   retrievedCookies.EmailId;
+    this.userId = retrievedCookies.EmailId;
     this.userEmail = retrievedCookies.EmailId;
     this.mobileNo = retrievedCookies.MobileNo;
     this.supervisorName = retrievedCookies.SupervisorName;
@@ -203,7 +203,15 @@ LoadPageDetails(): void {
     this.candidateName = retrievedCookies.CandidateName;
 
     // Set response URL
-    const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+    // const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+
+    let path = window.location.pathname;
+
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+    const baseUrl = `${window.location.origin}${path}`;
+
     this.responseUrl = `${baseUrl}/#/SearchPendingPayments`;
 
     this.fetchPaymentProofDetailsForUser();
@@ -219,7 +227,7 @@ LoadPageDetails(): void {
 
 
   private fetchPaymentProofDetailsForUser(): void {
-  
+
 
     this.CIFwebService.GetBookingPaymentProofDetails(this.userId).subscribe({
       next: (response: ApiResponse) => {
@@ -258,7 +266,7 @@ LoadPageDetails(): void {
             item.paymentStatus == null ||
             item.paymentStatus?.toLowerCase() === 'failure'
           );
-          
+
           if (this.tmpsBookingStatusData.length > 0) {
             this.fetchPaymentProofDetails(this.tmpsBookingStatusData);
           }
@@ -288,21 +296,21 @@ LoadPageDetails(): void {
   // ============================================
   // Payment Proof Methods
   // ============================================
-  
+
   private fetchPaymentProofDetails(bookingIds: any[]): void {
     // Call API once to get all proof details for the user
     this.CIFwebService.GetBookingPaymentProofDetails(this.userId).subscribe({
       next: (response: any) => {
         if (response && response.item1 && response.item1.length > 0) {
           const allProofData = response.item1;
-          
+
           // Match proof data to each booking
           bookingIds.forEach((bookingId: string) => {
             // Find proof data matching the current bookingId
-            const matchingProof = allProofData.find((proof: any) => 
+            const matchingProof = allProofData.find((proof: any) =>
               proof.bookingId == bookingId
             );
-            
+
             if (matchingProof) {
               this.paymentProofStatus[bookingId] = {
                 hasProof: true,
@@ -348,7 +356,7 @@ LoadPageDetails(): void {
   // ============================================
   search(): void {
     const query = this.searchQuery.toLowerCase();
-    
+
     if (!query.trim()) {
       // If search is empty, show pending payments (filtered from all data)
       this.tmpsBookingStatusData = this.BookingStatusData.filter((item: any) =>
@@ -404,7 +412,7 @@ LoadPageDetails(): void {
     this.PaymentReceipt = data;
     this.modalService.open(this.viewDescModal2, { size: 'lg' }).result.then(
       (result: string) => console.log('Modal closed:'),
-      () => {}
+      () => { }
     );
   }
 
@@ -418,11 +426,11 @@ LoadPageDetails(): void {
       });
       return;
     }
-    
+
     this.BookingCase = booking;
     this.modalService.open(this.viewDescModal5, { size: 'lg' }).result.then(
       (result: string) => console.log('Modal closed:'),
-      () => {}
+      () => { }
     );
   }
 
@@ -431,7 +439,7 @@ LoadPageDetails(): void {
     this.loadForm();
     this.modalService.open(this.PaymentReceiptUploadModal, { size: 'lg', centered: true }).result.then(
       (result: string) => console.log('Modal closed:', result),
-      () => {}
+      () => { }
     );
   }
 
@@ -518,7 +526,7 @@ LoadPageDetails(): void {
       formData.append('PaymentReceiptData', this.FileDataX || '');
       formData.append('UserId', this.userId);
 
- this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
+      this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
         next: (data: any) => {
           const returnId = data.item1[0]?.returnId;
           const message = data.item1[0]?.msg;
@@ -563,7 +571,7 @@ LoadPageDetails(): void {
       //     // Check returnId for status: 1 = Success, 0 = Failed, -1 = Already Existed
       //     const returnId = data.item1[0]?.returnId;
       //     const message = data.item1[0]?.msg;
-          
+
       //     if (returnId === 1) {
       //       Swal.fire({
       //         title: 'Upload Successful',
@@ -660,11 +668,11 @@ LoadPageDetails(): void {
     }).subscribe({
       next: (results: any) => {
         this.paymentData = results;
-        
+
         // Check if results exist and have the expected structure
         if (results && results.payment && results.payment.item1 && results.payment.item1.length > 0) {
           const paymentUrlData = results.payment.item1[0].url;
-          
+
           if (paymentUrlData && paymentUrlData.length > 0) {
             // Redirect to payment URL
             window.location.href = paymentUrlData;
