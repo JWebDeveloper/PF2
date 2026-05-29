@@ -58,13 +58,7 @@ export class CifLoginPageComponent implements OnInit {
 
     this.loadForm();
 
-    // const elapsed = new Date().getTime() - startTime;
-    // const remainingDelay = Math.max(500 - elapsed, 0);
-
-    // setTimeout(() => {}, remainingDelay);
-
-    // this.getAllInstruments();
-    // this.chunkedEvents = this.chunkArray(this.events, 3);
+    
   }
 
   loadForm(): void {

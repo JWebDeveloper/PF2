@@ -23,6 +23,19 @@ export class StorageService {
 
     return {};
   }
+
+
+  public isLoggedIn(): boolean {
+    const loginId= localStorage.getItem(USER_KEY);
+    const user = window.sessionStorage.getItem(USER_KEY);
+    if (loginId) {
+      return true;
+    }
+
+    return false;
+  }
+}
+
   // public saveUser(user: any): void {
   // this.clean();
   // localStorage.setItem(USER_KEY, user)
@@ -42,19 +55,6 @@ export class StorageService {
   //     return null;
   //   }
   // }
-
-  public isLoggedIn(): boolean {
-    const loginId= localStorage.getItem(USER_KEY);
-    const user = window.sessionStorage.getItem(USER_KEY);
-    if (loginId) {
-      return true;
-    }
-
-    return false;
-  }
-}
-
-
 // import { Injectable } from '@angular/core';
 
 // const USER_KEY = 'auth-user';

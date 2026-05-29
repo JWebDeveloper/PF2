@@ -163,7 +163,7 @@ export class InternalUserLoginComponent implements OnInit {
 
           const UserCookies = JSON.stringify(userCookiesData);
           // this.cookieService.set('authData', UserCookies);
-          const expirationMinutes = 20; // Set expiration time in minutes updated on 28-Jan-26
+          const expirationMinutes = 40; // Set expiration time in minutes updated on 28-Jan-26
           const expirationDate = new Date();
           expirationDate.setMinutes(expirationDate.getMinutes() + expirationMinutes); // Set expiration time
           this.cookieService.set(

@@ -149,7 +149,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
       title: 'Send Samples at Following Address :',
       html: `
         <address>
-          <div class="contact-text" style="text-align:left;">
+          <div class="contact-text" style="text-align:center;">
             Central Instrumentation Facility (CIF) <br/>
             Lovely Professional University <br/>
             Block-38, Room No.106 <br/>

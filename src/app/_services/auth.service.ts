@@ -4,10 +4,7 @@ import { Observable } from 'rxjs';
 
 const AUTH_API = 'https://webapi.lpu.in/cif/';
 const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';
-// const AUTH_API = 'https://webapi.lpu.in/cif/';
-// const AUTH_API = 'https://localhost:7125/';
-// const AUTH_API_LOCAL = 'https://localhost:7125/';
-// const AUTH_API_LOCALS = 'https://localhost:7125/';
+
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
@@ -18,10 +15,6 @@ const httpOptions = {
 export class AuthService {
   constructor(private http: HttpClient) {}
 
-
-  // 
-
-  
   LoginJournalAccessTemp(username: string): Observable<any> {
     return this.http.post(
       AUTH_API_LOCAL + 'security/createCifPortalToken',
@@ -68,13 +61,15 @@ export class AuthService {
       },
       httpOptions
     );
-  }
-
-    
-  // getModeratorBoard(): Observable<any> {
-  //   return this.http.get(API_URL + 'mod', { responseType: 'text' });
-  // }
+  }    
 }
+// const AUTH_API = 'https://webapi.lpu.in/cif/';
+// const AUTH_API = 'https://localhost:7125/';
+// const AUTH_API_LOCAL = 'https://localhost:7125/';
+// const AUTH_API_LOCALS = 'https://localhost:7125/';
+// getModeratorBoard(): Observable<any> {
+//   return this.http.get(API_URL + 'mod', { responseType: 'text' });
+// }
 
 // import { Injectable } from '@angular/core';
 // import { HttpClient, HttpHeaders } from '@angular/common/http';

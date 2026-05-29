@@ -64,7 +64,23 @@ export class FooterComponent implements OnInit, AfterViewInit {
   }
 
 
-  // private loadFooterWithCorsWorkaround(url: string, proxyIndex: number): void {
+
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.addEventListener('scroll', () => {
+        this.showGotoTop = window.scrollY > 300;
+      });
+    }
+  }
+
+  scrollToTop(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  }
+
+    // private loadFooterWithCorsWorkaround(url: string, proxyIndex: number): void {
   //   const targetUrl = proxyIndex === 0 ? url : CORS_PROXIES[proxyIndex - 1] + encodeURIComponent(url);
     
   //   this.http.get(targetUrl, { responseType: 'text' }).subscribe({
@@ -85,20 +101,6 @@ export class FooterComponent implements OnInit, AfterViewInit {
   //     }
   //   });
   // }
-
-  ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      window.addEventListener('scroll', () => {
-        this.showGotoTop = window.scrollY > 300;
-      });
-    }
-  }
-
-  scrollToTop(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    }
-  }
 }
 // import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';

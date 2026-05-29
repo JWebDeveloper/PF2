@@ -53,43 +53,24 @@
                 measurements, structure determination and chemical analysis. Click on the instrument name in the
                 following table to view their description.</p>
         </div>
-        <div class="facilities-grid" 
-     *ngIf="areFacilityImagesLoaded && tmpsInstrumentsDataData.length > 0">
-    
-    <div class="instrument-item" *ngFor="let instrument of tmpsInstrumentsDataData">
-        <div class="image-wrapper">
-            <!-- loading="eager" combined with preloading ensures instant render -->
-            <img [src]="instrument.cachedImageUrl" 
-                 [alt]="instrument.instrumentName" 
-                 class="instrument-img" 
-                 loading="eager">
-        </div>
+        <div class="facilities-grid" *ngIf="areFacilityImagesLoaded && tmpsInstrumentsDataData.length > 0">
 
-        <div class="link-container">
-            <a (click)="VisitUrl('/ourInstruments', instrument.instrumentName.slice(0,10), instrument.id, instrument.categoryId)"
-               [class.inactive]="!instrument.isActive">
-                {{ instrument.instrumentName }}
-            </a>
-        </div>
-    </div>
-</div>
-        <!-- <div class="row cif-facilties facilities-grid" id="InstrumentDetailsData"
-            [ngClass]="{'d-none': tmpsInstrumentsDataData.length < 1}"
-            *ngIf="areFacilityImagesLoaded && tmpsInstrumentsDataData.length > 1">
-            <div class="col-md-3" *ngFor="let InstrumentData of tmpsInstrumentsDataData; let i = index" [attr.data-index]="i">
-                <div class="mb-4">
-                    <img [src]="InstrumentData.imageUrl"
-                        alt="{{InstrumentData.instrumentName}}" class="img-fluid imgSize"  />
+            <div class="instrument-item" *ngFor="let instrument of tmpsInstrumentsDataData">
+                <div class="image-wrapper">
+                    <!-- loading="eager" combined with preloading ensures instant render -->
+                    <img [src]="instrument.cachedImageUrl" [alt]="instrument.instrumentName" class="instrument-img"
+                        loading="eager">
                 </div>
-                <div class="mb-5 " id="InstrumentsPage">
-                    <a (click)="VisitUrl('/ourInstruments',InstrumentData.instrumentName.slice(0,10), InstrumentData.id || InstrumentData.instrumentId, InstrumentData.categoryId); $event.preventDefault()"
-                        [attr.data-is-active]="InstrumentData.isActive ? 'true' : 'false'">
-                        {{InstrumentData.instrumentName}}
+
+                <div class="link-container">
+                    <a (click)="VisitUrl('/ourInstruments', instrument.instrumentName.slice(0,10), instrument.id, instrument.categoryId)"
+                        [class.inactive]="!instrument.isActive">
+                        {{ instrument.instrumentName }}
                     </a>
-        
                 </div>
             </div>
-        </div> -->
+        </div>
+
     </div>
 
 
@@ -97,7 +78,7 @@
 </section>
 
 <ng-template #ErrorCard>
-     <div class="text-center" >
+    <div class="text-center">
         <h3 class="text-center fs-2 m-5 text-danger pt-5 "> No Record ! </h3>
         <div class="row mt-4 mb-4">
             <div class="col-sm-12 text-center">
@@ -303,7 +284,7 @@
 </ng-template>
 
 <app-UpcomingEvents></app-UpcomingEvents> -->
- 
+
 <!-- <section class="section bg-dark-yellow">
     <div class="container">
         <div class="heading-wraper">
@@ -349,19 +330,19 @@
                     </div>
                 </div>
                 <ul>-->
-                    <!-- <li>
+<!-- <li>
                         <a href="">Application Form</a>
                     </li> -->
 
-                    <!-- <li>
+<!-- <li>
                         <a href="">Test Charges</a>
                     </li> -->
 
-                    <!-- <li>
+<!-- <li>
                         <a href="">Payment Options</a>
                     </li> -->
 
-                <!--</ul>
+<!--</ul>
             </div>
         </div>
     </div>
