@@ -11,6 +11,7 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
 
 
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
+import { catchError, finalize, of, tap } from 'rxjs';
 
 @Component({
     selector: 'app-AdminUpdateInstrumentPrice',
@@ -20,13 +21,13 @@ import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way
 export class AdminUpdateInstrumentPrice implements OnInit {
     formdata!: FormGroup;
     loadingIndicator = false;
-    
+
     // Data Arrays
     InstrumentData: any[] = [];
     AnalysisData: any[] = [];
     InstrumentsDuration: any[] = [];
     Datagrid: any[] = [];
-    
+
     // Selection Trackers
     selectedInstrumentId: number | null = null;
     selectedInstrumentName: string = '';
@@ -41,11 +42,11 @@ export class AdminUpdateInstrumentPrice implements OnInit {
 
     // Items per page dropdown options
     itemsPerPageOptions = [
-      { label: '5', value: 5 },
-      { label: '10', value: 10 },
-      { label: '15', value: 15 },
-      { label: '20', value: 20 },
-      { label: 'All', value: 'all' }
+        { label: '5', value: 5 },
+        { label: '10', value: 10 },
+        { label: '15', value: 15 },
+        { label: '20', value: 20 },
+        { label: 'All', value: 'all' }
     ];
 
     constructor(
@@ -85,7 +86,7 @@ export class AdminUpdateInstrumentPrice implements OnInit {
     GetAllInstruments(): void {
         this.loadingIndicator = true;
         this.CIFwebServiceNew.GetAllInstruments().subscribe({
-        // this.CIFwebService.GetAllInstruments().subscribe({
+            // this.CIFwebService.GetAllInstruments().subscribe({
             next: response => {
                 this.InstrumentData = response.item1 || [];
                 this.loadingIndicator = false;
@@ -108,7 +109,7 @@ export class AdminUpdateInstrumentPrice implements OnInit {
 
     onInstrumentChange(event: Event): void {
         const value = (event.target as HTMLSelectElement).value;
-        
+
         // Step 1: Clear everything downstream
         this.resetFromAnalysis();
 
@@ -124,7 +125,7 @@ export class AdminUpdateInstrumentPrice implements OnInit {
 
     onAnalysisTypeChange(event: Event): void {
         const value = (event.target as HTMLSelectElement).value;
-        
+
         // Step 2: Clear duration and price
         this.resetFromDuration();
 
@@ -135,12 +136,12 @@ export class AdminUpdateInstrumentPrice implements OnInit {
             this.formdata.patchValue({ AnalysisId: 'Select' });
         }
     }
-    selectedType :any;
+    selectedType: any;
     onDurationChange(event: Event): void {
         const select = event.target as HTMLSelectElement;
         const analysisId = select.value;
         const typeName = select.options[select.selectedIndex].text;
-        this.selectedType= typeName;
+        this.selectedType = typeName;
         // Step 3: Clear price only
         this.formdata.patchValue({ Charges: 0, TotalAmount: null });
 
@@ -166,7 +167,7 @@ export class AdminUpdateInstrumentPrice implements OnInit {
     private loadAnalysisTypes(instrumentId: number): void {
         this.loadingIndicator = true;
         this.CIFwebServiceNew.GetAnalysisDetails(instrumentId).subscribe({
-        // this.CIFwebService.GetAnalysisDetails(instrumentId).subscribe({
+            // this.CIFwebService.GetAnalysisDetails(instrumentId).subscribe({
             next: res => {
                 this.AnalysisData = res.item1 || [];
                 this.loadingIndicator = false;
@@ -178,7 +179,7 @@ export class AdminUpdateInstrumentPrice implements OnInit {
     private loadDurationData(analysisId: number): void {
         this.loadingIndicator = true;
         this.CIFwebServiceNew.GetAnalysisData(analysisId, this.selectedUserRole).subscribe({
-        // this.CIFwebService.GetAnalysisData(analysisId, this.selectedUserRole).subscribe({
+            // this.CIFwebService.GetAnalysisData(analysisId, this.selectedUserRole).subscribe({
             next: res => {
                 this.InstrumentsDuration = res.item1 || [];
                 this.loadingIndicator = false;
@@ -190,12 +191,12 @@ export class AdminUpdateInstrumentPrice implements OnInit {
     private loadPrice(analysisId: string, typeName: string): void {
         this.loadingIndicator = true;
         this.CIFwebServiceNew.GetDuationAndPrice(analysisId, this.selectedUserRole, typeName).subscribe({
-        // this.CIFwebService.GetDuationAndPrice(analysisId, this.selectedUserRole, typeName).subscribe({
+            // this.CIFwebService.GetDuationAndPrice(analysisId, this.selectedUserRole, typeName).subscribe({
             next: res => {
                 if (res.item1?.length > 0) {
                     const match = res.item1.find((i: any) => i.typeName === typeName);
                     const price = match ? match.price : 0;
-                    
+
                     if (price === 'N/A' || price === 'NA') {
                         swal.fire('Warning', 'This analysis is not available for the selected User Type.', 'warning');
                         this.formdata.patchValue({ Charges: 0 });
@@ -215,16 +216,47 @@ export class AdminUpdateInstrumentPrice implements OnInit {
             this.Datagrid.push({
                 instrumentName: this.selectedInstrumentName,
                 instrumentId: this.selectedInstrumentId,
-                analysisId: vals.AnalysisId,
-                duration: this.selectedType,
+                AnalysisId: vals.AnalysisId,
+                TypeName: this.selectedType,
                 oldPrice: vals.Charges,
-                newPrice: vals.TotalAmount,
-                userRole: vals.UserRoleS,
-                email: this.user_Email
+                NewPrice: vals.TotalAmount,
+                UserRole: vals.UserRoleS,
+                Email: this.user_Email
             });
-            // alert(JSON.stringify(this.Datagrid))
-            // console.log(JSON.stringify(this.Datagrid))
-            swal.fire('Success', 'Price update added to list.', 'success');
+            const updatePriceFormData = new FormData();
+            updatePriceFormData.append('AnalysisId', vals.AnalysisId);
+            updatePriceFormData.append('TypeName', this.selectedType);
+            updatePriceFormData.append('NewPrice', vals.TotalAmount);
+            updatePriceFormData.append('UserRole', vals.UserRoleS);
+            this.CIFwebService.UpdatePrice(updatePriceFormData).subscribe({
+                next: (data: any) => {
+                    const result = data.item1[0]['msg'];
+                    const returnId = data.item1[0]['ReturnId'];
+
+                    if (result === 'Success' && returnId !== '0') {
+                        swal.fire({
+                            title: 'Success', text: ` ${this.selectedInstrumentName} Price updated successfully.`, icon: 'success'
+                        }).then(() => {
+
+                            window.location.reload();
+                        });
+                    } else {
+                        swal.fire({
+                            title: 'Error', text: ` ${this.selectedInstrumentName} Price update failed.`, icon: 'error'
+                        }).then(() => {
+                            window.location.reload();
+
+                        });
+                    }
+                },
+                error: () => {
+                    swal.fire({
+                        title: 'Error', text: ` ${this.selectedInstrumentName} Price update failed.`, icon: 'error'
+                    }).then(() => {
+                    });
+                }
+                // window.location.reload();
+            });
         }
     }
 }

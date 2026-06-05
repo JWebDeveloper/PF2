@@ -41,26 +41,11 @@
                 following table to view their description.</p>
         </div>
 
-        <!-- <div class="cif-grid-layout" *ngIf="areFacilityImagesLoaded && tmpsInstrumentsDataData.length > 0">
-            <div class="cif-grid-item" *ngFor="let InstrumentData of tmpsInstrumentsDataData">
-                <div class="cif-img-frame">
-                    <img [src]="'assets/images/Instrument-Images/' + InstrumentData.instrumentId + '.jpg'"
-                        [alt]="InstrumentData.instrumentName" class="cif-fit-img img-fluid imgSize" loading="eager" />
-                </div>
-                <div class="cif-link-frame" id="InstrumentsPage">
-                    <a (click)="VisitUrl('/ourInstruments', InstrumentData.instrumentName.slice(0,10), InstrumentData.instrumentId, InstrumentData.categoryId)"
-                        [attr.data-is-active]="InstrumentData.isActive">
-                        {{ InstrumentData.instrumentName }}
-                    </a>
-                </div>
-            </div>
-           
-        </div> -->
+         
 
         <div class="cif-grid-layout" *ngIf="tmpsInstrumentsDataData.length > 0">
             <div class="cif-grid-item" *ngFor="let InstrumentData of tmpsInstrumentsDataData">
                 
-                <!-- Use a container to prevent layout shift while loading -->
                 <div class="cif-img-frame" *ngIf="InstrumentData.instrumentId">
                     <img [src]="'assets/images/Instrument-Images/' + InstrumentData.instrumentId + '.jpg'"
                          [alt]="InstrumentData.instrumentName" 

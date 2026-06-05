@@ -40,7 +40,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Clean up memory
     this.tmpsInstrumentsDataData.forEach(item => {
       if (item.cachedImageUrl && item.cachedImageUrl.startsWith('blob:')) {
         URL.revokeObjectURL(item.cachedImageUrl);
@@ -48,7 +47,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     });
   }
  
-// Add this to your component class
   getInstrumentImage(instrumentId: any): string {
     if (!instrumentId) {
       return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -62,7 +60,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     const currentSrc = imgElement.src;
 
     if (currentSrc.includes('.jpg')) {
-      // If .jpg failed, try .png
       imgElement.src = currentSrc.replace('.jpg', '.png');
     } else if (currentSrc.includes('.png')) {
       imgElement.src = currentSrc.replace('.png', '.jpg');
@@ -96,7 +93,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
         this.handleErrorState('Data Server Connection error, Try again later');
       }
     });
-    // console.log('Fetched Instruments:', JSON.stringify(this.tmpsInstrumentsDataData));
   }
 
   private async preloadInstrumentImages() {
@@ -136,9 +132,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     VisitUrl(Sufix: any, name: any, Id: any, catId: any) {
     this.router.navigateByUrl(Sufix + '/' + name + '/' + Id + '/' + catId);
   }
-  // VisitUrl(suffix: string, name: string, id: any, catId: any) {
-  //   this.router.navigateByUrl(`${suffix}/${name.slice(0, 10)}/${id}/${catId}`);
-  // }
 
   goto(path: string) {
     this.router.navigateByUrl(path);

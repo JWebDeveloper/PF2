@@ -39,7 +39,6 @@
                     <div class="main-head align-items-start">
                         <h2 id="InstrumentName">{{ instrumentName }}</h2>
                         <div class="call-action gap-3">
-                            <!-- <a class="lpu-btn mr-2" (click)="openChargesModal(InstrumentId)">Charges</a> -->
                             <a routerLink="/Login" class="lpu-btn">Login/Register</a>
                         </div>
                         <div class="call-action gap-3 d-none">
@@ -58,7 +57,6 @@
                     <strong>{{ isInstrumentActive ? 'Instrument is Active' : 'Instrument is Inactive' }}</strong>
                 </div>
                 <div class="mb-5">
-                    <!-- <img [src]="ImageUrl" alt="Instrument Image" class="ImageSizes" /> -->
                     <img [src]="'assets/images/Instrument-Images/' + this.InstrumentId + '.jpg'" class="ImageSizes" >
                 </div>
                 <p [innerHTML]="Description" style="text-align: justify;"></p>
@@ -77,6 +75,27 @@
     </div>
 </section>
 
+<section class="section ">
+    <div class="container">
+        <div class="heading-wraper mb-4">
+            <h2>FAQs</h2>
+        </div>
+
+        <div class="accordion-container ">
+            <div *ngFor="let faq of faqs" class="accordion-item">
+                <div class="accordion-header " (click)="toggleAccordion(faq)">
+                    <div class="accordion-title">{{ faq.question }}</div>
+                    <i class="accordion-icon" [class.icon-minus]="faq.isOpen" [class.icon-plus]="!faq.isOpen">
+                    </i>
+                </div>
+
+                <div class="accordion-body" *ngIf="faq.isOpen" [@slideInOut]>
+                    <div [innerHTML]="faq.answer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="section bg-dark-yellow d-none" #facilitiesSection>
     <div class="container">
@@ -122,27 +141,6 @@
 
 
 
-<section class="section ">
-    <div class="container">
-        <div class="heading-wraper mb-4">
-            <h2>FAQs</h2>
-        </div>
-
-        <div class="accordion-container ">
-            <div *ngFor="let faq of faqs" class="accordion-item">
-                <div class="accordion-header " (click)="toggleAccordion(faq)">
-                    <div class="accordion-title">{{ faq.question }}</div>
-                    <i class="accordion-icon" [class.icon-minus]="faq.isOpen" [class.icon-plus]="!faq.isOpen">
-                    </i>
-                </div>
-
-                <div class="accordion-body" *ngIf="faq.isOpen" [@slideInOut]>
-                    <div [innerHTML]="faq.answer"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 
 

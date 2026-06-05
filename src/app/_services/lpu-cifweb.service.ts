@@ -690,7 +690,15 @@ export class LpuCIFWebService {
   }
 
 
-
+  UpdatePrice(PricesDetails: FormData): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+    return this.http.post(
+      // 'https://localhost:7135/api/LpuCIF/CIFUpdatePrice', PricesDetails, { headers }
+      AUTH_API + 'api/LpuCIF/CIFUpdatePrice', PricesDetails, { headers }
+    );// for new user account creatinng
+  }
 
 
 
