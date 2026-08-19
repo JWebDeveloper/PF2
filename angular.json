@@ -45,6 +45,7 @@
             },
             "assets": ["src/favicon.ico", "src/assets", "src/.htaccess"],
             "styles": [
+               "src/styles.scss",
               "./node_modules/@fullcalendar/common/main.css",
               "./node_modules/@fullcalendar/daygrid/main.css",
               "./node_modules/@fullcalendar/timegrid/main.css",
@@ -71,8 +72,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "1200kb",
-                  "maximumError": "1400kb"
+                  "maximumWarning": "1200mb",
+                  "maximumError": "1400mb"
                 }
               ],
               "fileReplacements": [
