@@ -397,8 +397,8 @@ export class UpdateInstrumentPriceComponent implements OnInit {
           const result = data.item1[0]['msg'];
           if (result === 'ok') {
             swal.fire({
-              title: 'Uploaded the Document',
-              text: 'Document uploaded successfully and image prepared as ' + Id + '.jpg!',
+              title: 'Uploaded Successfully',
+              text: 'Document and instrument image uploaded successfully!',
               icon: 'success',
               showConfirmButton: true,
             })

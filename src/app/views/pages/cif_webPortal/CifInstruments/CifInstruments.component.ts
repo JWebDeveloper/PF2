@@ -371,12 +371,14 @@ export class CifInstrumentsComponent implements OnInit {
         this.setStaticSpecifications(categoryId);
       }
     });
+  }
+
   handleImageError(event: any): void {
     const img = event.target;
     const fallback = 'assets/images/Instrument-Images/' + this.InstrumentId + '.jpg';
-    if (img.src && !img.src.includes('assets/images/Instrument-Images/')) {
+    if (img && img.src && !img.src.includes('assets/images/Instrument-Images/')) {
       img.src = fallback;
-    } else {
+    } else if (img) {
       img.src = 'assets/images/default-instrument.jpg';
     }
   }
