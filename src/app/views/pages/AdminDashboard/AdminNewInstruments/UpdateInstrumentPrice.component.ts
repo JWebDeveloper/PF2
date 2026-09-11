@@ -67,6 +67,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
   supervisorName: any;
   departmentName: any;
   candidateName: any;
+  imagePreviewUrl: string = '';
 
 
 
@@ -230,10 +231,17 @@ export class UpdateInstrumentPriceComponent implements OnInit {
   onSelect(a: any) {
     let aa = a;
     // alert(JSON.stringify(aa))
-    this.InstrumentId = aa['instrumentId'];
+    this.InstrumentId = aa['instrumentId'] || aa['id'];
     this.InstrumentTitles = aa['instrumentName'];
-    this.modalService.open(this.viewDescModal, { size: 'lg' }).result.then((result) => {
+    this.StatusInstrument = aa['isActive'] ?? false;
+    this.fileChosen[this.InstrumentId] = false;
+    this.fileNamesX = '';
+    this.fileDataX = null as any;
+    this.FileDataX = '';
+    this.fileName = '';
+    this.imagePreviewUrl = '';
 
+    this.modalService.open(this.viewDescModal, { size: 'lg' }).result.then((result) => {
       console.log("Modal closed" + result);
     }).catch((res) => { });
   }
@@ -277,6 +285,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
         const ssssArray = ssss.split(',');
         this.FileDataX = ssssArray[1];
         this.fileName = validFileName;
+        this.imagePreviewUrl = ssss;
       };
       return;
     }
@@ -291,17 +300,91 @@ export class UpdateInstrumentPriceComponent implements OnInit {
         const ssssArray = ssss.split(',');
         this.FileDataX = ssssArray[1];
         this.fileName = file.name;
+        this.imagePreviewUrl = ssss;
       };
     }
   }
 
+  convertToJpegBlob(file: File): Promise<Blob> {
+    return new Promise((resolve) => {
+      if (!file) {
+        resolve(new Blob());
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(
+              (blob) => {
+                resolve(blob || file);
+              },
+              'image/jpeg',
+              0.95
+            );
+          } else {
+            resolve(file);
+          }
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async copyImageToInstrumentImages(instrumentId: any): Promise<void> {
+    if (!this.fileDataX) {
+      return;
+    }
+
+    const targetFileName = `${instrumentId}.jpg`;
+
+    try {
+      const jpegBlob = await this.convertToJpegBlob(this.fileDataX);
+
+      // Cache the image directly in the browser's Cache Storage under the assets path without any dialog
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        const cache = await caches.open('instrument-images');
+        const headers = new Headers({ 'Content-Type': 'image/jpeg' });
+        await cache.put(
+          `/assets/images/Instrument-Images/${targetFileName}`,
+          new Response(jpegBlob, { headers })
+        );
+        await cache.put(
+          `/assets/images/instrument-images/${targetFileName}`,
+          new Response(jpegBlob, { headers })
+        );
+      }
+
+      // Also store data URL in localStorage for instantaneous client-side fallback
+      if (this.FileDataX && typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(`instrument_img_${instrumentId}`, 'data:image/jpeg;base64,' + this.FileDataX);
+        } catch (storageErr) {
+          // Ignore quota errors silently
+        }
+      }
+    } catch (error) {
+      console.warn('Could not cache image in browser storage:', error);
+    }
+  }
 
   UpdateFileDocument(Id: any) {
-    this.loadingIndicator=true;
+    this.loadingIndicator = true;
     const startTime = new Date().getTime();
 
-
     if (this.fileChosen[Id]) {
+      // Copy image in assets/images/instrument-images folder and keep the name of image as instrumentid.jpg (e.g. 1000002.jpg)
+      this.copyImageToInstrumentImages(Id);
+
       const formData = new FormData();
       formData.append('InstrumentId', Id);
       formData.append('InstrumentName', this.InstrumentTitles);
@@ -315,7 +398,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
           if (result === 'ok') {
             swal.fire({
               title: 'Uploaded the Document',
-              text: 'Document uploaded successfully!',
+              text: 'Document uploaded successfully and image prepared as ' + Id + '.jpg!',
               icon: 'success',
               showConfirmButton: true,
             })
@@ -333,7 +416,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
           }
           const elapsed = new Date().getTime() - startTime;
           const remainingDelay = Math.max(1500 - elapsed, 0); // wait at least 5s
-  
+
           setTimeout(() => {
             this.loadingIndicator = false;
           }, remainingDelay);

@@ -202,6 +202,9 @@
                             Image</label>
                         <input class="form-control" [(ngModel)]="fileNamesX" type="file" id="File" name="file"
                             (change)="onFileXSelected($event, this.InstrumentId)" accept=".png, .jpg, .jpeg" />
+                        <small class="text-muted d-block mt-1">
+                            Uploads image for Instrument ID: <strong class="text-primary">{{this.InstrumentId}}</strong>
+                        </small>
                         <div *ngIf="isForm1Submitted && !fileNamesX" class="text-danger small mt-1">
                             Please select an image file.
                         </div>
@@ -216,6 +219,21 @@
                     </div>
 
                 </div>
+
+                <!-- Preview and Destination Details -->
+                <div *ngIf="imagePreviewUrl" class="row mt-2 pt-3 border-top align-items-center">
+                    <div class="col-auto">
+                        <div class="border rounded p-1 bg-white shadow-sm" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img [src]="imagePreviewUrl" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="fw-bold text-dark">Instrument ID: {{this.InstrumentId}}</div>
+                        <div class="text-muted small">Image will be uploaded to database and displayed across all portal pages</div>
+                    </div>
+                </div>
+
+
             </form>
         </div>
     </ng-template>

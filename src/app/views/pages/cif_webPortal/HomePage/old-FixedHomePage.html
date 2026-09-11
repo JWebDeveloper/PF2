@@ -45,7 +45,7 @@
         <div class="cif-grid-layout" *ngIf="areFacilityImagesLoaded && tmpsInstrumentsDataData.length > 0">
             <div class="cif-grid-item" *ngFor="let InstrumentData of tmpsInstrumentsDataData">
                 <div class="cif-img-frame">
-                    <img [src]="'assets/images/Instrument-Images/' + InstrumentData.instrumentId + '.jpg'"
+                    <img [src]="InstrumentData.imageUrl || ('assets/images/Instrument-Images/' + InstrumentData.instrumentId + '.jpg')"
                         [alt]="InstrumentData.instrumentName" class="cif-fit-img img-fluid imgSize" loading="eager" />
                 </div>
                 <div class="cif-link-frame" id="InstrumentsPage">

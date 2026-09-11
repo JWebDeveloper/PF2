@@ -55,16 +55,18 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     return `assets/images/Cif-Images/${instrumentId}.jpg`;
   }
 
-  handleImageError(event: any) {
+  handleImageError(event: any, instrumentId?: any) {
     const imgElement = event.target;
-    const currentSrc = imgElement.src;
+    const currentSrc = imgElement.src || '';
 
-    if (currentSrc.includes('.jpg')) {
+    if (instrumentId && !currentSrc.includes('assets/images/Instrument-Images/')) {
+      imgElement.src = 'assets/images/Instrument-Images/' + instrumentId + '.jpg';
+    } else if (currentSrc.includes('.jpg')) {
       imgElement.src = currentSrc.replace('.jpg', '.png');
     } else if (currentSrc.includes('.png')) {
       imgElement.src = currentSrc.replace('.png', '.jpg');
     } else {
-      imgElement.style.display = 'none';
+      imgElement.src = 'assets/images/default-instrument.jpg';
     }
   }
   updateUrl(event: any) {
