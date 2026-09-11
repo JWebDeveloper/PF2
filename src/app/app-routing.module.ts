@@ -147,17 +147,17 @@ const routes: Routes = [
     loadChildren: () => import('./views/pages/StaffDashboard/StaffUpdateSampleStatus/StaffUpdateSampleStatus.module').then(m => m.StaffUpdateSampleStatusModule),
   },
   {
-    path: "UserFeedbackdetailsS",// Add Module file 
+    path: "UserFeedbackdetailsS",// Add Module file
     loadChildren: () => import('./views/pages/StaffDashboard/StaffUserFeedbackDetails/StaffUserFeedbackDetails.module').then(m => m.StaffUserFeedbackDetailsModule),
   },
   {
-    path: "UserDetailSS",// Add Module file 
+    path: "UserDetailSS",// Add Module file
     loadChildren: () => import('./views/pages/StaffDashboard/UserDetails/StaffUserDetails.module').then(m => m.StaffUserDetailsModule),
   },
 
 
   {
-    path: "SearchBookings", 
+    path: "SearchBookings",
     loadChildren: () => import('./views/pages/InternalUserDashboard/search-bookings/search-bookings.module').then(m => m.SearchBookingsModule),
   },
 
@@ -184,7 +184,10 @@ const routes: Routes = [
   },
 
   // Admin Dashboard
-
+ {
+    path: 'NewAnalysis',
+    loadChildren: () => import('./views/pages/AdminDashboard/A-NewAnalysis-Page/New-Analysis.module').then( (m) => m.NewAnalysisModule),
+  },
   {
     path: "CifAnalysisCrud",
     // loadChildren: () => import('./views/pages/AdminDashboard/A-Analysis-CIF/cif-analysis.module').then(m => m.CIFAnalysisModule),
@@ -256,7 +259,7 @@ const routes: Routes = [
     // component:AdminAssignTestComponent
   },
   {
-    path: "UserDetail",// Add Module file 
+    path: "UserDetail",// Add Module file
     loadChildren: () => import('./views/pages/AdminDashboard/AdminUserDetails/AdminUserDetails.module').then(m => m.AdminUserDetailsModule),
     // component:AdminUserDetailsComponent
   },
@@ -275,11 +278,11 @@ const routes: Routes = [
   {
     path: "MyTestData/:loginName",
     loadChildren: () => import('./views/pages/AdminDashboard/ViewBookingAdmin/ViewBookingAdmin.module').then(m => m.ViewBookingAdminModule),
-   
+
   },
 
   {
-    path: "LPUTermsCondition",  
+    path: "LPUTermsCondition",
     loadChildren: () => import('./views/pages/InternalUserDashboard/LPUTermsConditions/LPUTermsConditions.module').then(m => m.LPUTermsConditionsModule),
   },
 
@@ -293,7 +296,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'Home',  
+    redirectTo: 'Home',
     pathMatch: 'full'
   }
 
@@ -304,6 +307,6 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top', useHash: true })],
   exports: [RouterModule]
 })
- 
- 
+
+
 export class AppRoutingModule { }

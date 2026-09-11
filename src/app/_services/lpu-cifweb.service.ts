@@ -700,6 +700,13 @@ export class LpuCIFWebService {
     );// for new user account creatinng
   }
 
-
+  InsertNewAnalysis(AnalysisData: FormData): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token);
+    return this.http.post(
+      AUTH_API + 'api/LpuCIF/CIFInsertNewAnalysis', AnalysisData, { headers }
+    );
+  }
 
 }

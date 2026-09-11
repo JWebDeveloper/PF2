@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+  NgZone,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from 'src/app/_services/auth.service';
@@ -14,7 +21,7 @@ import swal from 'sweetalert2';
   styleUrls: ['./FixedHomePage.scss'],
 })
 export class FixedHomePageComponent implements OnInit, OnDestroy {
-   @ViewChild('facilitiesSection') facilitiesSection!: ElementRef;
+  @ViewChild('facilitiesSection') facilitiesSection!: ElementRef;
 
   tmpsInstrumentsDataData: any[] = [];
   areFacilityImagesLoaded: boolean = false;
@@ -26,27 +33,27 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     private CIFwebService: LpuCIFWebServiceNewService,
     private ngZone: NgZone,
     private router: Router,
-        private authService: AuthService,
-        private storageService: StorageService,
-        private AuthSession: LoginSessionService,
-        private cookieService: CookieService,
+    private authService: AuthService,
+    private storageService: StorageService,
+    private AuthSession: LoginSessionService,
+    private cookieService: CookieService,
   ) {}
 
   ngOnInit(): void {
-     this.cookieService.delete('InternalUserAuthData');
-     this.cookieService.deleteAll('/');
+    this.cookieService.delete('InternalUserAuthData');
+    this.cookieService.deleteAll('/');
     this.AuthSession.clearSession();
     this.getAllInstruments();
   }
 
   ngOnDestroy(): void {
-    this.tmpsInstrumentsDataData.forEach(item => {
+    this.tmpsInstrumentsDataData.forEach((item) => {
       if (item.cachedImageUrl && item.cachedImageUrl.startsWith('blob:')) {
         URL.revokeObjectURL(item.cachedImageUrl);
       }
     });
   }
- 
+
   getInstrumentImage(instrumentId: any): string {
     if (!instrumentId) {
       return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -59,14 +66,18 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     const imgElement = event.target;
     const currentSrc = imgElement.src || '';
 
-    if (instrumentId && !currentSrc.includes('assets/images/Instrument-Images/')) {
-      imgElement.src = 'assets/images/Instrument-Images/' + instrumentId + '.jpg';
+    if (
+      instrumentId &&
+      !currentSrc.includes('assets/images/Instrument-Images/')
+    ) {
+      imgElement.src =
+        'assets/images/Instrument-Images/' + instrumentId + '.jpg';
     } else if (currentSrc.includes('.jpg')) {
       imgElement.src = currentSrc.replace('.jpg', '.png');
     } else if (currentSrc.includes('.png')) {
       imgElement.src = currentSrc.replace('.png', '.jpg');
     } else {
-      imgElement.src = 'assets/images/default-instrument.jpg';
+      imgElement.src = 'assets/images/Instrument-Images/default-instrument.jpg';
     }
   }
   updateUrl(event: any) {
@@ -74,8 +85,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
 
     if (currentSrc.endsWith('.jpg')) {
       event.target.src = currentSrc.replace('.jpg', '.png');
-    }
-    else if (currentSrc.endsWith('.png')) {
+    } else if (currentSrc.endsWith('.png')) {
       event.target.src = 'assets/images/Cif-Images/placeholder.jpg';
     }
   }
@@ -93,12 +103,12 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.handleErrorState('Data Server Connection error, Try again later');
-      }
+      },
     });
   }
 
   private async preloadInstrumentImages() {
-    const loadPromises = this.tmpsInstrumentsDataData.map(instrument => {
+    const loadPromises = this.tmpsInstrumentsDataData.map((instrument) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = instrument.imageUrl;
@@ -114,7 +124,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     });
 
     await Promise.all(loadPromises);
-    
+
     this.ngZone.run(() => {
       this.areFacilityImagesLoaded = true;
       this.loadingIndicator = false;
@@ -131,7 +141,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
     this.facilitiesSection.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-    VisitUrl(Sufix: any, name: any, Id: any, catId: any) {
+  VisitUrl(Sufix: any, name: any, Id: any, catId: any) {
     this.router.navigateByUrl(Sufix + '/' + name + '/' + Id + '/' + catId);
   }
 
@@ -154,7 +164,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
             Email : cif@lpu.co.in<br>
           </div>
         </address>`,
-      icon: 'info'
+      icon: 'info',
     });
   }
 }
@@ -203,7 +213,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
 //   }
 
 //   /**
-//    * Requirements #1: Preload images as blobs to ensure they render instantly 
+//    * Requirements #1: Preload images as blobs to ensure they render instantly
 //    * without loaders or "staircase" effects once visible.
 //    */
 //   private async preloadImages() {
@@ -211,12 +221,12 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
 //       return new Promise((resolve) => {
 //         const img = new Image();
 //         img.src = item.imageUrl;
-        
+
 //         img.onload = () => {
 //           item.cachedImageUrl = item.imageUrl;
 //           resolve(true);
 //         };
-        
+
 //         img.onerror = () => {
 //           // Silent fallback to a local asset if remote fails
 //           item.cachedImageUrl = 'assets/images/default-instrument.jpg';
@@ -226,7 +236,7 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
 //     });
 
 //     await Promise.all(promises);
-    
+
 //     this.ngZone.run(() => {
 //       this.areFacilityImagesLoaded = true;
 //       this.loadingIndicator = false;

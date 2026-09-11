@@ -41,18 +41,27 @@
                 following table to view their description.</p>
         </div>
 
-         
+
 
         <div class="cif-grid-layout" *ngIf="tmpsInstrumentsDataData.length > 0">
             <div class="cif-grid-item" *ngFor="let InstrumentData of tmpsInstrumentsDataData">
-                
+            <!-- <div class="cif-img-frame" *ngIf="InstrumentData.instrumentId">
+                                <img [src]="'https://files.lpu.in/umsweb/CIFDocuments/'+InstrumentData.imageUrl"
+                                    [alt]="InstrumentData.instrumentName"
+                                    class="cif-fit-img img-fluid imgSize"
+                                    loading="eager"
+                                    fetchpriority="high" />
+                            </div> -->
                 <div class="cif-img-frame" *ngIf="InstrumentData.instrumentId">
                     <img [src]="InstrumentData.imageUrl || ('assets/images/Instrument-Images/' + InstrumentData.instrumentId + '.jpg')"
                          (error)="handleImageError($event, InstrumentData.instrumentId)"
-                         [alt]="InstrumentData.instrumentName" 
-                         class="cif-fit-img img-fluid imgSize" 
-                         loading="eager" 
+                         [alt]="InstrumentData.instrumentName"
+                         class="cif-fit-img img-fluid imgSize"
+                         loading="eager"
                          fetchpriority="high" />
+
+
+
                 </div>
 
                 <div class="cif-link-frame" id="InstrumentsPage">
