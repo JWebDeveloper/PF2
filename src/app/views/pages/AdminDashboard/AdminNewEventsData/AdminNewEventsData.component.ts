@@ -1,9 +1,11 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
 import Swal from 'sweetalert2';
+import swal from 'sweetalert2';
 import { LoginSessionService } from 'src/app/_services/login-session.service';
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 @Component({
@@ -21,8 +23,8 @@ export class AdminNewEventsDataComponent implements OnInit {
     private fb: FormBuilder,
     private modalService: NgbModal,
     private AuthSession: LoginSessionService,
-
-    private cookieService: CookieService) { }
+    private cookieService: CookieService,
+    private router: Router) { }
   user_Email: any; sessionData: any[] = [];
   getSessionDetails() {
     this.sessionData = this.AuthSession.getSession();
@@ -33,9 +35,21 @@ export class AdminNewEventsDataComponent implements OnInit {
   ngOnInit(): void {
     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';//'http://172.19.2.52/umsweb/webftp/CIFDocuments/';
     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.EmailId;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.EmailId;
+      } catch (e) {
+        console.error('Error parsing authData in AdminNewEventsData:', e);
+      }
+    } else {
+      Swal.fire({
+        title: 'Login Failed ',
+        icon: 'warning',
+      });
+      this.router.navigate(['/Home']);
+    }
     // this.UserId = '121309';
     this.LoadNewForm();
     this.GetAllEventDetails();

@@ -163,15 +163,23 @@ export class ChangePasswordsComponent implements OnInit {
   ngOnInit(): void {
     this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    // console.log(JSON.stringify(retrievedCookies))
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.EmailId;
-    this.ProofName = retrievedCookies.ProofName;
-    this.ProofNumber = retrievedCookies.ProofNumber;
-    this.SecretKey = retrievedCookies.PasswordText;
-    // console.log(this.ProofName)
-    // console.log(this.SecretKey)
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.EmailId;
+        this.ProofName = retrievedCookies.ProofName;
+        this.ProofNumber = retrievedCookies.ProofNumber;
+        this.SecretKey = retrievedCookies.PasswordText;
+      } catch (e) {
+        console.error('Error parsing InternalUserAuthData cookie:', e);
+        this.router.navigate(['/Home']);
+        return;
+      }
+    } else {
+      this.router.navigate(['/Home']);
+      return;
+    }
     if (this.UserRole == 400000) {
       swal.fire({
         title: 'Unauthorise Access ',

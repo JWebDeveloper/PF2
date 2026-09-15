@@ -120,13 +120,17 @@ export class ViewBookingsComponent implements OnInit {
   // Refresh User/Cookie context
   const GetCookieData = this.cookieService.get('InternalUserAuthData');
   if (GetCookieData) {
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
-    this.MobileNo = retrievedCookies.MobileNo;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    try {
+      const retrievedCookies = JSON.parse(GetCookieData);
+      this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+      this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
+      this.MobileNo = retrievedCookies.MobileNo;
+      this.supervisorName = retrievedCookies.SupervisorName;
+      this.departmentName = retrievedCookies.DepartmentName;
+      this.candidateName = retrievedCookies.CandidateName;
+    } catch (e) {
+      console.error('Error parsing cookie in view-bookings:', e);
+    }
   }
 
   this.getParams();
@@ -320,31 +324,17 @@ export class ViewBookingsComponent implements OnInit {
     }).subscribe({
       next: (results: any) => {
         this.paymentData = results;
-        if (results) {
-          const paymentUrlData = results.payment.item1[0].url;
-          if (paymentUrlData && paymentUrlData.length > 0) {
-            window.location.href = paymentUrlData;
-
-          } else {
-            Swal.fire({
-              title: 'Error Occurred, Try Again Later',
-              text: 'Payment URL not found!',
-              icon: 'error',
-            });
-          }
+        const paymentUrlData = results?.payment?.item1?.[0]?.url;
+        if (paymentUrlData && paymentUrlData.length > 0) {
+          window.location.href = paymentUrlData;
         } else {
+          this.loadingIndicator = false;
           Swal.fire({
-            title: 'Error',
-            text: 'No data received from the API!',
+            title: 'Error Occurred, Try Again Later',
+            text: 'Payment URL not found!',
             icon: 'error',
           });
         }
-        const elapsed = new Date().getTime() - startTime;
-        const remainingDelay = Math.max(2500 - elapsed, 0); // wait at least 5s
-
-        setTimeout(() => {
-          this.loadingIndicator = false;
-        }, remainingDelay);
       },
       error: (error: any) => {
         console.error('Error during API call: ', error);
@@ -641,11 +631,17 @@ export class ViewBookingsComponent implements OnInit {
       },
       error: async (err) => {
         swal.close();
+        let message = 'Download failed';
         if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
+          }
+          swal.fire('Error', message, 'error');
         } else {
-          swal.fire('Error', 'Could not connect to the server', 'error');
+          swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
         }
       }
     });

@@ -122,11 +122,17 @@ export class AUploadProofStatusComponent implements OnInit {
           },
           error: async (err) => {
             swal.close();
+            let message = 'Download failed';
             if (err.error instanceof Blob) {
-              const errorMsg = JSON.parse(await err.error.text());
-              swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+              try {
+                const errorMsg = JSON.parse(await err.error.text());
+                message = errorMsg.message || message;
+              } catch {
+                message = 'Failed to download file from server';
+              }
+              swal.fire('Error', message, 'error');
             } else {
-              swal.fire('Error', 'Could not connect to the server', 'error');
+              swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
             }
           }
         });
@@ -159,11 +165,17 @@ export class AUploadProofStatusComponent implements OnInit {
 user_Email: any; UserRole:any; candidateName:any;
   private loadUserFromCookie(): void {
 
-     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
+    const GetCookieData = this.cookieService.get('authData');
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in AUploadProofStatus:', e);
+      }
+    }
 
 
     

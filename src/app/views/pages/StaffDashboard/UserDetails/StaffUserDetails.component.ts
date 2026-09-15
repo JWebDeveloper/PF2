@@ -84,11 +84,17 @@ export class StaffUserDetailsComponent implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
-    this.getBookingDetails()
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData cookie:', e);
+      }
+    }
+    this.getBookingDetails();
   }
 
   searchQuery: string = '';
@@ -264,8 +270,8 @@ export class StaffUserDetailsComponent implements OnInit {
     formData.append('File', this.FileData);
     this.CIFwebService.CIFResultsUploads(formData).subscribe({
       next: (data: any) => {
-        const result = data.item1[0]['msg']; // Adjusted to match your stored procedure
-        const returnId = data.item1[0]['ReturnId'];
+        const result = data?.item1?.[0]?.['msg']; // Adjusted to match your stored procedure
+        const returnId = data?.item1?.[0]?.['ReturnId'];
 
         if (result === 'Success' && returnId !== '0') {
           Swal.fire({

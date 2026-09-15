@@ -78,7 +78,7 @@ export class HomePageTopBarComponent implements OnInit {
       })
       .catch(error => {
         // console.error('Error fetching the file:', error);
-        alert('Error downloading file');
+        // alert('Error downloading file');
       });
   }
 

@@ -95,12 +95,16 @@ export class NewBookingsComponent implements OnInit {
     // Refresh User/Cookie context
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     if (GetCookieData) {
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.UserRole;
-      this.UserId = retrievedCookies.UserRole;
-      this.user_Email = retrievedCookies.EmailId;
-      this.candidateName = retrievedCookies.CandidateName;
-      this.MobileNo = retrievedCookies.MobileNo;
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.UserId || retrievedCookies.EmailId;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+        this.MobileNo = retrievedCookies.MobileNo;
+      } catch (e) {
+        console.error('Error parsing cookie in new-bookings:', e);
+      }
     }
     this.getInstrumentData();
     this.loadMyMous();
@@ -379,11 +383,11 @@ export class NewBookingsComponent implements OnInit {
     var result;
     this.CIFwebService.addBookingSlot(formData).subscribe({
       next: data => {
-        result = data.item1[0]['msg']
+        result = data?.item1?.[0]?.['msg'];
         if (result == 'OK') {
           swal.fire({
             title: 'Uploaded the Document',
-            text: data.item1[0]['msg'],
+            text: result,
             icon: 'success'
           }
           );
@@ -457,11 +461,17 @@ export class NewBookingsComponent implements OnInit {
       },
       error: async (err) => {
         swal.close();
+        let message = 'Download failed';
         if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
+          }
+          swal.fire('Error', message, 'error');
         } else {
-          swal.fire('Error', 'Could not connect to the server', 'error');
+          swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
         }
       }
     });
@@ -540,12 +550,12 @@ export class NewBookingsComponent implements OnInit {
       next: results => {
         let allSuccess = true;
         results.forEach(data => {
-          const result = data.item1[0]['msg'];
+          const result = data?.item1?.[0]?.['msg'];
           if (result !== 'OK') {
             allSuccess = false;
             swal.fire({
               title: 'Something went wrong',
-              text: result,
+              text: result || 'Failed to submit test',
               icon: 'error'
             });
           }
@@ -657,21 +667,13 @@ export class NewBookingsComponent implements OnInit {
     }).subscribe({
       next: (results: any) => {
         this.paymentData = results;
-        if (results) {
-          const paymentUrlData = results.payment.item1[0].url;
-          if (paymentUrlData && paymentUrlData.length > 0) {
-            window.location.href = paymentUrlData;
-          } else {
-            Swal.fire({
-              title: 'Error Occurred, Try Again Later',
-              text: 'Payment URL not found!',
-              icon: 'error',
-            });
-          }
+        const paymentUrlData = results?.payment?.item1?.[0]?.url;
+        if (paymentUrlData && paymentUrlData.length > 0) {
+          window.location.href = paymentUrlData;
         } else {
           Swal.fire({
-            title: 'Error',
-            text: 'No data received from the API!',
+            title: 'Error Occurred, Try Again Later',
+            text: 'Payment URL not found!',
             icon: 'error',
           });
         }

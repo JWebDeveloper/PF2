@@ -41,12 +41,18 @@ export class StaffMenuComponent implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData in StaffMenu:', e);
+      }
+    }
   //  console.log(JSON.parse(GetCookieData));
   }
 

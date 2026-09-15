@@ -52,16 +52,18 @@ export class FacultyDashboardComponent implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('authData');
-    // console.log("User Details = " + GetCookieData); // Already a string, no need to stringify
-
-    const retrievedCookies = JSON.parse(GetCookieData);
-
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
-
+    if (GetCookieData && GetCookieData.length > 0) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in FacultyDashboard:', e);
+      }
+    }
   }
 
 

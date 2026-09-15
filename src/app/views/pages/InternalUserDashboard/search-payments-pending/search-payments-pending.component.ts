@@ -64,11 +64,17 @@ export class SearchPaymentsPendingComponent implements OnInit {
       },
       error: async (err) => {
         Swal.close();
+        let message = 'Download failed';
         if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
+          }
+          Swal.fire('Error', message, 'error');
         } else {
-          Swal.fire('Error', 'Could not connect to the server', 'error');
+          Swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
         }
       }
     });

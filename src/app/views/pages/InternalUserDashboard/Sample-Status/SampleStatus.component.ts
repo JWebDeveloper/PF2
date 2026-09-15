@@ -70,10 +70,16 @@ export class SampleStatusComponent implements OnInit {
   ngOnInit(): void {
     this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.EmailId;
-    this.getMySampleStatus(this.UserId)
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.EmailId;
+        this.getMySampleStatus(this.UserId);
+      } catch (e) {
+        console.error('Error parsing cookie in SampleStatus:', e);
+      }
+    }
   }
 
   searchQuery: string = ''; // Property to store the search query

@@ -58,11 +58,17 @@ export class AdminActionInstrumentsComponent implements OnInit {
       },
       error: async (err) => {
         swal.close();
+        let message = 'Download failed';
         if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
+          }
+          swal.fire('Error', message, 'error');
         } else {
-          swal.fire('Error', 'Could not connect to the server', 'error');
+          swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
         }
       }
     });
@@ -354,12 +360,24 @@ export class AdminActionInstrumentsComponent implements OnInit {
 
     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFSampleExcelSheets/';
     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in AdminActionInstruments:', e);
+      }
+    } else {
+      swal.fire({
+        title: 'Login Failed ',
+        icon: 'warning',
+      });
+      this.router.navigate(['/Home']);
+    }
 
     this.GetAllInstruments()
   }

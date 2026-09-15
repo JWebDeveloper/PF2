@@ -4,7 +4,6 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { EventModel } from '../_model/Event.model';
-import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
 // const AUTH_API = 'https://projectsapi.lpu.in/';
 const AUTH_API = 'https://webapi.lpu.in/cif/';

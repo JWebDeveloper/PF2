@@ -85,16 +85,23 @@ export class SecurePasswordChangeComponent implements OnInit {
 
       return;
     }
-    const retrievedCookies = JSON.parse(GetCookieData);
+    let retrievedCookies: any;
+    try {
+      retrievedCookies = JSON.parse(GetCookieData);
+    } catch (e) {
+      console.error('Error parsing cookie:', e);
+      return;
+    }
     this.UserEmail = retrievedCookies.EmailId;
     this.CIFwebServiceNew.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
       next: (data: ApiResponse) => {
-        this.userDetails = data.item1[0]; // As per your snippet
-        this.resetForm.patchValue({
-          mobileNumber: this.userDetails.mobileNumber || '',
-          idProofType: this.userDetails.idProofType || ''
-        });
-
+        if (data?.item1 && data.item1.length > 0) {
+          this.userDetails = data.item1[0];
+          this.resetForm.patchValue({
+            mobileNumber: this.userDetails.mobileNumber || '',
+            idProofType: this.userDetails.idProofType || ''
+          });
+        }
         // Disable password fields until verified
         this.resetForm.get('newPassword')?.disable();
         this.resetForm.get('confirmNewPassword')?.disable();
@@ -102,7 +109,6 @@ export class SecurePasswordChangeComponent implements OnInit {
       error: (error) => {
         console.error('Failed to load user details:', error);
         this.errorMessage = 'Failed to load user details. Please log in again.';
-        // Optional: alert(this.errorMessage);
         this.router.navigate(['/Login']);
       }
     });

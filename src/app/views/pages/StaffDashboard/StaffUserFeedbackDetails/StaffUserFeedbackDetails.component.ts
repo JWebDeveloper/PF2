@@ -37,12 +37,17 @@ this.router.navigateByUrl(val, { skipLocationChange: true });;
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData cookie:', e);
+      }
+    }
     this.GetAllFeedbackData();
-
   }
   AllFeedbackData: any;
   GetAllFeedbackData(){

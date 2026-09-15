@@ -330,11 +330,17 @@ export class AdminAssignTestComponent implements OnInit {
           },
           error: async (err) => {
             swal.close();
+            let message = 'Download failed';
             if (err.error instanceof Blob) {
-              const errorMsg = JSON.parse(await err.error.text());
-              swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+              try {
+                const errorMsg = JSON.parse(await err.error.text());
+                message = errorMsg.message || message;
+              } catch {
+                message = 'Failed to download file from server';
+              }
+              swal.fire('Error', message, 'error');
             } else {
-              swal.fire('Error', 'Could not connect to the server', 'error');
+              swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
             }
           }
         });

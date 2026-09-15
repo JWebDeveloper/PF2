@@ -78,8 +78,12 @@ export class AdminUpdateInstrumentPrice implements OnInit {
     loadUserEmail(): void {
         const GetCookieData = this.cookieService.get('authData');
         if (GetCookieData) {
-            const retrievedCookies = JSON.parse(GetCookieData);
-            this.user_Email = retrievedCookies.EmailId;
+            try {
+                const retrievedCookies = JSON.parse(GetCookieData);
+                this.user_Email = retrievedCookies.EmailId;
+            } catch (e) {
+                console.error('Error parsing authData in AdminUpdateInstrumentPrice:', e);
+            }
         }
     }
 
@@ -230,8 +234,8 @@ export class AdminUpdateInstrumentPrice implements OnInit {
             updatePriceFormData.append('UserRole', vals.UserRoleS);
             this.CIFwebService.UpdatePrice(updatePriceFormData).subscribe({
                 next: (data: any) => {
-                    const result = data.item1[0]['msg'];
-                    const returnId = data.item1[0]['ReturnId'];
+                    const result = data?.item1?.[0]?.['msg'];
+                    const returnId = data?.item1?.[0]?.['ReturnId'];
 
                     if (result === 'Success' && returnId !== '0') {
                         swal.fire({

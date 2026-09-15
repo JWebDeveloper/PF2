@@ -48,11 +48,17 @@ export class FailedPaymentsComponent implements OnInit {
           },
           error: async (err) => {
             Swal.close();
+            let message = 'Download failed';
             if (err.error instanceof Blob) {
-              const errorMsg = JSON.parse(await err.error.text());
-              Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+              try {
+                const errorMsg = JSON.parse(await err.error.text());
+                message = errorMsg.message || message;
+              } catch {
+                message = 'Failed to download file from server';
+              }
+              Swal.fire('Error', message, 'error');
             } else {
-              Swal.fire('Error', 'Could not connect to the server', 'error');
+              Swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
             }
           }
         });
@@ -312,14 +318,20 @@ export class FailedPaymentsComponent implements OnInit {
   ngOnInit(): void {
 
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.UserId = this.userId = this.user_Email = retrievedCookies.EmailId;
-    this.MobileNo = retrievedCookies.MobileNo;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
-    this.UserRole = retrievedCookies.UserRole;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.UserId = this.userId = this.user_Email = retrievedCookies.EmailId;
+        this.MobileNo = retrievedCookies.MobileNo;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+        this.UserRole = retrievedCookies.UserRole;
+      } catch (e) {
+        console.error('Error parsing cookie in FailedPayments:', e);
+      }
+    }
 
     this.initializeForm();
     this.route.queryParamMap.subscribe((params) => {

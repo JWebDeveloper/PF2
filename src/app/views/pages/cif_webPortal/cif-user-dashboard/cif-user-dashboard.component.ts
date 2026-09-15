@@ -53,13 +53,20 @@ export class CifUserDashboardComponent implements OnInit {
     // this.departmentName = retrievedCookies[0].departmentName;
     // this.candidateName = retrievedCookies[0].candidateName;
     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in cif-user-dashboard:', e);
+      }
+    } else {
+      this.router.navigate(['/Home']);
+    }
 
   }
 

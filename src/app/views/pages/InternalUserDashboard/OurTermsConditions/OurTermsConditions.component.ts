@@ -60,16 +60,21 @@ export class OurTermsConditionsComponent implements OnInit {
 
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.CanidateName = retrievedCookies.CandidateName;
-    this.UserId = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.Department = retrievedCookies.DepartmentName;
-    this.Designation=retrievedCookies.Designation;
-    this.MobileN=retrievedCookies.MobileNo;
-    this.UserRole=retrievedCookies.UserRole;
-    this.SupervisorName=retrievedCookies.SupervisorName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.CanidateName = retrievedCookies.CandidateName;
+        this.UserId = retrievedCookies.UserId || retrievedCookies.EmailId;
+        this.user_Email = retrievedCookies.EmailId;
+        this.Department = retrievedCookies.DepartmentName;
+        this.Designation = retrievedCookies.Designation;
+        this.MobileN = retrievedCookies.MobileNo;
+        this.SupervisorName = retrievedCookies.SupervisorName;
+      } catch (e) {
+        console.error('Error parsing cookie in OurTermsConditions:', e);
+      }
+    }
   }
 
 }

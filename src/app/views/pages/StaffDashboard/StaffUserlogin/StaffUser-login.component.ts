@@ -210,8 +210,8 @@ export class StaffUserLoginComponent implements OnInit {
           return;
         }
 
-        const result = data.item1[0]['msg'];
-        const errorCode = data.item1[0]['returnId'];
+        const result = data?.item1?.[0]?.['msg'];
+        const errorCode = data?.item1?.[0]?.['returnId'];
 
         if (result === 'Success') {
           this.storeResult = 1;

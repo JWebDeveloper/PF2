@@ -115,10 +115,9 @@ export class RecoverAccountComponent implements OnInit {
         formData.append('Password', password);
         // formData.forEach((value, key) => {
         //   console.log(`${key}: ${value}`);
-        // });
         this.CIFwebServiceNew.CIFUpdateUserDetails(formData).subscribe({
           next: (data: any) => {
-            const result = data.item1[0]['msg'];
+            const result = data?.item1?.[0]?.['msg'] || data?.item1?.[0]?.['Msg'];
             if (result === 'Success') {
               swal.fire({
                 title: 'Details Updated Successfully!',

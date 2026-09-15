@@ -62,14 +62,25 @@ export class UserProfile implements OnInit {
   populateUserData() {
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
     if (!GetCookieData) {
-        this.LogoutUser();
-      // return;
+      this.LogoutUser();
+      return;
     }
-    const retrievedCookies = JSON.parse(GetCookieData);
+    let retrievedCookies: any;
+    try {
+      retrievedCookies = JSON.parse(GetCookieData);
+    } catch (e) {
+      console.error('Error parsing cookie:', e);
+      this.LogoutUser();
+      return;
+    }
 
     this.CIFwebServiceNew.CIFGetUserDetails(retrievedCookies.EmailId).subscribe({
       next: (data) => {
-        this.UserDetails = data.item1[0];
+        if (data?.item1 && data.item1.length > 0) {
+          this.UserDetails = data.item1[0];
+        } else {
+          this.UserDetails = {};
+        }
         // console.log('User  Details:', JSON.stringify( this.UserDetails));
 
         this.cifUserForm.patchValue({

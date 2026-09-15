@@ -398,8 +398,8 @@ export class ViewBookingAdminComponent implements OnInit {
     formData.append('File', this.FileData);
     this.CIFwebService.CIFResultsUploads(formData).subscribe({
         next: (data: any) => {
-            const result = data.item1[0]['msg']; // Adjusted to match your stored procedure
-            const returnId = data.item1[0]['ReturnId'];
+            const result = data?.item1?.[0]?.['msg']; // Adjusted to match your stored procedure
+            const returnId = data?.item1?.[0]?.['ReturnId'];
 
             if (result === 'Success' && returnId !== '0') {
                 Swal.fire({
@@ -509,11 +509,17 @@ export class ViewBookingAdminComponent implements OnInit {
             },
             error: async (err) => {
               swal.close();
+              let message = 'Download failed';
               if (err.error instanceof Blob) {
-                const errorMsg = JSON.parse(await err.error.text());
-                swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+                try {
+                  const errorMsg = JSON.parse(await err.error.text());
+                  message = errorMsg.message || message;
+                } catch {
+                  message = 'Failed to download file from server';
+                }
+                swal.fire('Error', message, 'error');
               } else {
-                swal.fire('Error', 'Could not connect to the server', 'error');
+                swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
               }
             }
           });

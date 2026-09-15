@@ -72,17 +72,23 @@ export class BookingStatusComponent implements OnInit {
   ngOnInit(): void {
     this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
     if (GetCookieData) {
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-      this.user_Email = retrievedCookies.EmailId;
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+      } catch (e) {
+        console.error('Error parsing session cookie:', e);
+        this.router.navigate(['/Home']);
+        return;
+      }
     } else {
        swal.fire({
         title: 'Login Failed ',
         icon: 'warning',
       });
       this.router.navigate(['/Home']);
+      return;
     }
 
     this.getBookingDetails()
@@ -125,6 +131,7 @@ export class BookingStatusComponent implements OnInit {
         }
         else {
           this.BookingStatusData = [];
+          this.tmpsBookingStatusData = [];
         }
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(1500 - elapsed, 0); // wait at least 5s
@@ -134,7 +141,8 @@ export class BookingStatusComponent implements OnInit {
         }, remainingDelay);
       },
       error: err => {
-        console.log(err)
+        console.log(err);
+        this.loadingIndicator = false;
       }
     });
   }

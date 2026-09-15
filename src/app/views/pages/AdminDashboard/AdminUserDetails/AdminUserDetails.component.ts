@@ -117,10 +117,14 @@ Modal: any;
   PageLoadDetails() {
     const GetCookieData = this.cookieService.get('authData');
     if (GetCookieData) {
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.UserRole;
-      this.user_Email = retrievedCookies.EmailId;
-      this.candidateName = retrievedCookies.CandidateName;
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in AdminUserDetails:', e);
+      }
     } else {
       swal.fire({
         title: 'Login Failed ',
@@ -312,8 +316,8 @@ Modal: any;
     formData.append('File', this.FileData);
     this.CIFwebService.CIFResultsUploads(formData).subscribe({
       next: (data: any) => {
-        const result = data.item1[0]['msg']; // Adjusted to match your stored procedure
-        const returnId = data.item1[0]['ReturnId'];
+        const result = data?.item1?.[0]?.['msg']; // Adjusted to match your stored procedure
+        const returnId = data?.item1?.[0]?.['ReturnId'];
 
         if (result === 'Success' && returnId !== '0') {
           Swal.fire({

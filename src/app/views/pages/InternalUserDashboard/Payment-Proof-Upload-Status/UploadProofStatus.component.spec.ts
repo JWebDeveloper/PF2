@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SampleStatusComponent } from './UploadProofStatus.component';
+import { UploadProofStatusComponent } from './UploadProofStatus.component';
 
-describe('SampleStatusComponent', () => {
-  let component: SampleStatusComponent;
-  let fixture: ComponentFixture<SampleStatusComponent>;
+describe('UploadProofStatusComponent', () => {
+  let component: UploadProofStatusComponent;
+  let fixture: ComponentFixture<UploadProofStatusComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SampleStatusComponent ]
+      declarations: [ UploadProofStatusComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SampleStatusComponent);
+    fixture = TestBed.createComponent(UploadProofStatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

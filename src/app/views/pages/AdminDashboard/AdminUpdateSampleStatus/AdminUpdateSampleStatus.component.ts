@@ -68,10 +68,15 @@ export class AdminUpdateSampleStatusComponent implements OnInit {
       this.handleUnauthorized();
       return;
     }
-    const parsed = JSON.parse(cookieData);
-    this.UserRole = parsed.UserRole;
-    this.user_Email = parsed.EmailId;
-    this.candidateName = parsed.CandidateName;
+    try {
+      const parsed = JSON.parse(cookieData);
+      this.UserRole = parsed.UserRole;
+      this.user_Email = parsed.EmailId;
+      this.candidateName = parsed.CandidateName;
+    } catch (e) {
+      console.error('Error parsing authData in AdminUpdateSampleStatus:', e);
+      this.handleUnauthorized();
+    }
   }
 
   private handleUnauthorized(): void {

@@ -11,6 +11,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { LpuCIFWebServiceNewService } from 'src/app/_services/lpu-cifweb-new-way.service';
 
@@ -45,7 +46,7 @@ export class AdminActionCifEvents implements OnInit {
   BookingCase: any;
   InstrumentData: any[] = [];
   currentPage = 1;
-  itemsPerPage = 10; // 
+  itemsPerPage = 10; //
   tmpsInstrumentData: any[] = [];
   InstrumentId: any;
   UserRole: any;
@@ -59,7 +60,8 @@ export class AdminActionCifEvents implements OnInit {
     private CIFwebService: LpuCIFWebService,private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private modalService: NgbModal, private fb: FormBuilder,
     private AuthSession: LoginSessionService,
-    private cookieService: CookieService) { }
+    private cookieService: CookieService,
+    private router: Router) { }
   user_Email: any;
   sessionData: any[] = [];
   getSessionDetails() {
@@ -70,18 +72,30 @@ export class AdminActionCifEvents implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in AdminActionCifEvents:', e);
+      }
+    } else {
+      swal.fire({
+        title: 'Login Failed ',
+        icon: 'warning',
+      });
+      this.router.navigate(['/Home']);
+    }
 
     this.GetAllEventDetails();
     this.LoadNewForm();
   }
 
-  searchQuery: string = '';  
+  searchQuery: string = '';
 
   get filteredInstrumentData(): any[] {
     // If search query is empty, return all data
@@ -307,29 +321,29 @@ export class AdminActionCifEvents implements OnInit {
 
   updateEvent() {
     this.isForm1Submitted = true;
-  
+
     if (this.CIFEventRegistration.invalid || !this.isImageValid) {
       return;
     }
-  
+
     this.isLoading = true;
-  
+
     const formValue = this.CIFEventRegistration.value;
     const formData = new FormData();
-  
+
     formData.append('EventId', this.editEvent.eventId);
     formData.append('EventName', formValue.EventName);
     formData.append('EventDate', formValue.EventDate);
     formData.append('EventDetails', formValue.EventDetails || '');
     formData.append('CreatedBy', this.user_Email);
-  
+
     if (this.selectedFile) {
       formData.append("ImageUrl", this.ConsentLetterFileName);
       formData.append("ImageUrlData", this.ConsentLetterData);
     } else if (this.editEvent.imageUrl) {
       formData.append('ExistingImageUrl', this.editEvent.imageUrl);
     }
-  
+
     this.CIFwebService.CIFUpdateEventsDetails(formData).subscribe({
       next: (res: any) => {
         this.isLoading = false;
@@ -345,7 +359,7 @@ export class AdminActionCifEvents implements OnInit {
       }
     });
   }
-  
+
 
   CIFEventRegistration!: FormGroup; isForm1Submitted: boolean = false; isSubmitted = false;
   isLoading: boolean = false;
@@ -366,7 +380,7 @@ export class AdminActionCifEvents implements OnInit {
     // Valid if either a new file is selected or existing image URL is present
     return !!this.selectedFile || !!this.editEvent?.imageUrl;
   }
-  
+
   // get isImageValid(): boolean {
   //   // If editing and existing image present, valid
   //   if (this.editEvent?.imageUrl) {
@@ -382,7 +396,7 @@ export class AdminActionCifEvents implements OnInit {
     const reader = new FileReader();
     const target = event.target as HTMLInputElement;
     const file: File | null = (target.files as FileList)[0] || null;
-  
+
     if (file && file.size > 3148576) {
       Swal.fire({
         title: 'File size exceeds 3MB. Please upload a smaller file.',
@@ -394,7 +408,7 @@ export class AdminActionCifEvents implements OnInit {
       this.CIFEventRegistration.patchValue({ ImageUrl: '' });
       return;
     }
-  
+
     const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
     if (file && !fileNameRegex.test(file.name)) {
       const validFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -402,10 +416,10 @@ export class AdminActionCifEvents implements OnInit {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
-  
+
       this.selectedFile = modifiedFile;
       this.ConsentLetterFileName = validFileName;
-  
+
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
@@ -424,12 +438,12 @@ export class AdminActionCifEvents implements OnInit {
         };
       }
     }
-  
+
     // Patch form control to trigger validation update
     this.CIFEventRegistration.patchValue({ ImageUrl: this.ConsentLetterFileName });
     this.CIFEventRegistration.get('ImageUrl')?.markAsTouched();
   }
-  
+
 
   Onsubmit(): void {
     this.isForm1Submitted = true;

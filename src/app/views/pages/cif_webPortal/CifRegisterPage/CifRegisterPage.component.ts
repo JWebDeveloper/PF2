@@ -126,8 +126,8 @@ OnReset(): void {
             return;
           }
 
-          let result = data.item1[0]['msg'];
-          let errorCode = data.item1[0]['returnId'];
+          let result = data?.item1?.[0]?.['msg'] || '';
+          let errorCode = data?.item1?.[0]?.['returnId'];
 
           if (result === 'Success') {
             swal.fire({
@@ -139,7 +139,7 @@ OnReset(): void {
             swal.fire({ title: 'User Already Exists', icon: 'error' })
               .then(() => window.location.reload());
           } else {
-            swal.fire({ title: 'Some Technical Issue', text: result, icon: 'error' })
+            swal.fire({ title: 'Some Technical Issue', text: result || 'Failed to create user', icon: 'error' })
               .then(() => window.location.reload());
           }
         },

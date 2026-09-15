@@ -106,10 +106,10 @@ GetAllEventDetails(): Promise<void> {
       error: (err) => {
         this.loadingIndicator = false;
         this.serverError = true;
-        this.errorMessage = 'Error';
+        this.errorMessage = 'Unable to load event details. Please try again later.';
         this.events = [];
         this.chunkedEventsC = [];
-        reject(err);
+        resolve();
       }
     });
   });

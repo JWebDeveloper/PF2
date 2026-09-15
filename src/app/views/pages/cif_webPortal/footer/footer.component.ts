@@ -31,26 +31,36 @@ export class FooterComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
   //  this.loadFooterWithCorsWorkaround(environment.footerUrl, 0);
-   this.loadFooter();
+  //  this.loadFooter();
   }
 
   loadFooter() {
-    this.CIFwebServiceNew.getLpuFooter().subscribe(res => {
-    // this.CIFwebService.getLpuFooter().subscribe(res => {
+    this.CIFwebServiceNew.getLpuFooter().subscribe({
+      next: (res) => {
+        if (!res) return;
+        // load css
+        if (Array.isArray(res.css)) {
+          res.css.forEach((css: string) => this.assetLoader.loadCss(css));
+        }
 
-      // load css
-      res.css.forEach((css: string) => this.assetLoader.loadCss(css));
+        // load js
+        if (Array.isArray(res.js)) {
+          res.js.forEach((js: string) => this.assetLoader.loadJs(js));
+        }
 
-      // load js
-      res.js.forEach((js: string) => this.assetLoader.loadJs(js));
+        // inject html
+        if (this.footerDiv?.nativeElement && res.html) {
+          this.footerDiv.nativeElement.innerHTML = res.html;
+        }
 
-      // inject html
-      this.footerDiv.nativeElement.innerHTML = res.html;
-
-      // execute inline events after load
-      setTimeout(() => {
-        this.rebindScripts();
-      }, 1500);
+        // execute inline events after load
+        setTimeout(() => {
+          this.rebindScripts();
+        }, 1500);
+      },
+      error: (err) => {
+        console.warn('LPU Footer service unavailable:', err?.message || err);
+      }
     });
   }
 

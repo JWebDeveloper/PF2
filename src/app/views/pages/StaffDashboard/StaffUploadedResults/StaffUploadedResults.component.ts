@@ -37,11 +37,17 @@ export class StaffUploadedResultsComponent implements OnInit {
   ngOnInit(): void {
     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.EmailId;
-    this.EmployeeCode = retrievedCookies.UserId;
-    this.getUploadedResultsDetails(this.EmployeeCode);
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.EmailId;
+        this.EmployeeCode = retrievedCookies.UserId;
+        this.getUploadedResultsDetails(this.EmployeeCode);
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData cookie:', e);
+      }
+    }
   }
 
   search(): void {
@@ -207,11 +213,17 @@ getTotalRecords():number {
             },
             error: async (err) => {
               Swal.close();
+              let message = 'Download failed';
               if (err.error instanceof Blob) {
-                const errorMsg = JSON.parse(await err.error.text());
-                Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+                try {
+                  const errorMsg = JSON.parse(await err.error.text());
+                  message = errorMsg.message || message;
+                } catch {
+                  message = 'Failed to download file from server';
+                }
+                Swal.fire('Error', message, 'error');
               } else {
-                Swal.fire('Error', 'Could not connect to the server', 'error');
+                Swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
               }
             }
           });

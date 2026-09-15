@@ -81,10 +81,16 @@ export class SearchBookingsComponent implements OnInit {
     ngOnInit(): void {
       this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
       const GetCookieData = this.cookieService.get('InternalUserAuthData');
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.UserRole;
-      this.UserId = retrievedCookies.EmailId;
-      this.getBookingDetails()
+      if (GetCookieData) {
+        try {
+          const retrievedCookies = JSON.parse(GetCookieData);
+          this.UserRole = retrievedCookies.UserRole;
+          this.UserId = retrievedCookies.EmailId;
+          this.getBookingDetails();
+        } catch (e) {
+          console.error('Error parsing cookie in search-bookings:', e);
+        }
+      }
     }
   
     searchQuery: string = ''; // Property to store the search query

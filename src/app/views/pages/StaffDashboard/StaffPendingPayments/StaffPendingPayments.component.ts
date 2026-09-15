@@ -71,10 +71,16 @@ export class StaffPendingPaymentsComponent implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.getAllPaymentDetails()
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData cookie:', e);
+      }
+    }
+    this.getAllPaymentDetails();
   }
 
   searchQuery: string = ''; // Property to store the search query

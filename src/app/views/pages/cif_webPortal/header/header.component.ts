@@ -35,22 +35,35 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
 ngOnInit() {
     //this.loadHeaderWithCorsWorkaround(environment.headerUrl, 0);
-    this.loadHeader();
+    // this.loadHeader();
   }
   loadHeader() {
-    this.CIFwebServiceNew.getLpuHeader().subscribe(async (res) => {
-      res.css.forEach((css: string) => this.assetLoader.loadCss(css));
+    this.CIFwebServiceNew.getLpuHeader().subscribe({
+      next: async (res) => {
+        if (!res) return;
+        if (Array.isArray(res.css)) {
+          res.css.forEach((css: string) => this.assetLoader.loadCss(css));
+        }
+        if (Array.isArray(res.js)) {
+          res.js.forEach((js: string) => this.assetLoader.loadJs(js));
+        }
 
-      res.js.forEach((js: string) => this.assetLoader.loadJs(js));
+        // inject html
+        if (this.headerDiv?.nativeElement && res.html) {
+          this.headerDiv.nativeElement.innerHTML = res.html;
+        }
 
-      // inject html
-      this.headerDiv.nativeElement.innerHTML = res.html;
-     
-      // execute inline events after load
-      setTimeout(() => {
-      this.executeSafeInlineScripts(res.inlineScripts);
-     this.initializeAnnouncementBar();
-      }, 1500);
+        // execute inline events after load
+        setTimeout(() => {
+          if (res.inlineScripts) {
+            this.executeSafeInlineScripts(res.inlineScripts);
+          }
+          this.initializeAnnouncementBar();
+        }, 1500);
+      },
+      error: (err) => {
+        console.warn('LPU Header service unavailable:', err?.message || err);
+      }
     });
   }
 

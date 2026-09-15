@@ -29,5 +29,9 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": [
+    "src/app/_model/cif-analysis.module.ts",
+    "src/app/views/pages/NotUsedComponent-ChangedtoInternalUserDashboard/**/*"
+  ]
 }

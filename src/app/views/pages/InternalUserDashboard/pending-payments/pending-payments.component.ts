@@ -77,15 +77,21 @@ export class PendingPaymentsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-   const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.UserId = retrievedCookies.Id;
-    this.user_Email = retrievedCookies.EmailId;
-    this.MobileNo = retrievedCookies.MobileNo;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.UserId = retrievedCookies.Id;
+        this.user_Email = retrievedCookies.EmailId;
+        this.MobileNo = retrievedCookies.MobileNo;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing cookie in pending-payments:', e);
+      }
+    }
      
     this.route.queryParamMap.subscribe((params) => {
       const queryParamLength = params.keys.length;

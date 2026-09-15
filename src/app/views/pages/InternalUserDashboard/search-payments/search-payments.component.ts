@@ -71,19 +71,24 @@ export class SearchPaymentsComponent implements OnInit {
 
     this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole =
-      retrievedCookies.userRole?.length > 0
-        ? retrievedCookies.userRole
-        : 'Internal User';
-    // this.UserId = retrievedCookies.Id;
-    this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
-    this.MobileNo = retrievedCookies.MobileNo;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole =
+          retrievedCookies.userRole?.length > 0
+            ? retrievedCookies.userRole
+            : 'Internal User';
+        this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
+        this.MobileNo = retrievedCookies.MobileNo;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing cookie in search-payments:', e);
+      }
+    }
 
-    this.getBookingDetails()
+    this.getBookingDetails();
   }
 
   searchQuery: string = ''; // Property to store the search query

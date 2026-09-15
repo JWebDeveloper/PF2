@@ -74,26 +74,31 @@ export class StaffUpdateSampleStatusComponent implements OnInit {
       this.user_Email = session[0]['userEmail']
     }
   }
-  disabledStatusSet: Set<string>;
+  disabledStatusSet: Set<string> = new Set();
+  AllStatusData: any[] = [];
+
   ngOnInit(): void {
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';  serverUrl: string = 'https://files.lpu.in/umsweb/CIFDocuments/';
+    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
     const GetCookieData = this.cookieService.get('StaffUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
- 
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing StaffUserAuthData cookie:', e);
+      }
+    }
+
     this.getAllBookigsDetails();
     this.GetAllSampleStatus();
-    this.disabledStatusSet = new Set(
-      this.AllStatusData.map((status: { instrumentId: any; bookingId: any; }) => `${status.instrumentId}-${status.bookingId}`)
-    );
   }
 // Utility function to check if booking exists in status data
 isStatusDisabled(bookingId: string, instrumentId: string): boolean {
   return this.AllStatusData.some(
-    (    status: { bookingId: any; instrumentId: any; }) => 
-      String(status.bookingId) === String(bookingId) && 
+    (    status: { bookingId: any; instrumentId: any; }) =>
+      String(status.bookingId) === String(bookingId) &&
       String(status.instrumentId) === String(instrumentId)
   );
 }
@@ -119,7 +124,7 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
     });
   }
   getAllBookigsDetails() {
-    this.loadingIndicator = true; 
+    this.loadingIndicator = true;
     const startTime = new Date().getTime();
     this.CIFwebService.GetAllBookingTests().subscribe({
       next: response => {
@@ -130,7 +135,7 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
           this.headHtmlData = this.tmpsAllBookingTestsData[0];
           this.columns = Object.keys(this.tmpsAllBookingTestsData[0]);
           this.columns.push()
-          
+
         }
         else {
           this.AllBookingTestsData = [];
@@ -231,7 +236,7 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
     formData.append('ReceivedByUID', this.user_Email);
     formData.append('SampleCondition', this.AssignedTo);
     formData.append('ReceivedOn', this.ReceivedDate);
-  
+
     this.CIFwebService.NewSAmpleStatus(formData).subscribe({
       next: (response: any) => {
         const isValidResponse = response && Array.isArray(response.item1) && response.item1.length > 0;
@@ -239,7 +244,7 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
           this.showAlert('Something went wrong', 'Unexpected server response. Please try again.', 'error', true);
           return;
         }
-  
+
         const message = response.item1[0]?.msg;
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(1500 - elapsed, 0); // wait at least 5s
@@ -251,16 +256,16 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
           case 'Success':
             this.showAlert('Sample Status Updated!', '', 'success', true);
             break;
-  
+
           case 'Failed':
             this.showAlert('Test is already assigned', 'You cannot assign it again.', 'warning', true);
             break;
-  
+
           default:
             this.showAlert('Status already updated', 'No further action is required.', 'info', true);
             break;
         }
-        
+
       },
       error: (err: any) => {
         console.error('VerifyData API Error:', err);
@@ -268,7 +273,7 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
       }
     });
   }
-  
+
   /**
    * Utility method to show SweetAlert messages.
    * @param title Alert title
@@ -291,44 +296,53 @@ isStatusDisabled(bookingId: string, instrumentId: string): boolean {
 
    onDownloadFile(remoteUrl: string): void {
           swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
-      
+
           this.CIFwebService.downloadFile(remoteUrl).subscribe({
             next: (blob: Blob) => {
               const downloadUrl = window.URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = downloadUrl;
-      
+
               const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
               link.download = fileName;
-      
+
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
               window.URL.revokeObjectURL(downloadUrl);
-      
+
               swal.close();
             },
             error: async (err) => {
               swal.close();
+              let message = 'Download failed';
               if (err.error instanceof Blob) {
-                const errorMsg = JSON.parse(await err.error.text());
-                swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+                try {
+                  const errorMsg = JSON.parse(await err.error.text());
+                  message = errorMsg.message || message;
+                } catch {
+                  message = 'Failed to download file from server';
+                }
+                swal.fire('Error', message, 'error');
               } else {
-                swal.fire('Error', 'Could not connect to the server', 'error');
+                swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
               }
             }
           });
         }
-  AllStatusData: any;
+  // AllStatusData: any;
   GetAllSampleStatus(){
     this.CIFwebService.GetAllSampleStatus().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.AllStatusData = response.item1;
-          // console.log(JSON.stringify(this.AllStatusData))
+          this.disabledStatusSet = new Set(
+            this.AllStatusData.map((status: { instrumentId: any; bookingId: any; }) => `${status.instrumentId}-${status.bookingId}`)
+          );
         }
         else {
           this.AllStatusData = [];
+          this.disabledStatusSet = new Set();
         }
       },
       error: err => {

@@ -58,13 +58,13 @@ export class UserFeedbackFormComponent implements OnInit {
     formData.append("Suggestions", this.Suggestions);
     this.CIFwebService.NewCifFeedback(formData).subscribe({
       next: (data) => {
-        let result = data.item1[0]['msg'];
-        let errorCode = data.item1[0]['returnId'];
+        let result = data?.item1?.[0]?.['msg'] || '';
+        let errorCode = data?.item1?.[0]?.['returnId'];
   
         if (result === 'Success') {
           swal.fire({
             title: 'Feedback Stored Successfully',
-            text: data.item1[0]['msg'],
+            text: result,
             icon: 'success',
           }).then(() => {
             window.location.reload();
@@ -103,14 +103,19 @@ export class UserFeedbackFormComponent implements OnInit {
   }
   ngOnInit() {
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.UserRole;
-    this.UserId = retrievedCookies.UserRole;
-    this.user_Email = retrievedCookies.EmailId;
-    this.candidateName = retrievedCookies.CandidateName;
-    this.MobileNo = retrievedCookies.MobileNo;
-    // console.log(retrievedCookies);
-      this.loadingIndicator = true;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.UserRole;
+        this.UserId = retrievedCookies.UserId || retrievedCookies.EmailId;
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+        this.MobileNo = retrievedCookies.MobileNo;
+      } catch (e) {
+        console.error('Error parsing InternalUserAuthData cookie:', e);
+      }
+    }
+    this.loadingIndicator = true;
     const startTime = new Date().getTime();
     this.loadForm();
 

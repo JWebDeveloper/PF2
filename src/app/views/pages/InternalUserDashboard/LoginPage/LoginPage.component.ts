@@ -239,7 +239,7 @@ export class LoginPageNComponent implements OnInit {
     this.CIFwebService.GetInternalUserDetails(UserId).subscribe({
     // this.mouDocumentsService.GetEmployeeDetails().subscribe({
       next: response => {
-        if (response.item1.length > 0) {
+        if (response?.item1 && response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.CandidateName = this.EmployeeName = response.item1[0].employeeName;
           this.UserId = this.EmployeeCode = response.item1[0].employeeCode;
@@ -373,8 +373,8 @@ export class LoginPageNComponent implements OnInit {
             return;
           }
 
-          let result = data.item1[0]['msg'];
-          let errorCode = data.item1[0]['returnId'];
+          let result = data?.item1?.[0]?.['msg'];
+          let errorCode = data?.item1?.[0]?.['returnId'];
 
           if (result === 'Success') {
             this.storeResult = 1;

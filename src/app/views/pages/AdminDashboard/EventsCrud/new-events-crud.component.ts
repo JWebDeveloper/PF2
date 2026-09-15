@@ -85,12 +85,18 @@ export class newEventsCrudComponent implements OnInit {
   const GetCookieData = this.cookieService.get('authData');
 
         if (GetCookieData) {
-            const retrievedCookies = JSON.parse(GetCookieData);
-            this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-            this.user_Email = retrievedCookies.EmailId;
-            this.supervisorName = retrievedCookies.SupervisorName;
-            this.departmentName = retrievedCookies.DepartmentName;
-            this.candidateName = retrievedCookies.CandidateName;
+            try {
+                const retrievedCookies = JSON.parse(GetCookieData);
+                this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+                this.user_Email = retrievedCookies.EmailId;
+                this.supervisorName = retrievedCookies.SupervisorName;
+                this.departmentName = retrievedCookies.DepartmentName;
+                this.candidateName = retrievedCookies.CandidateName;
+            } catch (e) {
+                console.error('Error parsing authData in new-events-crud:', e);
+                swal.fire({ title: 'Login Failed', icon: 'warning' });
+                this.router.navigate(['Home']);
+            }
         } else {
             swal.fire({ title: 'Login Failed', icon: 'warning' });
             this.router.navigate(['Home']);

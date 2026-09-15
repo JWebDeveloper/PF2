@@ -79,11 +79,20 @@ export class BookingResultsComponent implements OnInit {
   LoadPageDetails(){
      this.ServerUrl ='https://files.lpu.in/umsweb/CIFDocuments/';
     const GetCookieData = this.cookieService.get('InternalUserAuthData');
-   if (GetCookieData) {
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-      this.user_Email = retrievedCookies.EmailId;
-      this.candidateName = retrievedCookies.CandidateName;
+    if (GetCookieData) {
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing InternalUserAuthData in booking-results:', e);
+        swal.fire({
+          title: 'Login Failed ',
+          icon: 'warning',
+        });
+        this.router.navigate(['/Home']);
+      }
     } else {
        swal.fire({
         title: 'Login Failed ',
@@ -133,6 +142,7 @@ export class BookingResultsComponent implements OnInit {
         }
         else {
           this.BookingData = [];
+          this.tmpsBookingData = [];
         }
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(1500 - elapsed, 0); // wait at least 5s
@@ -142,7 +152,8 @@ export class BookingResultsComponent implements OnInit {
         }, remainingDelay);
       },
       error: err => {
-        console.log(err)
+        console.log(err);
+        this.loadingIndicator = false;
       }
     });
   }
@@ -249,7 +260,8 @@ export class BookingResultsComponent implements OnInit {
         }, remainingDelay);
       },
       error: err => {
-        console.log(err)
+        console.log(err);
+        this.loadingIndicator = false;
       }
     });
 

@@ -40,9 +40,6 @@ export class FixedHomePageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.cookieService.delete('InternalUserAuthData');
-    this.cookieService.deleteAll('/');
-    this.AuthSession.clearSession();
     this.getAllInstruments();
   }
 

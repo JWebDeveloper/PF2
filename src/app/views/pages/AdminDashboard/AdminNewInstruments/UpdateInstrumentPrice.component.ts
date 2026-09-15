@@ -99,20 +99,17 @@ export class UpdateInstrumentPriceComponent implements OnInit {
   }
   ngOnInit(): void {
     const GetCookieData = this.cookieService.get('authData');
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = retrievedCookies.EmailId;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
-
     if (GetCookieData) {
-      const retrievedCookies = JSON.parse(GetCookieData);
-      this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-      this.user_Email = retrievedCookies.EmailId;
-      this.supervisorName = retrievedCookies.SupervisorName;
-      this.departmentName = retrievedCookies.DepartmentName;
-      this.candidateName = retrievedCookies.CandidateName;
+      try {
+        const retrievedCookies = JSON.parse(GetCookieData);
+        this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
+        this.user_Email = retrievedCookies.EmailId;
+        this.supervisorName = retrievedCookies.SupervisorName;
+        this.departmentName = retrievedCookies.DepartmentName;
+        this.candidateName = retrievedCookies.CandidateName;
+      } catch (e) {
+        console.error('Error parsing authData in UpdateInstrumentPrice:', e);
+      }
     } else {
        swal.fire({
         title: 'Login Failed ',
@@ -394,7 +391,7 @@ export class UpdateInstrumentPriceComponent implements OnInit {
 
       this.CIFwebService.CIFInstrumentUpdateDetails(formData).subscribe({
         next: (data: any) => {
-          const result = data.item1[0]['msg'];
+          const result = data?.item1?.[0]?.['msg'];
           if (result === 'ok') {
             swal.fire({
               title: 'Uploaded Successfully',
