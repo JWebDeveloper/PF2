@@ -7,7 +7,8 @@ import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { StaffMenuModule } from '../StaffMenu/StaffMenu.module';
-import { HomePageTopBarModule } from "../../cif_webPortal/HomePage/HomePageTopBar/HomePageTopBar.module"; 
+import { HomePageTopBarModule } from "../../cif_webPortal/HomePage/HomePageTopBar/HomePageTopBar.module";
+import { UpcomingEventsModule } from "../../cif_webPortal/UpcomingEvents/UpcomingEvents.module"; 
 const routes: Routes = [
   {
     path: '',
@@ -29,7 +30,8 @@ const routes: Routes = [
     PerfectScrollbarModule,
     NgSelectModule,
     StaffMenuModule,
-    HomePageTopBarModule
+    HomePageTopBarModule,
+    UpcomingEventsModule
 ]
 })
 export class StaffUserLoginModule {}

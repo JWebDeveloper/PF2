@@ -16,6 +16,7 @@ import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 // Ng-select
 import { NgSelectModule } from '@ng-select/ng-select';
+import { UpcomingEventsModule } from "../UpcomingEvents/UpcomingEvents.module";
 // import { ATopHeaderModule } from '../atop-header/atop-header.module';
 
 const routes: Routes = [
@@ -44,7 +45,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModule,
     ReactiveFormsModule,
     NgSelectModule,
-  ],
+    UpcomingEventsModule
+],
   providers: [
     NgbRatingConfig,
     {

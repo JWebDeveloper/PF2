@@ -8,6 +8,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ArchwizardModule } from 'angular-archwizard';
 import { HomePageTopBarModule } from '../../cif_webPortal/HomePage/HomePageTopBar/HomePageTopBar.module';
+import { UpcomingEventsModule } from "../../cif_webPortal/UpcomingEvents/UpcomingEvents.module";
 
 const routes: Routes = [
   {
@@ -26,7 +27,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     PerfectScrollbarModule,
     NgbModule,
-    HomePageTopBarModule
-  ],
+    HomePageTopBarModule,
+    UpcomingEventsModule
+],
 })
 export class LoginPageNComponentModule { }

@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
 ngOnInit() {
     //this.loadHeaderWithCorsWorkaround(environment.headerUrl, 0);
-    // this.loadHeader();
+    this.loadHeader();
   }
   loadHeader() {
     this.CIFwebServiceNew.getLpuHeader().subscribe({

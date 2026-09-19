@@ -6,8 +6,8 @@ import { StorageService } from './storage.service';
 import { EventModel } from '../_model/Event.model';
 
 // const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API = 'https://webapi.lpu.in/cif/';
-// const AUTH_API = 'https://localhost:7125/';
+// const AUTH_API = 'https://webapi.lpu.in/cif/';
+const AUTH_API = 'https://localhost:44362/';
 
 @Injectable({
   providedIn: 'root'

@@ -18,6 +18,7 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 // Ng-select
 import { CifMenuBarModule } from '../cif-menu-bar/cif-menu-bar.module';
 import { HomePageTopBarModule } from '../../cif_webPortal/HomePage/HomePageTopBar/HomePageTopBar.module';
+import { UpcomingEventsModule } from "../../cif_webPortal/UpcomingEvents/UpcomingEvents.module";
 
 const routes: Routes = [
   {
@@ -37,8 +38,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModule,
     ReactiveFormsModule,
     CifMenuBarModule,
-    HomePageTopBarModule
-  ],
+    HomePageTopBarModule,
+    UpcomingEventsModule
+],
   providers: [
     NgbRatingConfig,
     {

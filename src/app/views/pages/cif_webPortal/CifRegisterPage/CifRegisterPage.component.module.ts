@@ -11,6 +11,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { ArchwizardModule } from 'angular-archwizard';
 import { HomePageModule } from '../HomePage/HomePage.module';
 import { HomePageTopBarModule } from '../HomePage/HomePageTopBar/HomePageTopBar.module';
+import { UpcomingEventsModule } from "../UpcomingEvents/UpcomingEvents.module";
  
 const routes: Routes = [
   {
@@ -30,8 +31,9 @@ const routes: Routes = [
     PerfectScrollbarModule,
     NgbModule,
     HomePageTopBarModule,
-    NgbCarouselModule
-  ],
+    NgbCarouselModule,
+    UpcomingEventsModule
+],
 })
  
 export class CifRegisterPageModule { }

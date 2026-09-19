@@ -31,7 +31,7 @@ export class FooterComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
   //  this.loadFooterWithCorsWorkaround(environment.footerUrl, 0);
-  //  this.loadFooter();
+   this.loadFooter();
   }
 
   loadFooter() {
