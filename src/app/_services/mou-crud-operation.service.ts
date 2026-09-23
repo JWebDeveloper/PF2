@@ -80,10 +80,10 @@ export class MOUCrudOperation {
   private readonly storageService = inject(StorageService);
 
   // private readonly baseUrl = 'https://localhost:7125/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
-  // private readonly baseUrl = 'https://webapi.lpu.in/cif/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
+  private readonly baseUrl = 'https://webapi.lpu.in/cif/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
 
 
- private readonly baseUrl =  'https://localhost:44362/api/LpuCIF';
+//  private readonly baseUrl =  'https://localhost:44362/api/LpuCIF';
 // const AUTH_API_LOCAL = 'https://localhost:44362/';//'https://localhost:44362/';
 // const AUTH_API_LOCALS = 'https://localhost:44362/';//'https://localhost:7135/';
 

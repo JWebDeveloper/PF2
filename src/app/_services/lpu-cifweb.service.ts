@@ -6,12 +6,12 @@ import { StorageService } from './storage.service';
 import { EventModel } from '../_model/Event.model';
 
 
-// const AUTH_API =  'https://webapi.lpu.in/cif/';
-// const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';
-// const AUTH_API_LOCALS = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';
-const AUTH_API =  'https://localhost:44362/';
-const AUTH_API_LOCAL = 'https://localhost:44362/';//'https://localhost:44362/';
-const AUTH_API_LOCALS = 'https://localhost:44362/';//'https://localhost:7135/';
+const AUTH_API =  'https://webapi.lpu.in/cif/';
+const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';
+const AUTH_API_LOCALS = 'https://webapi.lpu.in/cif/';//'https://localhost:7135/';
+// const AUTH_API =  'https://localhost:44362/';
+// const AUTH_API_LOCAL = 'https://localhost:44362/';//'https://localhost:44362/';
+// const AUTH_API_LOCALS = 'https://localhost:44362/';//'https://localhost:7135/';
 
 @Injectable({
   providedIn: 'root'
