@@ -1,24 +1,22 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgForOf } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FailedPaymentsComponent } from './FailedPayments.component';
 import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CifMenuBarModule } from '../cif-menu-bar/cif-menu-bar.module'; 
+import { CifMenuBarModule } from '../cif-menu-bar/cif-menu-bar.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: FailedPaymentsComponent  
-  }
+    component: FailedPaymentsComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [
-    FailedPaymentsComponent  
-  ],
+  declarations: [FailedPaymentsComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes), // Set up child routes
@@ -28,7 +26,7 @@ const routes: Routes = [
     NgbModule,
     PerfectScrollbarModule,
     NgSelectModule,
-    CifMenuBarModule // Include the menu bar module
-  ]
+    CifMenuBarModule, // Include the menu bar module
+  ],
 })
 export class FailedPaymentsModule {}

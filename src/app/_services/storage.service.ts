@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 const USER_KEY = 'auth-user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
   constructor() {}
@@ -24,9 +24,8 @@ export class StorageService {
     return {};
   }
 
-
   public isLoggedIn(): boolean {
-    const loginId= localStorage.getItem(USER_KEY);
+    const loginId = localStorage.getItem(USER_KEY);
     const user = window.sessionStorage.getItem(USER_KEY);
     if (loginId) {
       return true;
@@ -36,25 +35,25 @@ export class StorageService {
   }
 }
 
-  // public saveUser(user: any): void {
-  // this.clean();
-  // localStorage.setItem(USER_KEY, user)
-  //  window.sessionStorage.removeItem(USER_KEY);
-  //  window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-  // }
+// public saveUser(user: any): void {
+// this.clean();
+// localStorage.setItem(USER_KEY, user)
+//  window.sessionStorage.removeItem(USER_KEY);
+//  window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+// }
 
-  // public getUser(): any {
-  //   // return localStorage.getItem(USER_KEY);
-  //   const user = localStorage.getItem(USER_KEY); //window.sessionStorage.getItem(USER_KEY);
-  //   if (user) {
-  //     return user;
-  //   }
-  //   else
-  //   {
-  //     this.clean();
-  //     return null;
-  //   }
-  // }
+// public getUser(): any {
+//   // return localStorage.getItem(USER_KEY);
+//   const user = localStorage.getItem(USER_KEY); //window.sessionStorage.getItem(USER_KEY);
+//   if (user) {
+//     return user;
+//   }
+//   else
+//   {
+//     this.clean();
+//     return null;
+//   }
+// }
 // import { Injectable } from '@angular/core';
 
 // const USER_KEY = 'auth-user';

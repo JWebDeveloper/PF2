@@ -1,0 +1,3 @@
+D:\Projects\CIF-New\obj\Debug\net9.0\CIFWebAPI.dll
+D:\Projects\CIF-New\obj\Debug\net9.0\refint\CIFWebAPI.dll
+D:\Projects\CIF-New\obj\Debug\net9.0\CIFWebAPI.pdb

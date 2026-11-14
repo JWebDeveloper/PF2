@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const AUTH_API = 'https://webapi.lpu.in/cif/';
-const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';
+// const AUTH_API = 'https://webapi.lpu.in/cif/';
+// const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';
 
-
-// const AUTH_API =  'https://localhost:44362/';
-// const AUTH_API_LOCAL = 'https://localhost:44362/';//'https://localhost:44362/';
-// const AUTH_API_LOCALS = 'https://localhost:44362/';//'https://localhost:7135/';
-
+const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
 };
 
 @Injectable({
@@ -25,37 +23,35 @@ export class AuthService {
     return this.http.post(
       AUTH_API_LOCAL + 'security/createCifPortalToken',
       {
-        username
+        username,
       },
-      httpOptions
+      httpOptions,
     );
   }
 
-
-  loginTemp(username: string,menuName:string=''): Observable<any> {
-
+  loginTemp(username: string, menuName: string = ''): Observable<any> {
     const checkData = {
-      UserName:username,
-      MenuName:menuName
-     }
+      UserName: username,
+      MenuName: menuName,
+    };
 
     return this.http.post(
       // AUTH_API + 'security/createcommonToken',
       AUTH_API + 'security/createcommonToken',
       checkData,
-      httpOptions
+      httpOptions,
     );
   }
-  
+
   loginInternalUser(userId: string, key: string): Observable<any> {
     // // debugger
     return this.http.post(
       AUTH_API + 'security/createtoken ',
       {
         userName: userId,
-        password: key        
+        password: key,
       },
-      httpOptions
+      httpOptions,
     );
   }
 
@@ -63,11 +59,11 @@ export class AuthService {
     return this.http.post(
       AUTH_API + 'security/createumscommonToken',
       {
-        username
+        username,
       },
-      httpOptions
+      httpOptions,
     );
-  }    
+  }
 }
 // const AUTH_API = 'https://webapi.lpu.in/cif/';
 // const AUTH_API = 'https://localhost:7125/';
@@ -123,12 +119,11 @@ export class AuthService {
 //       AUTH_API + 'security/createtoken ',
 //       {
 //         userName: userId,
-//         password: key        
+//         password: key
 //       },
 //       httpOptions
 //     );
 //   }
-
 
 //   // getModeratorBoard(): Observable<any> {
 //   //   return this.http.get(API_URL + 'mod', { responseType: 'text' });

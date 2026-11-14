@@ -270,3 +270,26 @@
 .fw-bold {
   font-weight: 600;
 }
+
+// ── Document button (as in A-CIF-Mou) ──────────────────────────────────────
+.btn-doc {
+  background: #212529;
+  color: #fff;
+  border: none;
+  padding: .35rem .85rem;
+  border-radius: 6px;
+  font-size: .8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s;
+
+  &:hover {
+    background: #ef7d00;
+    color: #fff;
+  }
+}
+
+.no-doc {
+  color: #6c757d;
+}
+

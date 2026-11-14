@@ -92,14 +92,10 @@
                   <td class="fw-bold">{{ row.noOfSamples }}</td>
                   <td class="fw-bold">{{ row.totalCharges }}</td>
                   <td>
-                    <ng-container *ngIf="row.receiptProofFile; else NoFile">
-                      <button class="btn btn-sm btn-dark" (click)="downloadFile(row.receiptProofFile)">
-                         <i class="bi bi-download"></i>
-                      </button>
-                    </ng-container>
-                    <ng-template #NoFile>
-                      <span class="badge bg-info text-dark">N/A</span>
-                    </ng-template>
+                    <button *ngIf="row.receiptProofFile"
+                      class="btn-doc" (click)="viewDocument(row.receiptProofFile)"
+                      title="View payment proof">📄</button>
+                    <span *ngIf="!row.receiptProofFile" class="no-doc">—</span>
                   </td>
                   <td class="text-danger">{{ row.requestDate }}</td>
                   <td class="text-dark">{{ row.proofRemarks  ? row.proofRemarks:'N-A'  }}</td>

@@ -1,4 +1,10 @@
-import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,15 +21,23 @@ import { LpuCIFWebService } from 'src/app/_services/lpu-cifweb.service';
   styleUrls: ['./AdminAssignTest.component.scss'],
 })
 export class AdminAssignTestComponent implements OnInit {
-
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
-  @ViewChild('ngSelectComponentStream') ngSelectComponentStream: NgSelectComponent;
+  @ViewChild('ngSelectComponentStream')
+  ngSelectComponentStream: NgSelectComponent;
   @ViewChild('verticalCenteredModal') verticalCenteredModal: TemplateRef<any>;
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
   @ViewChild('viewDescModal2') viewDescModal2: TemplateRef<any>;
   @ViewChild('table') table: ElementRef;
 
-  displayedColumns: string[] = ['instrumentName', 'analysisType', 'analysisCharges', 'noOfSamples', 'totalCharges', 'remarks', 'bookingRequestDate'];
+  displayedColumns: string[] = [
+    'instrumentName',
+    'analysisType',
+    'analysisCharges',
+    'noOfSamples',
+    'totalCharges',
+    'remarks',
+    'bookingRequestDate',
+  ];
   dataSource: MatTableDataSource<any>;
 
   AllBookingTestsData: any[] = [];
@@ -31,7 +45,7 @@ export class AdminAssignTestComponent implements OnInit {
   headHtmlData: any[] = [];
 
   currentPage = 1;
-  itemsPerPage = 15;
+  itemsPerPage = 5;
   searchQuery: string = '';
 
   // Items per page dropdown options
@@ -64,9 +78,11 @@ export class AdminAssignTestComponent implements OnInit {
 
   constructor(
     private CIFwebService: LpuCIFWebService,
-    private modalService: NgbModal, private fb: FormBuilder,
+    private modalService: NgbModal,
+    private fb: FormBuilder,
     private router: Router,
-    private cookieService: CookieService) { }
+    private cookieService: CookieService,
+  ) {}
 
   ngOnInit(): void {
     // const GetCookieData = this.cookieService.get('authData');
@@ -93,11 +109,19 @@ export class AdminAssignTestComponent implements OnInit {
         this.candidateName = parsed.CandidateName || '';
       } catch (err) {
         // console.error('Error parsing authData cookie:', err);
-        swal.fire('Session Error', 'Invalid session data. Please login again.', 'error');
+        swal.fire(
+          'Session Error',
+          'Invalid session data. Please login again.',
+          'error',
+        );
         this.router.navigate(['/Home']);
       }
     } else {
-      swal.fire('Session Expired', 'Please login again to continue.', 'warning');
+      swal.fire(
+        'Session Expired',
+        'Please login again to continue.',
+        'warning',
+      );
       this.router.navigate(['/Home']);
     }
   }
@@ -106,9 +130,10 @@ export class AdminAssignTestComponent implements OnInit {
     const query = this.searchQuery.trim().toLowerCase();
     if (!query) return this.AllBookingTestsData;
 
-    return this.AllBookingTestsData.filter((booking) =>
-      booking.instrumentName.toLowerCase().includes(query) ||
-      booking.analysisType.toLowerCase().includes(query)
+    return this.AllBookingTestsData.filter(
+      (booking) =>
+        booking.instrumentName.toLowerCase().includes(query) ||
+        booking.analysisType.toLowerCase().includes(query),
     );
   }
 
@@ -136,7 +161,7 @@ export class AdminAssignTestComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load booking tests:', err);
-      }
+      },
     });
   }
 
@@ -148,9 +173,13 @@ export class AdminAssignTestComponent implements OnInit {
     if (this.selectedStatus === '') {
       this.tmpsAllBookingTestsData = [...this.originalData]; // Show all data
     } else if (this.selectedStatus === 'null') {
-      this.tmpsAllBookingTestsData = this.originalData.filter(item => item.paymentStatus === null || item.paymentStatus === 'null');
+      this.tmpsAllBookingTestsData = this.originalData.filter(
+        (item) => item.paymentStatus === null || item.paymentStatus === 'null',
+      );
     } else {
-      this.tmpsAllBookingTestsData = this.originalData.filter(item => item.paymentStatus === this.selectedStatus);
+      this.tmpsAllBookingTestsData = this.originalData.filter(
+        (item) => item.paymentStatus === this.selectedStatus,
+      );
     }
     this.currentPage = 1; // Reset to first page after filtering
   }
@@ -159,7 +188,7 @@ export class AdminAssignTestComponent implements OnInit {
     { label: 'All', value: '' },
     { label: 'Success', value: 'success' },
     { label: 'Failure', value: 'failure' },
-    { label: 'Pending', value: 'null' }
+    { label: 'Pending', value: 'null' },
   ];
 
   AllAssignedTest: any;
@@ -174,16 +203,16 @@ export class AdminAssignTestComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load assigned tests:', err);
-      }
+      },
     });
   }
 
   assignedTests: any[] = []; // This should be filled from your assigned tests API
 
   isAlreadyAssigned(row: any): boolean {
-    return this.assignedTests.some(test =>
-      test.bookingId === row.bookingId &&
-      test.returnMessage !== 'No Details'
+    return this.assignedTests.some(
+      (test) =>
+        test.bookingId === row.bookingId && test.returnMessage !== 'No Details',
     );
   }
 
@@ -196,7 +225,10 @@ export class AdminAssignTestComponent implements OnInit {
 
   getCurrentPageData(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.tmpsAllBookingTestsData.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.tmpsAllBookingTestsData.slice(
+      startIndex,
+      startIndex + this.itemsPerPage,
+    );
   }
 
   nextPage(): void {
@@ -212,7 +244,7 @@ export class AdminAssignTestComponent implements OnInit {
   }
 
   exportToExcel(): void {
-    const exportedData = this.AllBookingTestsData.map(item => ({
+    const exportedData = this.AllBookingTestsData.map((item) => ({
       BookingId: item.bookingId,
       InstrumentName: item.instrumentName,
       SampleCount: item.noOfSamples,
@@ -222,9 +254,14 @@ export class AdminAssignTestComponent implements OnInit {
       CandidateName: item.candidateName,
       OrganisationName: item.organisationName,
       UserType: item.userRole,
-      PaymentStatus: item.paymentStatus == 'success' ? 'Paid' : item?.paymentStatus == 'failure' ? 'Failed' : 'Pending',
+      PaymentStatus:
+        item.paymentStatus == 'success'
+          ? 'Paid'
+          : item?.paymentStatus == 'failure'
+            ? 'Failed'
+            : 'Pending',
       PaymentDate: item.paymentDate,
-      AssignedTo: item.assignedUserId
+      AssignedTo: item.assignedUserId,
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
@@ -235,7 +272,9 @@ export class AdminAssignTestComponent implements OnInit {
 
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.href = URL.createObjectURL(
+      new Blob([blobData], { type: 'application/octet-stream' }),
+    );
     link.download = 'Assigned_Details_report.xlsx';
     link.click();
   }
@@ -243,9 +282,10 @@ export class AdminAssignTestComponent implements OnInit {
   openPaymentModal(item: any): void {
     this.BookingCase = item;
     this.AssignedTo = ''; // Reset assigned staff selection on modal open
-    this.modalService.open(this.viewDescModal2, { size: 'lg' }).result
-      .then((result: string) => console.log('Modal closed:', result))
-      .catch(() => { });
+    this.modalService
+      .open(this.viewDescModal2, { size: 'lg' })
+      .result.then((result: string) => console.log('Modal closed:', result))
+      .catch(() => {});
   }
 
   onActivitySelected(event: any): void {
@@ -254,7 +294,11 @@ export class AdminAssignTestComponent implements OnInit {
 
   VerifyData(AssignTest: any): void {
     if (!this.AssignedTo) {
-      swal.fire('Select Staff', 'Please select a staff member to assign.', 'warning');
+      swal.fire(
+        'Select Staff',
+        'Please select a staff member to assign.',
+        'warning',
+      );
       return;
     }
 
@@ -269,13 +313,23 @@ export class AdminAssignTestComponent implements OnInit {
       next: (data: any) => {
         const result = data.item1?.[0]?.msg || '';
 
-        const alertMap: Record<'Success' | 'Failed' | 'Default', { title: string; icon: any }> = {
-          Success: { title: 'Action Planned Stored Successfully!', icon: 'success' },
+        const alertMap: Record<
+          'Success' | 'Failed' | 'Default',
+          { title: string; icon: any }
+        > = {
+          Success: {
+            title: 'Action Planned Stored Successfully!',
+            icon: 'success',
+          },
           Failed: { title: 'Test is already Assigned', icon: 'error' },
-          Default: { title: 'Something Went Wrong, Try again later', icon: 'error' }
+          Default: {
+            title: 'Something Went Wrong, Try again later',
+            icon: 'error',
+          },
         };
 
-        const alert = alertMap[result as keyof typeof alertMap] || alertMap.Default;
+        const alert =
+          alertMap[result as keyof typeof alertMap] || alertMap.Default;
 
         swal.fire({ title: alert.title, icon: alert.icon }).then(() => {
           this.modalService.dismissAll(); // Close modal
@@ -284,67 +338,77 @@ export class AdminAssignTestComponent implements OnInit {
         });
       },
       error: () => {
-        swal.fire({
-          title: 'Error',
-          text: 'Failed to Upload.',
-          icon: 'error'
-        }).then(() => this.modalService.dismissAll());
-      }
+        swal
+          .fire({
+            title: 'Error',
+            text: 'Failed to Upload.',
+            icon: 'error',
+          })
+          .then(() => this.modalService.dismissAll());
+      },
     });
   }
 
   search() {
     const query = this.searchQuery.toLowerCase();
-    this.tmpsAllBookingTestsData = this.AllBookingTestsData.filter(item => {
-      return Object.values(item).some(val =>
-        String(val).toLowerCase().includes(query)
+    this.tmpsAllBookingTestsData = this.AllBookingTestsData.filter((item) => {
+      return Object.values(item).some((val) =>
+        String(val).toLowerCase().includes(query),
       );
     });
   }
 
   downloadFile(fileName: string): void {
     const url = this.serverUrl + fileName;
-   
-       this.onDownloadFile(url);
+
+    this.onDownloadFile(url);
   }
 
-  
-      onDownloadFile(remoteUrl: string): void {
-        swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
-    
-        this.CIFwebService.downloadFile(remoteUrl).subscribe({
-          next: (blob: Blob) => {
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-    
-            const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-            link.download = fileName;
-    
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(downloadUrl);
-    
-            swal.close();
-          },
-          error: async (err) => {
-            swal.close();
-            let message = 'Download failed';
-            if (err.error instanceof Blob) {
-              try {
-                const errorMsg = JSON.parse(await err.error.text());
-                message = errorMsg.message || message;
-              } catch {
-                message = 'Failed to download file from server';
-              }
-              swal.fire('Error', message, 'error');
-            } else {
-              swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
-            }
+  onDownloadFile(remoteUrl: string): void {
+    swal.fire({
+      title: 'Downloading...',
+      didOpen: () => {
+        swal.showLoading(null);
+      },
+    });
+
+    this.CIFwebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        let message = 'Download failed';
+        if (err.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
           }
-        });
-      }
+          swal.fire('Error', message, 'error');
+        } else {
+          swal.fire(
+            'Error',
+            err?.error?.message || 'Could not connect to the server',
+            'error',
+          );
+        }
+      },
+    });
+  }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     if (this.dataSource) {
@@ -355,47 +419,47 @@ export class AdminAssignTestComponent implements OnInit {
   AllCifUserList = [
     {
       uid: '24374',
-      uiD_Name: 'Dr. Vijay Kumar'
+      uiD_Name: 'Dr. Vijay Kumar',
     },
     {
       uid: '20362',
-      uiD_Name: 'Dr. Nupur Prasad '
+      uiD_Name: 'Dr. Nupur Prasad ',
     },
     {
       uid: '16477',
-      uiD_Name: 'Mr. Prashant Kumar '
+      uiD_Name: 'Mr. Prashant Kumar ',
     },
     {
       uid: '27727',
-      uiD_Name: 'Dr. Nabaparna Chakraborty '
+      uiD_Name: 'Dr. Nabaparna Chakraborty ',
     },
     {
       uid: '26918',
-      uiD_Name: 'Ms. Baljit Bangar'
+      uiD_Name: 'Ms. Baljit Bangar',
     },
     {
       uid: '30694',
-      uiD_Name: 'Ms. Amandeep Kaur'
+      uiD_Name: 'Ms. Amandeep Kaur',
     },
     {
       uid: '29159',
-      uiD_Name: 'Ms. Kamlash Rani '
+      uiD_Name: 'Ms. Kamlash Rani ',
     },
     {
       uid: '31691',
-      uiD_Name: 'Mr. Sameer Singh Pathania'
+      uiD_Name: 'Mr. Sameer Singh Pathania',
     },
     {
       uid: '33476',
-      uiD_Name: 'Mr. Sanjeev Verma '
+      uiD_Name: 'Mr. Sanjeev Verma ',
     },
     {
       uid: '34125',
-      uiD_Name: 'Dr. Puneet '
+      uiD_Name: 'Dr. Puneet ',
     },
     {
       uid: '34228',
-      uiD_Name: 'Monika Kumari'
+      uiD_Name: 'Monika Kumari',
     },
   ];
 
@@ -410,12 +474,14 @@ export class AdminAssignTestComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to get UIDS:', err);
-      }
+      },
     });
   }
 
   getTotalRecords(): number {
-    return this.tmpsAllBookingTestsData ? this.tmpsAllBookingTestsData.length : 0;
+    return this.tmpsAllBookingTestsData
+      ? this.tmpsAllBookingTestsData.length
+      : 0;
   }
 
   // Handle record size dropdown change
@@ -436,10 +502,6 @@ export class AdminAssignTestComponent implements OnInit {
     this.onItemsPerPageChange(event);
   }
 
-
-
-
-
   IsAssigned: string = '';
   getAssignedData(): void {
     if (this.IsAssigned === '') {
@@ -447,13 +509,14 @@ export class AdminAssignTestComponent implements OnInit {
       this.tmpsAllBookingTestsData = [...this.originalData];
     } else if (this.IsAssigned === 'Assigned') {
       // Filter items where assignedUser Id exists and is non-empty string
-      this.tmpsAllBookingTestsData = this.originalData.filter(item =>
-        item.assignedUserId && item.assignedUserId.trim().length > 0
+      this.tmpsAllBookingTestsData = this.originalData.filter(
+        (item) => item.assignedUserId && item.assignedUserId.trim().length > 0,
       );
     } else if (this.IsAssigned === 'Pending') {
       // Filter items where assignedUser Id is null, undefined, or empty string
-      this.tmpsAllBookingTestsData = this.originalData.filter(item =>
-        !item.assignedUserId || item.assignedUserId.trim().length === 0
+      this.tmpsAllBookingTestsData = this.originalData.filter(
+        (item) =>
+          !item.assignedUserId || item.assignedUserId.trim().length === 0,
       );
     } else {
       // Default fallback: show all data
@@ -462,11 +525,10 @@ export class AdminAssignTestComponent implements OnInit {
     this.currentPage = 1; // Reset to first page after filtering
   }
 
-
   assignedOptions = [
     { label: 'All', value: '' },
     { label: 'Assigned', value: 'Assigned' },
-    { label: 'Pending', value: 'Pending' }
+    { label: 'Pending', value: 'Pending' },
   ];
 
   hasAnySearchCriteria: any;
@@ -479,29 +541,34 @@ export class AdminAssignTestComponent implements OnInit {
 
   advancedSearch = {
     paymentType: '',
-    assignedTo: ''
-
+    assignedTo: '',
   };
 
   applyAdvancedSearch(): void {
-    this.tmpsAllBookingTestsData = this.originalData.filter(item => {
+    this.tmpsAllBookingTestsData = this.originalData.filter((item) => {
       let matches = true;
 
       // Filter by Payment Status
       if (this.selectedStatus) {
         if (this.selectedStatus === 'null') {
-          matches = matches && (!item.paymentStatus || item.paymentStatus === 'null');
+          matches =
+            matches && (!item.paymentStatus || item.paymentStatus === 'null');
         } else {
-          matches = matches && (item.paymentStatus === this.selectedStatus);
+          matches = matches && item.paymentStatus === this.selectedStatus;
         }
       }
 
       // Filter by Assignment
       if (this.IsAssigned) {
         if (this.IsAssigned === 'Assigned') {
-          matches = matches && (item.assignedUserId && item.assignedUserId.trim().length > 0);
+          matches =
+            matches &&
+            item.assignedUserId &&
+            item.assignedUserId.trim().length > 0;
         } else if (this.IsAssigned === 'Pending') {
-          matches = matches && (!item.assignedUserId || item.assignedUserId.trim().length === 0);
+          matches =
+            matches &&
+            (!item.assignedUserId || item.assignedUserId.trim().length === 0);
         }
       }
 
@@ -510,14 +577,17 @@ export class AdminAssignTestComponent implements OnInit {
 
     // Sort results by bookingRequestDate (if present)
     this.tmpsAllBookingTestsData.sort((a, b) => {
-      const dateA = a.bookingRequestDate ? new Date(a.bookingRequestDate).getTime() : 0;
-      const dateB = b.bookingRequestDate ? new Date(b.bookingRequestDate).getTime() : 0;
+      const dateA = a.bookingRequestDate
+        ? new Date(a.bookingRequestDate).getTime()
+        : 0;
+      const dateB = b.bookingRequestDate
+        ? new Date(b.bookingRequestDate).getTime()
+        : 0;
       return dateA - dateB;
     });
 
     this.currentPage = 1; // Reset to first page
   }
-
 
   resetAdvancedSearch(): void {
     this.selectedStatus = '';
@@ -537,7 +607,6 @@ export class AdminAssignTestComponent implements OnInit {
     }
   }
 
-
   // 18 sept-25
   @ViewChild('editEventModal') editEventModal: TemplateRef<any>;
   editEvent: any = {};
@@ -556,9 +625,9 @@ export class AdminAssignTestComponent implements OnInit {
     this.modalService.open(this.editEventModal, { centered: true, size: 'lg' });
   }
 
-
-
-  CIFTestReassignForm!: FormGroup; isForm1Submitted: boolean = false; isSubmitted = false;
+  CIFTestReassignForm!: FormGroup;
+  isForm1Submitted: boolean = false;
+  isSubmitted = false;
   isLoading: boolean = false;
 
   get form1() {
@@ -570,7 +639,7 @@ export class AdminAssignTestComponent implements OnInit {
       EventName: ['', Validators.required],
       EventDate: ['', Validators.required],
       EventDetails: ['', Validators.required],
-      ImageUrl: ['']
+      ImageUrl: [''],
     });
   }
   get isImageValid(): boolean {
@@ -591,7 +660,11 @@ export class AdminAssignTestComponent implements OnInit {
 
   ReAssginStaff(AssignTest: any): void {
     if (!this.AssignedToNew) {
-      swal.fire('Select Staff', 'Please select a staff member to assign.', 'warning');
+      swal.fire(
+        'Select Staff',
+        'Please select a staff member to assign.',
+        'warning',
+      );
       return;
     }
     // const formData = new FormData();
@@ -611,13 +684,23 @@ export class AdminAssignTestComponent implements OnInit {
       next: (data: any) => {
         const result = data.item1?.[0]?.msg || '';
 
-        const alertMap: Record<'Success' | 'Failed' | 'Default', { title: string; icon: any }> = {
-          Success: { title: 'Action Planned Stored Successfully!', icon: 'success' },
+        const alertMap: Record<
+          'Success' | 'Failed' | 'Default',
+          { title: string; icon: any }
+        > = {
+          Success: {
+            title: 'Action Planned Stored Successfully!',
+            icon: 'success',
+          },
           Failed: { title: 'Test is already Assigned', icon: 'error' },
-          Default: { title: 'Something Went Wrong, Try again later', icon: 'error' }
+          Default: {
+            title: 'Something Went Wrong, Try again later',
+            icon: 'error',
+          },
         };
 
-        const alert = alertMap[result as keyof typeof alertMap] || alertMap.Default;
+        const alert =
+          alertMap[result as keyof typeof alertMap] || alertMap.Default;
 
         swal.fire({ title: alert.title, icon: alert.icon }).then(() => {
           this.modalService.dismissAll(); // Close modal
@@ -626,16 +709,14 @@ export class AdminAssignTestComponent implements OnInit {
         });
       },
       error: () => {
-        swal.fire({
-          title: 'Error',
-          text: 'Failed to Upload.',
-          icon: 'error'
-        }).then(() => this.modalService.dismissAll());
-      }
+        swal
+          .fire({
+            title: 'Error',
+            text: 'Failed to Upload.',
+            icon: 'error',
+          })
+          .then(() => this.modalService.dismissAll());
+      },
     });
   }
-
-
-
-
 }

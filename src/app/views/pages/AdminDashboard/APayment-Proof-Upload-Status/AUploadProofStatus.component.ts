@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,7 +18,6 @@ import { LoginSessionService } from 'src/app/_services/login-session.service';
 
 import { ColumnMode } from '@swimlane/ngx-datatable';
 
-import swal from 'sweetalert2';
 import Swal from 'sweetalert2';
 
 interface UploadProofRecord {
@@ -34,7 +40,7 @@ interface ApiResponse {
 @Component({
   selector: 'app-upload-proof-status',
   templateUrl: './AUploadProofStatus.component.html',
-  styleUrls: ['./AUploadProofStatus.component.scss']
+  styleUrls: ['./AUploadProofStatus.component.scss'],
 })
 export class AUploadProofStatusComponent implements OnInit {
   // Template references
@@ -43,19 +49,18 @@ export class AUploadProofStatusComponent implements OnInit {
   // Pagination
   currentPage = 1;
   itemsPerPage = 5;
-  
+
   // Items per page dropdown options
   itemsPerPageOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
     { label: '15', value: 15 },
     { label: '20', value: 20 },
-    { label: 'All', value: 'all' }
   ];
-  
+
   // Track if 'all' is selected
   isAllSelected = false;
-  
+
   // Search
   searchQuery = '';
 
@@ -75,7 +80,8 @@ export class AUploadProofStatusComponent implements OnInit {
   samplesCase: UploadProofRecord | null = null;
 
   // Server config
-  private readonly serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
+  serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/'; // 'https://files.lpu.in/umsweb/CIFDocuments/'
+  ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
 
   // Column definitions
   readonly displayedColumns = [
@@ -86,58 +92,119 @@ export class AUploadProofStatusComponent implements OnInit {
     'totalCharges',
     'remarks',
     'SamplesRequestDate',
-    'Uploaded Proof'
+    'Uploaded Proof',
   ];
 
   ColumnMode = ColumnMode;
   columns: string[] = [];
   Math = Math;
 
-   downloadFile(fileName: string): void {
-    const url = this.serverUrl + fileName;
-    this.onDownloadFile(url);
-    // window.open(url, '_blank');
+  viewDocument(url: string): void {
+    if (!url) {
+      Swal.fire('Notice', 'No document found for this record.', 'info');
+      return;
+    }
+    window.open(this.serverUrl + url, '_blank');
+    // this.onDownloadFile(url);
   }
 
+  downloadFile(fileName: any): void {
+    if (!fileName) {
+      Swal.fire('Notice', 'No document found for this record.', 'info');
+      return;
+    }
+    this.onDownloadFile(fileName);
+  }
 
-  
-     onDownloadFile(remoteUrl: string): void {
-       Swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
-    
-        this.cifWebService.downloadFile(remoteUrl).subscribe({
-          next: (blob: Blob) => {
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-    
-            const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-            link.download = fileName;
-    
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(downloadUrl);
-    
-            swal.close();
-          },
-          error: async (err) => {
-            swal.close();
-            let message = 'Download failed';
-            if (err.error instanceof Blob) {
-              try {
-                const errorMsg = JSON.parse(await err.error.text());
-                message = errorMsg.message || message;
-              } catch {
-                message = 'Failed to download file from server';
-              }
-              swal.fire('Error', message, 'error');
-            } else {
-              swal.fire('Error', err?.error?.message || 'Could not connect to the server', 'error');
-            }
+  onDownloadFile(remoteUrl: string): void {
+    if (!remoteUrl) {
+      Swal.fire('Notice', 'No document found for this record.', 'info');
+      return;
+    }
+
+    const fileName = remoteUrl.split('?')[0].split('/').pop() || 'Document.pdf';
+    const directUrl =
+      remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://')
+        ? remoteUrl
+        : `${this.serverUrl.replace(/\/+$/, '')}/${remoteUrl.replace(/^\/+/, '')}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being fetched.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    const triggerBlobDownload = (blob: Blob, downloadFileName: string) => {
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = downloadFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      Swal.close();
+    };
+
+    const fallbackDirectDownload = () => {
+      fetch(directUrl)
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
           }
+          const blob = await response.blob();
+          triggerBlobDownload(blob, fileName);
+        })
+        .catch(() => {
+          // If direct fetch is blocked by CORS or fails, download/open via direct link
+          const link = document.createElement('a');
+          link.href = directUrl;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          Swal.close();
         });
-      }
-    
+    };
+
+    // The backend CIFDownloadFiles API combines BaseUrl with the file name.
+    // When a full URL is sent, BaseUrl and AbsolutePath can duplicate path segments (causing 400/404).
+    // Try downloading via fileName first; if it returns 400 or fails, try the full URL before falling back directly.
+    this.cifWebService.downloadFile(fileName).subscribe({
+      next: (blob: Blob) => {
+        if (blob && blob.size > 0 && blob.type !== 'application/json') {
+          triggerBlobDownload(blob, fileName);
+        } else {
+          fallbackDirectDownload();
+        }
+      },
+      error: () => {
+        // If fileName resulted in an error (e.g. 400 Bad Request), try directUrl before fallback
+        if (remoteUrl !== fileName) {
+          this.cifWebService.downloadFile(directUrl).subscribe({
+            next: (blob: Blob) => {
+              if (blob && blob.size > 0 && blob.type !== 'application/json') {
+                triggerBlobDownload(blob, fileName);
+              } else {
+                fallbackDirectDownload();
+              }
+            },
+            error: () => {
+              fallbackDirectDownload();
+            },
+          });
+        } else {
+          fallbackDirectDownload();
+        }
+      },
+    });
+  }
+
   constructor(
     private cifWebService: LpuCIFWebService,
     private storageService: StorageService,
@@ -147,7 +214,7 @@ export class AUploadProofStatusComponent implements OnInit {
     private authSession: LoginSessionService,
     private router: Router,
     private route: ActivatedRoute,
-    private cookieService: CookieService
+    private cookieService: CookieService,
   ) {}
 
   ngOnInit(): void {
@@ -162,9 +229,10 @@ export class AUploadProofStatusComponent implements OnInit {
       this.userEmail = sessionData[0][0]?.['userEmail'] || '';
     }
   }
-user_Email: any; UserRole:any; candidateName:any;
+  user_Email: any;
+  UserRole: any;
+  candidateName: any;
   private loadUserFromCookie(): void {
-
     const GetCookieData = this.cookieService.get('authData');
     if (GetCookieData) {
       try {
@@ -176,9 +244,6 @@ user_Email: any; UserRole:any; candidateName:any;
         console.error('Error parsing authData in AUploadProofStatus:', e);
       }
     }
-
-
-    
   }
 
   private fetchPaymentProofDetails(): void {
@@ -194,7 +259,7 @@ user_Email: any; UserRole:any; candidateName:any;
       error: (error) => {
         console.error('Error fetching payment proof details:', error);
         this.loadingIndicator = false;
-      }
+      },
     });
   }
 
@@ -213,7 +278,7 @@ user_Email: any; UserRole:any; candidateName:any;
     if (this.filteredData.length > 0) {
       const firstRow = this.filteredData[0];
       this.columns = Object.keys(firstRow).filter(
-        (key) => !['ResultFile', 'userId', 'id', 'analysisId'].includes(key)
+        (key) => !['ResultFile', 'userId', 'id', 'analysisId'].includes(key),
       );
     }
   }
@@ -236,8 +301,8 @@ user_Email: any; UserRole:any; candidateName:any;
     } else {
       this.filteredData = this.uploadProofStatusData.filter((item) =>
         Object.values(item).some((val) =>
-          String(val).toLowerCase().includes(query)
-        )
+          String(val).toLowerCase().includes(query),
+        ),
       );
     }
 
@@ -304,7 +369,7 @@ user_Email: any; UserRole:any; candidateName:any;
       TotalCharges: item.totalCharges,
       RequestDate: item.requestDate,
       ProofRemarks: item.proofRemarks,
-      Status: this.getStatusLabel(item.isProofApproved)
+      Status: this.getStatusLabel(item.isProofApproved),
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
@@ -315,7 +380,7 @@ user_Email: any; UserRole:any; candidateName:any;
       { wpx: 100 },
       { wpx: 120 },
       { wpx: 150 },
-      { wpx: 100 }
+      { wpx: 100 },
     ];
     ws['!cols'] = wscols;
 
@@ -324,7 +389,9 @@ user_Email: any; UserRole:any; candidateName:any;
 
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.href = URL.createObjectURL(
+      new Blob([blobData], { type: 'application/octet-stream' }),
+    );
     link.download = fileName;
     link.click();
   }

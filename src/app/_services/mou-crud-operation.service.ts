@@ -21,13 +21,13 @@ export interface MouUpdatePayload {
   action: 'Update';
   mouId: string;
   mouTitle?: string;
-  mouDocumentData: string;  
-  mouDocumentUrl: string;   
+  mouDocumentData: string;
+  mouDocumentUrl: string;
   mouStartDate?: string;
   mouEndDate: string;
   mouRemarks?: string;
   loginName: string;
-    userId: string;
+  userId: string;
 }
 
 export interface MouDeletePayload {
@@ -76,21 +76,19 @@ export interface MouViewResponse {
 
 @Injectable({ providedIn: 'root' })
 export class MOUCrudOperation {
-  private readonly http           = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   private readonly storageService = inject(StorageService);
 
   // private readonly baseUrl = 'https://localhost:7125/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
-  private readonly baseUrl = 'https://webapi.lpu.in/cif/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
+  // private readonly baseUrl = 'https://webapi.lpu.in/cif/api/LpuCIF'; //'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
 
-
-//  private readonly baseUrl =  'https://localhost:44362/api/LpuCIF';
-// const AUTH_API_LOCAL = 'https://localhost:44362/';//'https://localhost:44362/';
-// const AUTH_API_LOCALS = 'https://localhost:44362/';//'https://localhost:7135/';
+  private readonly baseUrl = 'https://projectsapi.lpu.in/api/LpuCIF';
+  // const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
+  // const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
 
   private get authHeadersFormData(): HttpHeaders {
     const token = this.storageService.getUser();
-    return new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token);
+    return new HttpHeaders().set('Authorization', 'Bearer ' + token);
   }
 
   // ── Shared error handler ──────────────────────────────────────────────────
@@ -101,8 +99,9 @@ export class MOUCrudOperation {
     };
   }
 
-  
-  private buildFormData(fields: Record<string, string | undefined | null>): FormData {
+  private buildFormData(
+    fields: Record<string, string | undefined | null>,
+  ): FormData {
     const fd = new FormData();
     for (const [key, value] of Object.entries(fields)) {
       if (value !== undefined && value !== null && value !== '') {
@@ -115,70 +114,78 @@ export class MOUCrudOperation {
   // ── Insert new MOU (Simple User) ──────────────────────────────────────────
   insertMou(payload: MouInsertPayload): Observable<MouApiResponse> {
     const fd = this.buildFormData({
-      Action:          'Insert',
-      MOUTitle:        payload.mouTitle,
-      MOUDocumentUrl:  payload.mouDocumentUrl,
+      Action: 'Insert',
+      MOUTitle: payload.mouTitle,
+      MOUDocumentUrl: payload.mouDocumentUrl,
       MOUDocumentData: payload.mouDocumentData,
-      MouStartDate:    payload.mouStartDate,
-      MouEndDate:      payload.mouEndDate,
-      MOURemarks:      payload.mouRemarks,
-      UserId:          payload.userId,
+      MouStartDate: payload.mouStartDate,
+      MouEndDate: payload.mouEndDate,
+      MOURemarks: payload.mouRemarks,
+      UserId: payload.userId,
     });
 
-    return this.http.post<MouApiResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('insertMou',
-        { item1: [{ msg: 'Failed', returnId: -1 }] }))
-    );
+    return this.http
+      .post<MouApiResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(
+        catchError(
+          this.handleError('insertMou', {
+            item1: [{ msg: 'Failed', returnId: -1 }],
+          }),
+        ),
+      );
   }
 
   // ── Update existing MOU (Simple User) ────────────────────────────────────
   updateMou(payload: MouUpdatePayload): Observable<MouApiResponse> {
     const fd = this.buildFormData({
-      Action:          'Update',
-      MouId:           payload.mouId,
-      MOUTitle:        payload.mouTitle,
-      MOUDocumentData: payload.mouDocumentData,   
-      MOUDocumentUrl:  payload.mouDocumentUrl,
-      MouStartDate:    payload.mouStartDate,
-      MouEndDate:      payload.mouEndDate,
-      MOURemarks:      payload.mouRemarks,
-      LoginName:       payload.loginName,
-      UserId:          payload.userId,             
+      Action: 'Update',
+      MouId: payload.mouId,
+      MOUTitle: payload.mouTitle,
+      MOUDocumentData: payload.mouDocumentData,
+      MOUDocumentUrl: payload.mouDocumentUrl,
+      MouStartDate: payload.mouStartDate,
+      MouEndDate: payload.mouEndDate,
+      MOURemarks: payload.mouRemarks,
+      LoginName: payload.loginName,
+      UserId: payload.userId,
     });
 
-    return this.http.post<MouApiResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('updateMou',
-        { item1: [{ msg: 'Failed', returnId: -1 }] }))
-    );
+    return this.http
+      .post<MouApiResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(
+        catchError(
+          this.handleError('updateMou', {
+            item1: [{ msg: 'Failed', returnId: -1 }],
+          }),
+        ),
+      );
   }
-
 
   // ── Delete / deactivate MOU (Admin) ──────────────────────────────────────
   deleteMou(payload: MouDeletePayload): Observable<MouApiResponse> {
     const fd = this.buildFormData({
-      Action:    'Delete',
-      MouId:     payload.mouId,
-      MOUTitle:  payload.mouTitle,
-      UserId:    payload.userId,
+      Action: 'Delete',
+      MouId: payload.mouId,
+      MOUTitle: payload.mouTitle,
+      UserId: payload.userId,
       LoginName: payload.loginName,
     });
 
-    return this.http.post<MouApiResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('deleteMou',
-        { item1: [{ msg: 'Failed', returnId: -1 }] }))
-    );
+    return this.http
+      .post<MouApiResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(
+        catchError(
+          this.handleError('deleteMou', {
+            item1: [{ msg: 'Failed', returnId: -1 }],
+          }),
+        ),
+      );
   }
 
   // ── View MOUs for a specific user (Simple User) ───────────────────────────
@@ -188,80 +195,81 @@ export class MOUCrudOperation {
       UserId: userId,
     });
 
-    return this.http.post<MouViewResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('viewMyMous', { item1: [] }))
-    );
+    return this.http
+      .post<MouViewResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(catchError(this.handleError('viewMyMous', { item1: [] })));
   }
 
-  
   viewAllMous(): Observable<MouViewResponse> {
     const fd = this.buildFormData({
       Action: 'ViewAll',
     });
 
-    return this.http.post<MouViewResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('viewAllMous', { item1: [] }))
-    );
+    return this.http
+      .post<MouViewResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(catchError(this.handleError('viewAllMous', { item1: [] })));
   }
 
   // ── Approve MOU (Admin) ───────────────────────────────────────────────────
   approveMou(payload: MouApprovePayload): Observable<MouApiResponse> {
     const fd = this.buildFormData({
-      Action:          'Approve',
-      MouId:           payload.mouId,
-      UserId:          payload.userId,
+      Action: 'Approve',
+      MouId: payload.mouId,
+      UserId: payload.userId,
       ApprovalRemarks: payload.approvalRemarks,
-      LoginName:       payload.loginName,
+      LoginName: payload.loginName,
     });
 
-    return this.http.post<MouApiResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('approveMou',
-        { item1: [{ msg: 'Failed', returnId: -1 }] }))
-    );
+    return this.http
+      .post<MouApiResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(
+        catchError(
+          this.handleError('approveMou', {
+            item1: [{ msg: 'Failed', returnId: -1 }],
+          }),
+        ),
+      );
   }
 
   // ── Disapprove MOU (Admin) ────────────────────────────────────────────────
   disapproveMou(payload: MouApprovePayload): Observable<MouApiResponse> {
     const fd = this.buildFormData({
-      Action:          'DisApprove',
-      MouId:           payload.mouId,
-      UserId:          payload.userId,
+      Action: 'DisApprove',
+      MouId: payload.mouId,
+      UserId: payload.userId,
       ApprovalRemarks: payload.approvalRemarks,
-      LoginName:       payload.loginName,
+      LoginName: payload.loginName,
     });
 
-    return this.http.post<MouApiResponse>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('disapproveMou',
-        { item1: [{ msg: 'Failed', returnId: -1 }] }))
-    );
+    return this.http
+      .post<MouApiResponse>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(
+        catchError(
+          this.handleError('disapproveMou', {
+            item1: [{ msg: 'Failed', returnId: -1 }],
+          }),
+        ),
+      );
   }
 
   // ── Upload MOU document — multipart FormData ──────────────────────────────
   uploadMouDocument(file: File): Observable<{ fileUrl: string }> {
     const fd = new FormData();
-    fd.append('File', file);   // PascalCase 'File' to match controller param
-    return this.http.post<{ fileUrl: string }>(
-      `${this.baseUrl}/CIFMOUCrudOperation`,
-      fd,
-      { headers: this.authHeadersFormData }
-    ).pipe(
-      catchError(this.handleError('uploadMouDocument', { fileUrl: '' }))
-    );
+    fd.append('File', file); // PascalCase 'File' to match controller param
+    return this.http
+      .post<{
+        fileUrl: string;
+      }>(`${this.baseUrl}/CIFMOUCrudOperation`, fd, {
+        headers: this.authHeadersFormData,
+      })
+      .pipe(catchError(this.handleError('uploadMouDocument', { fileUrl: '' })));
   }
 }
