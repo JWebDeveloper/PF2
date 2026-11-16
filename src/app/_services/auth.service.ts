@@ -2,12 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// const AUTH_API = 'https://webapi.lpu.in/cif/';
-// const AUTH_API_LOCAL = 'https://webapi.lpu.in/cif/';
+import { environment } from 'src/environments/environment';
 
-const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+const BASE_URL = environment.apiUrl;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -21,7 +18,7 @@ export class AuthService {
 
   LoginJournalAccessTemp(username: string): Observable<any> {
     return this.http.post(
-      AUTH_API_LOCAL + 'security/createCifPortalToken',
+      BASE_URL + 'security/createCifPortalToken',
       {
         username,
       },
@@ -36,8 +33,8 @@ export class AuthService {
     };
 
     return this.http.post(
-      // AUTH_API + 'security/createcommonToken',
-      AUTH_API + 'security/createcommonToken',
+      // BASE_URL + 'security/createcommonToken',
+      BASE_URL + 'security/createcommonToken',
       checkData,
       httpOptions,
     );
@@ -46,7 +43,7 @@ export class AuthService {
   loginInternalUser(userId: string, key: string): Observable<any> {
     // // debugger
     return this.http.post(
-      AUTH_API + 'security/createtoken ',
+      BASE_URL + 'security/createtoken ',
       {
         userName: userId,
         password: key,
@@ -57,7 +54,7 @@ export class AuthService {
 
   loginUMSTemp(username: string): Observable<any> {
     return this.http.post(
-      AUTH_API + 'security/createumscommonToken',
+      BASE_URL + 'security/createumscommonToken',
       {
         username,
       },
@@ -65,10 +62,10 @@ export class AuthService {
     );
   }
 }
-// const AUTH_API = 'https://webapi.lpu.in/cif/';
-// const AUTH_API = 'https://localhost:7125/';
-// const AUTH_API_LOCAL = 'https://localhost:7125/';
-// const AUTH_API_LOCALS = 'https://localhost:7125/';
+// const BASE_URL = 'https://webapi.lpu.in/cif/';
+// const BASE_URL = 'https://localhost:7125/';
+// const BASE_URL = 'https://localhost:7125/';
+// const BASE_URLS = 'https://localhost:7125/';
 // getModeratorBoard(): Observable<any> {
 //   return this.http.get(API_URL + 'mod', { responseType: 'text' });
 // }
@@ -77,8 +74,8 @@ export class AuthService {
 // import { HttpClient, HttpHeaders } from '@angular/common/http';
 // import { Observable } from 'rxjs';
 
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+// const BASE_URL = 'https://projectsapi.lpu.in/';
+// const BASE_URL = 'https://projectsapi.lpu.in/';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -97,7 +94,7 @@ export class AuthService {
 //      }
 
 //     return this.http.post(
-//       AUTH_API + 'security/createcommonToken',
+//       BASE_URL + 'security/createcommonToken',
 //       checkData,
 //       httpOptions
 //     );
@@ -105,7 +102,7 @@ export class AuthService {
 
 //   loginUMSTemp(username: string): Observable<any> {
 //     return this.http.post(
-//       AUTH_API + 'security/createumscommonToken',
+//       BASE_URL + 'security/createumscommonToken',
 //       {
 //         username
 //       },
@@ -116,7 +113,7 @@ export class AuthService {
 //   loginInternalUser(userId: string, key: string): Observable<any> {
 //     // // debugger
 //     return this.http.post(
-//       AUTH_API + 'security/createtoken ',
+//       BASE_URL + 'security/createtoken ',
 //       {
 //         userName: userId,
 //         password: key

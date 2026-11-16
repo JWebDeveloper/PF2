@@ -1,0 +1,345 @@
+<app-AdminDashboard></app-AdminDashboard>
+
+<!-- Fullscreen Spinner Loading Overlay -->
+<div *ngIf="loading"
+     class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75"
+     style="z-index: 9999;">
+  <div class="text-center">
+    <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status">
+      <span class="visually-hidden">Processing...</span>
+    </div>
+    <div class="mt-3 fw-bold text-dark fs-5">Uploading Offline Booking Records...</div>
+    <small class="text-muted">Calling database procedure pInsertCIFBookingDetailsWithExceldata...</small>
+  </div>
+</div>
+
+<div class="container-fluid py-3">
+  <!-- Page Header Card -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <h3 class="mb-1 text-primary fw-bold">
+            <i class="feather icon-upload-cloud me-2 text-warning"></i>
+            Offline CIF Booking Excel Upload
+          </h3>
+          <p class="text-muted mb-0">
+            Upload offline CIF bookings via Excel spreadsheet (.xlsx, .xls) with automatic detection against previous submits and database records.
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <button (click)="downloadSampleTemplate()" class="btn btn-outline-success">
+            <i class="feather icon-download me-1"></i> Download Sample Template
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Action Card -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white border-bottom py-3">
+      <h5 class="card-title mb-0 fw-semibold text-dark">
+        <i class="feather icon-file-text me-2 text-primary"></i> Select Excel File
+      </h5>
+    </div>
+    <div class="card-body p-4">
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-dropzone"
+           [class.drag-over]="isDragOver"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"
+           (click)="fileInput.click()">
+        <input #fileInput
+               type="file"
+               class="d-none"
+               accept=".xlsx, .xls, .csv"
+               (change)="onFileChange($event)" />
+        <div class="dropzone-content text-center py-4">
+          <div class="upload-icon mb-3">
+            <i class="feather icon-file-plus display-4 text-primary"></i>
+          </div>
+          <h5 class="fw-bold mb-1">Drag and drop your Excel sheet here</h5>
+          <p class="text-muted mb-3">or <span class="text-primary text-decoration-underline" style="cursor: pointer;">browse from computer</span></p>
+          <span class="badge bg-light text-secondary border px-3 py-2">
+            Required columns: InstrumentName, AnalysisName, UserId, NoOfSamples, TotalCharges, Remarks, RequestDate, SCOperatorName
+          </span>
+        </div>
+      </div>
+
+      <!-- File Details, CreatedBy & Actions Summary Bar (When file selected) -->
+      <div *ngIf="selectedFile" class="mt-4 p-3 bg-light rounded border">
+        <!-- Duplicate Detection Statistics Banner -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-secondary fs-6 px-3 py-2">Total Rows: {{ excelRows.length }}</span>
+            <span class="badge bg-success fs-6 px-3 py-2">Unique / New: {{ uniqueCount }}</span>
+            <span *ngIf="dbDuplicateCount > 0" class="badge bg-danger fs-6 px-3 py-2">
+              <i class="feather icon-database me-1"></i> Already in Database: {{ dbDuplicateCount }}
+            </span>
+            <span *ngIf="sheetDuplicateCount > 0" class="badge bg-warning text-dark fs-6 px-3 py-2">
+              <i class="feather icon-copy me-1"></i> Duplicate in Sheet: {{ sheetDuplicateCount }}
+            </span>
+          </div>
+
+          <!-- Exclude Duplicates Option -->
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="excludeDupSwitch"
+                   [(ngModel)]="excludeDuplicates"
+                   (change)="onExcludeDuplicatesToggle()" />
+            <label class="form-check-label fw-bold small text-dark ms-1" for="excludeDupSwitch">
+              FORBID / SKIP DUPLICATE ENTRIES
+            </label>
+          </div>
+        </div>
+
+        <!-- Alert when all rows are duplicates / already in DB -->
+        <div *ngIf="uniqueCount === 0 && excelRows.length > 0" class="alert alert-warning d-flex align-items-center py-2 px-3 mb-3 small">
+          <i class="feather icon-alert-triangle fs-5 text-warning me-2"></i>
+          <div>
+            <strong>Notice:</strong> All <strong>{{ excelRows.length }}</strong> rows already exist in the database table <code>dbo.CIFOfflineBookingSlotMater</code> (or are duplicates). Upload is blocked to prevent duplicate entries.
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="file-badge p-2 bg-white rounded border text-success">
+              <i class="feather icon-file-text fs-3"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark">{{ fileName }}</div>
+              <div class="small text-muted">
+                Size: {{ fileSizeText }} |
+                Upload Targets: <strong [class.text-danger]="(excludeDuplicates ? uniqueCount : excelRows.length) === 0"
+                                        [class.text-primary]="(excludeDuplicates ? uniqueCount : excelRows.length) > 0">
+                  {{ excludeDuplicates ? uniqueCount : excelRows.length }} row(s)
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-flex align-items-center gap-1">
+              <label class="small fw-bold text-secondary mb-0">CreatedBy:</label>
+              <input type="text"
+                     class="form-control form-control-sm"
+                     style="width: 100px;"
+                     [(ngModel)]="createdBy"
+                     placeholder="e.g. 31309" />
+            </div>
+
+            <button (click)="toggleXmlPreview()" class="btn btn-outline-info btn-sm">
+              <i class="feather icon-code me-1"></i> {{ showXmlPreview ? 'Hide XML' : 'View XML' }}
+            </button>
+
+            <button (click)="uploadOfflineBookings()"
+                    class="btn btn-primary px-3"
+                    [disabled]="loading || (excludeDuplicates ? uniqueCount === 0 : excelRows.length === 0)">
+              <i class="feather icon-upload me-1"></i> Upload to Database
+            </button>
+
+            <button (click)="reset()"
+                    class="btn btn-outline-secondary btn-sm"
+                    [disabled]="loading">
+              <i class="feather icon-refresh-cw me-1"></i> Reset
+            </button>
+
+            <button (click)="clearSubmittedHistory()"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Clear remembered records from previous submits">
+              <i class="feather icon-trash-2 me-1"></i> Clear Cache
+            </button>
+          </div>
+        </div>
+
+        <!-- XML Payload Preview Collapsible -->
+        <div *ngIf="showXmlPreview" class="mt-3">
+          <div class="card card-body bg-dark text-white p-3 border-0 rounded" style="max-height: 250px; overflow-y: auto;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-secondary">Generated XML Payload (@BookingSlotData)</span>
+              <small class="text-muted">{{ xmlData.length }} characters</small>
+            </div>
+            <pre class="text-info mb-0 small" style="white-space: pre-wrap;">{{ xmlData }}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Success Banner -->
+      <div *ngIf="uploadSuccess" class="alert alert-success mt-4 d-flex align-items-center" role="alert">
+        <i class="feather icon-check-circle fs-3 me-3 text-success"></i>
+        <div>
+          <h6 class="alert-heading fw-bold mb-1">Booking Records Uploaded Successfully!</h6>
+          <p class="mb-0">{{ uploadResponseMsg }} | Inserted Count: <strong>{{ insertedCount }}</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Preview Card (When data loaded) -->
+  <div *ngIf="excelRows.length > 0" class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white border-bottom py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <!-- Status filter tabs -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="fw-semibold text-dark me-1"><i class="feather icon-eye me-1 text-info"></i> View:</span>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button"
+                  class="btn"
+                  [ngClass]="statusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'"
+                  (click)="setStatusFilter('all')">
+            All ({{ excelRows.length }})
+          </button>
+          <button type="button"
+                  class="btn"
+                  [ngClass]="statusFilter === 'valid' ? 'btn-success' : 'btn-outline-success'"
+                  (click)="setStatusFilter('valid')">
+            Valid New ({{ uniqueCount }})
+          </button>
+          <button *ngIf="dbDuplicateCount > 0"
+                  type="button"
+                  class="btn"
+                  [ngClass]="statusFilter === 'inDatabase' ? 'btn-danger' : 'btn-outline-danger'"
+                  (click)="setStatusFilter('inDatabase')">
+            In Database ({{ dbDuplicateCount }})
+          </button>
+          <button *ngIf="sheetDuplicateCount > 0"
+                  type="button"
+                  class="btn"
+                  [ngClass]="statusFilter === 'duplicate' ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'"
+                  (click)="setStatusFilter('duplicate')">
+            In Sheet Dups ({{ sheetDuplicateCount }})
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <!-- Search filter -->
+        <div class="input-group input-group-sm" style="max-width: 250px;">
+          <span class="input-group-text bg-white"><i class="feather icon-search"></i></span>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Search records..."
+                 [(ngModel)]="searchQuery"
+                 (keyup)="onSearch()" />
+        </div>
+
+        <!-- Items per page -->
+        <div class="d-flex align-items-center gap-1">
+          <label class="small text-muted text-nowrap mb-0">Show:</label>
+          <select class="form-select form-select-sm"
+                  [value]="itemsPerPage"
+                  (change)="onItemsPerPageChange($event)">
+            <option *ngFor="let opt of itemsPerPageOptions" [value]="opt">{{ opt }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive" style="max-height: 480px;">
+        <table class="table table-hover align-middle mb-0 text-nowrap">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th scope="col" style="width: 50px;" class="text-center">#</th>
+              <th scope="col" style="width: 140px;">Status</th>
+              <th scope="col">InstrumentName</th>
+              <th scope="col">AnalysisName</th>
+              <th scope="col">UserId</th>
+              <th scope="col" class="text-center">NoOfSamples</th>
+              <th scope="col" class="text-end">TotalCharges</th>
+              <th scope="col">Remarks</th>
+              <th scope="col">RequestDate</th>
+              <th scope="col">SCOperatorName</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of paginatedRows; let i = index"
+                [class.table-danger]="row.isDuplicate && row.duplicateType === 'database'"
+                [class.table-warning]="row.isDuplicate && row.duplicateType === 'sheet'">
+              <td class="text-center text-muted fw-bold">
+                {{ row.originalRowIndex }}
+              </td>
+              <td>
+                <span *ngIf="!row.isDuplicate" class="badge bg-success px-2 py-1">
+                  <i class="feather icon-check me-1"></i> Valid New
+                </span>
+                <span *ngIf="row.isDuplicate && row.duplicateType === 'database'"
+                      class="badge bg-danger px-2 py-1"
+                      title="Already exists in database table dbo.CIFOfflineBookingSlotMater from a previous submit">
+                  <i class="feather icon-database me-1"></i> In Database
+                </span>
+                <span *ngIf="row.isDuplicate && row.duplicateType === 'sheet'"
+                      class="badge bg-warning text-dark px-2 py-1"
+                      [title]="'Duplicate of Row #' + row.duplicateOfIndex">
+                  <i class="feather icon-copy me-1"></i> Dup in Sheet (#{{ row.duplicateOfIndex }})
+                </span>
+              </td>
+              <td class="fw-semibold text-primary">
+                {{ row.InstrumentName || '-' }}
+              </td>
+              <td>
+                {{ row.AnalysisName || '-' }}
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border">{{ row.UserId || '-' }}</span>
+              </td>
+              <td class="text-center">
+                {{ row.NoOfSamples }}
+              </td>
+              <td class="text-end fw-semibold">
+                {{ row.TotalCharges }}
+              </td>
+              <td class="text-truncate" style="max-width: 200px;" [title]="row.Remarks">
+                {{ row.Remarks || '-' }}
+              </td>
+              <td class="text-muted small">
+                {{ row.RequestDate || '-' }}
+              </td>
+              <td>
+                {{ row.SCOperatorName || '-' }}
+              </td>
+            </tr>
+            <tr *ngIf="paginatedRows.length === 0">
+              <td colspan="10" class="text-center py-4 text-muted">
+                No matching records found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="card-footer bg-white border-top py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <small class="text-muted">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+        {{ (currentPage * itemsPerPage > filteredRows.length) ? filteredRows.length : (currentPage * itemsPerPage) }}
+        of {{ filteredRows.length }} entries
+        <span *ngIf="duplicateCount > 0 && excludeDuplicates" class="text-danger ms-2">
+          ({{ duplicateCount }} duplicate entries excluded from upload)
+        </span>
+      </small>
+
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPage(currentPage - 1)" style="cursor: pointer;">Previous</a>
+        </li>
+        <li class="page-item"
+            *ngFor="let p of [].constructor(totalPages); let idx = index"
+            [class.active]="currentPage === idx + 1">
+          <a class="page-link"
+             *ngIf="idx + 1 === 1 || idx + 1 === totalPages || (idx + 1 >= currentPage - 2 && idx + 1 <= currentPage + 2)"
+             (click)="goToPage(idx + 1)"
+             style="cursor: pointer;">
+            {{ idx + 1 }}
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" (click)="goToPage(currentPage + 1)" style="cursor: pointer;">Next</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

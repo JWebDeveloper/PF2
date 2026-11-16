@@ -202,6 +202,10 @@ const routes: Routes = [
     loadChildren: () => import('./views/pages/AdminDashboard/APayment-Proof-Upload-Status/AUploadProofStatus.module').then(m => m.AUploadProofStatusModule),
   },
   {
+    path: "OfflineBookingUpload",
+    loadChildren: () => import('./views/pages/AdminDashboard/A-Offline-Booking-Upload/AOfflineBookingUpload.module').then(m => m.AOfflineBookingUploadModule),
+  },
+  {
     path: "EventCrud",
     loadChildren: () => import('./views/pages/AdminDashboard/EventsCrud/event-crud.module').then(m => m.EventsCrudComponentModule),
   },

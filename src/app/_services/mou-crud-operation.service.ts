@@ -82,9 +82,8 @@ export class MOUCrudOperation {
   // private readonly baseUrl = 'https://localhost:7125/api/LpuCIF';//'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
   // private readonly baseUrl = 'https://webapi.lpu.in/cif/api/LpuCIF'; //'https://localhost:7125/api/LpuCIF'; 'https://localhost:7125/api/LpuCIF';//
 
-  private readonly baseUrl = 'https://projectsapi.lpu.in/api/LpuCIF';
-  // const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
-  // const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
+  
+  private readonly baseUrl = `${environment.apiUrl}api/LpuCIF`;
 
   private get authHeadersFormData(): HttpHeaders {
     const token = this.storageService.getUser();

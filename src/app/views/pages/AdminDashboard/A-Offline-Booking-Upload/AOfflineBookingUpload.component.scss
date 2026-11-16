@@ -1,0 +1,57 @@
+.upload-dropzone {
+  border: 2px dashed #b8c2cc;
+  border-radius: 8px;
+  background-color: #fafbfc;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+
+  &:hover {
+    border-color: #ef7d00;
+    background-color: #fff9f3;
+  }
+
+  &.drag-over {
+    border-color: #ef7d00;
+    background-color: #fff2e2;
+    transform: scale(1.01);
+  }
+
+  .dropzone-content {
+    pointer-events: none;
+  }
+
+  .upload-icon i {
+    font-size: 3rem;
+    color: #ef7d00 !important;
+  }
+}
+
+.table {
+  font-size: 0.875rem;
+
+  th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+    color: #495057;
+    white-space: nowrap;
+    border-top: none;
+  }
+
+  td {
+    white-space: nowrap;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #ef7d00;
+  border-color: #ef7d00;
+  color: #fff;
+}
+
+.pagination .page-link {
+  color: #495057;
+}
+

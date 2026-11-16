@@ -37,32 +37,31 @@ export class ViewBookingAdminComponent implements OnInit {
   loadingIndicator = false;   headHtmlData: any[] = [];
   p: any = 1;   perPage: any = 5;   perPages: any = 5;  currentPages: any=1; itemsPerPages = 10;
   BookingCase: any;   BookingData: any[]=[];      currentPage = 1;    itemsPerPage = 10; //
-  
+
   // Items per page dropdown options
   itemsPerPageOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
     { label: '15', value: 15 },
     { label: '20', value: 20 },
-    { label: 'All', value: 'all' }
   ];
-  
+
   // Track if 'all' is selected
   isAllSelected = false;
-  
+
   UplaodedResultsData: any[]=[]; tmpUplaodedResultsData: any[]=[];
   tmpsBookingData: any[]=[];    InstrumentId: any;    UserRole: any;  UserId: any;
   uploadEnabled: boolean; Remarks: any;   serverUrl: string;
 
   isLoginFailed: boolean = false;     EmployeeDetails: any;  EmployeeName: any;  EmployeeCode: any;
   ContactNoX: any;    Department: any;  DepartmentName: any;  showNoDataFoundMessage: boolean;
- 
+
   @ViewChild('table') table: ElementRef;
   displayedColumns: string[] = [
     'instrumentName', 'analysisType', 'analysisCharges', 'noOfSamples',
     'totalCharges', 'remarks', 'bookingRequestDate', //'bookingrequestDate'
   ];
-   
+
   constructor(
     private CIFwebService: LpuCIFWebService, private CIFwebServiceNew: LpuCIFWebServiceNewService,
     private storageService: StorageService,
@@ -82,26 +81,26 @@ export class ViewBookingAdminComponent implements OnInit {
     }
   }
   ngOnInit(): void {
- 
+
     this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';//'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
     // const GetCookieData = this.cookieService.get('authData');
     // const retrievedCookies = JSON.parse(GetCookieData);
     // this.UserRole = retrievedCookies.UserRole;
     // this.UserId = retrievedCookies.EmailId;
-    
+
     let loginName = this.route.snapshot.params['loginName'];
     if (loginName != '' && loginName != undefined) {
       this.getToken(loginName);
     }
-   
+
   }
-  getToken(id: any) 
+  getToken(id: any)
   {
-    
+
     this.authService.loginTemp(id).subscribe({
       next: data => {
         this.storageService.saveUser(data);
-        
+
          this.GetEmployeeDetails(id);
         this.GetAllUPloadedResults();
       },
@@ -194,7 +193,7 @@ export class ViewBookingAdminComponent implements OnInit {
     });
   }
 
-  searchQueryx: string = '';  
+  searchQueryx: string = '';
 
   searchx() {
     const query = this.searchQueryx.toLowerCase();
@@ -218,7 +217,7 @@ export class ViewBookingAdminComponent implements OnInit {
     return this.tmpUplaodedResultsData.slice(startIndex, endIndex);
   }
 
- 
+
   nextPages() {
     if (this.currentPages < this.getTotalPagess()) {
       this.currentPages++;
@@ -261,7 +260,7 @@ export class ViewBookingAdminComponent implements OnInit {
 
 
 
-  // Tab -1 
+  // Tab -1
   getBookingDetails() {
     this.CIFwebService.GetAllBooking().subscribe({
       next: response => {
@@ -405,7 +404,7 @@ export class ViewBookingAdminComponent implements OnInit {
                 Swal.fire({
                     title: 'Uploaded Successfully!',
                     icon: 'success'
-                }).then(() => {                    
+                }).then(() => {
                   this.router.navigateByUrl('ViewBookingAdmin', { skipLocationChange: true }).then(() => {
                     this.router.navigate(['/ViewBookingAdmin']);
                   });
@@ -490,21 +489,21 @@ export class ViewBookingAdminComponent implements OnInit {
 
    onDownloadFile(remoteUrl: string): void {
           swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
-      
+
           this.CIFwebService.downloadFile(remoteUrl).subscribe({
             next: (blob: Blob) => {
               const downloadUrl = window.URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = downloadUrl;
-      
+
               const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
               link.download = fileName;
-      
+
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
               window.URL.revokeObjectURL(downloadUrl);
-      
+
               swal.close();
             },
             error: async (err) => {

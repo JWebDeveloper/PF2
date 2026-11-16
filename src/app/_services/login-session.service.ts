@@ -4,11 +4,7 @@ import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 import { environment } from 'src/environments/environment';
 
-// const AUTH_API = 'https://projectsapi.lpu.in/';
 
-const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 
 @Injectable({
   providedIn: 'root',

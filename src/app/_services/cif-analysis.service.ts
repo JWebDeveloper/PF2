@@ -4,12 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
 // import { environment } from '../../../environments/environment';
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/';
-const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCALS = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+
 
 export interface Instrument {
   instrumentId: string;
@@ -69,14 +64,12 @@ export class CIFAnalysisService {
   }
 
   getInstruments(): Observable<any> {
-    // return this.http.get<Instrument[]>( AUTH_API +'api/LpuCIF/GetAllInstruments');
+
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + this.authToken)
       .set('Content-Type', 'application/json');
     return this.http.get<Instrument[]>(
-      AUTH_API + 'api/LpuCIF/GetAllInstruments',
-      //   AUTH_API +'api/LpuCIF/GetAllInstruments',
-      // AUTH_API_LOCAL + 'api/LpuCIF/GetAllInstruments',
+      `${environment.apiUrl}api/LpuCIF/GetAllInstruments`,
       { headers },
     );
   }
