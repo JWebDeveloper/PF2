@@ -5,10 +5,9 @@ import { catchError } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { EventModel } from '../_model/Event.model';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
+import { environment } from 'src/environments/environment.prod';
 
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API = 'https://webapi.lpu.in/cif/';
-// const AUTH_API = 'https://localhost:7125/';
+const AUTH_API = environment.apiUrl ;
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +45,7 @@ export class LpuCIFWebServiceNewService {
     };
   }
 
-  
+
 
 
   folderUrl = 'https://files.lpu.in/umsweb/webftp/CIFDocuments/';
@@ -57,18 +56,18 @@ export class LpuCIFWebServiceNewService {
 
 
   CIFGetUserDetails(UserEmailId: string): Observable<any> {
-     return this.http.get<any>(AUTH_API + `api/LpuCIFHeaderFooter/CIFGetUserDetails?EmailId=` + UserEmailId,      
+    return this.http.get<any>(AUTH_API + `api/LpuCIFHeaderFooter/CIFGetUserDetails?EmailId=` + UserEmailId,
     )
   }
-  
-    CIFUpdateUserDetails(UpdateUserData: FormData): Observable<any> {
-     
+
+  CIFUpdateUserDetails(UpdateUserData: FormData): Observable<any> {
+
     return this.http.post(
       AUTH_API + 'api/LpuCIFHeaderFooter/CIFChangePasswordDetails', UpdateUserData
     )
   }
 
-// home page  
+  // home page  
   getAllInstruments(): Observable<any> {
     return this.http.get<any>(`${AUTH_API}api/LpuCIFHeaderFooter/GetAllInstruments`);
   }
@@ -77,17 +76,17 @@ export class LpuCIFWebServiceNewService {
       AUTH_API + 'api/LpuCIFHeaderFooter/GetAllInstruments',
     ).pipe(catchError(this.handleError('GetAllInstrumentsData', [])));
   }
-// our instrument page 
+  // our instrument page 
   fetchSpecifications(): Observable<any> {
     return this.http.get<any>(`${AUTH_API}api/LpuCIFHeaderFooter/GetAllSpecifications`);
   }
   getLpuHeader(): Observable<any> {
-    
+
     return this.http.get(AUTH_API + 'api/LpuCIFHeaderFooter/GetLpuHeader');
   }
 
   getLpuFooter(): Observable<any> {
-    
+
     return this.http.get(AUTH_API + 'api/LpuCIFHeaderFooter/GetLpuFooter');
   }
 
@@ -102,25 +101,23 @@ export class LpuCIFWebServiceNewService {
 
   // New Logic for Login Page
   GetAuthoriseUserData(loginData: FormData): Observable<any> {
- 
+
     return this.http.post(
-      AUTH_API + 'api/LpuCIFHeaderFooter/LoginExternaluser', loginData 
-      // AUTH_API + 'api/LpuCIFHeaderFooter/GetUserDataIdWise', loginData 
-    ) 
+      AUTH_API + 'api/LpuCIFHeaderFooter/LoginExternaluser', loginData
+    )
   }
 
-  // New Logic for Internal user login
   NewUserRecord(newUserData: FormData): Observable<any> {
- 
+
     return this.http.post(
-      AUTH_API + 'api/LpuCIFHeaderFooter/CreateCIFUserAccount', newUserData 
-    ) 
+      AUTH_API + 'api/LpuCIFHeaderFooter/CreateCIFUserAccount', newUserData
+    )
   }
 
-  NewUserSignUp(newUserData: FormData): Observable<any> {   
-    return this.http.post(      
+  NewUserSignUp(newUserData: FormData): Observable<any> {
+    return this.http.post(
       AUTH_API + 'api/LpuCIFHeaderFooter/CIFNewUserSignUpInsert', newUserData
-    ); 
+    );
   }
 
 
@@ -129,36 +126,36 @@ export class LpuCIFWebServiceNewService {
       AUTH_API + 'api/LpuCIFHeaderFooter/GetAnalysisIdWisePriceDetails?AnalysisId=' + Id + '&TypeId=' + TypeId,
     )
   }
-   
+
 
   GetInstrumentsDetails(): Observable<any> {
-     return this.http.get(
+    return this.http.get(
       AUTH_API + 'api/LpuCIFHeaderFooter/GetInstrumentsDetails',
     )
   }
 
-    
+
   GetAllInstruments(): Observable<any> {
-     return this.http.get(
+    return this.http.get(
       AUTH_API + 'api/LpuCIFHeaderFooter/GetInstrumentsDetails',
     )
   }
 
 
-  
+
 
   GetAllEventDetails(): Observable<any> {
-     return this.http.get(
+    return this.http.get(
       AUTH_API + 'api/LpuCIFHeaderFooter/GetAllCifEventDetails',
     )
   }
 
   GetDuationAndPrice(AnalysisId: any, UserId: any, Duration: string): Observable<any> {
 
-     return this.http.get(
+    return this.http.get(
       AUTH_API + `api/LpuCIFHeaderFooter/GetDuationAndPrice?AnalysisId=` + AnalysisId + `&UserId=` + UserId + `&Duration=` + Duration,
     )
-     
+
   }
 
 
@@ -179,16 +176,16 @@ export class LpuCIFWebServiceNewService {
       AUTH_API + 'api/LpuCIF/NewBookingSlot', newBookingData, { headers })
       .pipe(catchError(this.handleError('addBookingSlot', { success: false, message: 'Failed to add booking slot' })));
   }
- 
 
 
 
- 
- 
-  
- 
 
- 
+
+
+
+
+
+
 
 
 

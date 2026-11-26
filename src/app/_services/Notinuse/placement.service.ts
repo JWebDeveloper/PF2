@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
+import { environment } from 'src/environments/environment.prod';
 
-const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API = environment.apiUrl ;// 'https://projectsapi.lpu.in/';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })

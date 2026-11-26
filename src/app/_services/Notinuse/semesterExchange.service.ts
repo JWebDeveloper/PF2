@@ -10,7 +10,7 @@ import { StorageService } from './storage.service';
 // import { xmlUniversity } from '../views/pages/sm-add-new-university/xmlUniversity.model';
 // import { deleteUniversity } from '../views/pages/sm-add-new-university/deleteUniversity.model';
 
-const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API = environment.apiUrl ;// 'https://projectsapi.lpu.in/';
 //const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
 
 @Injectable({

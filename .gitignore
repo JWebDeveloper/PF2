@@ -1,6 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
+/old-Builds
 /dist
 /Zip-Build
 /dist-14-July-25

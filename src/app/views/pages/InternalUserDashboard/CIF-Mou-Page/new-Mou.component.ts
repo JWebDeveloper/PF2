@@ -34,7 +34,6 @@ export type FormMode = 'create' | 'edit' | null;
   styleUrls: ['./new-Mou.scss'],
 })
 export class NewUserMouComponent implements OnInit, OnDestroy {
-
   @ViewChild('editModal') editModal!: TemplateRef<any>;
 
   private readonly destroy$ = new Subject<void>();
@@ -44,26 +43,26 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
   ServerUrl = '';
 
   // ── Legacy session fields (kept for compatibility) ────────────────────────
-  UserRole:   any;
-  UserId:     any;
+  UserRole: any;
+  UserId: any;
   user_Email: any;
 
-  userEmail = ''; 
-  userName  = ''; 
+  userEmail = '';
+  userName = '';
 
-  mouList:   MouRecord[] = [];  
-  isLoading  = false;           
-  formMode:  FormMode = null;   
+  mouList: MouRecord[] = [];
+  isLoading = false;
+  formMode: FormMode = null;
 
-  searchQuery = '';  
-  currentPage = 1;   
-  pageSize    = 8;   
+  searchQuery = '';
+  currentPage = 1;
+  pageSize = 8;
 
   get filteredList(): MouRecord[] {
     const q = this.searchQuery.toLowerCase().trim();
     if (!q) return this.mouList;
-    return this.mouList.filter(m =>
-      Object.values(m).some(v => String(v).toLowerCase().includes(q))
+    return this.mouList.filter((m) =>
+      Object.values(m).some((v) => String(v).toLowerCase().includes(q)),
     );
   }
 
@@ -81,32 +80,32 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
   }
 
   form = {
-    mouId:        '',
-    mouTitle:     '',
+    mouId: '',
+    mouTitle: '',
     mouStartDate: '',
-    mouEndDate:   '',
-    mouRemarks:   '',
+    mouEndDate: '',
+    mouRemarks: '',
   };
 
   // ── File state ────────────────────────────────────────────────────────────
   fileData64 = '';
-  fileName   = '';
-  fileStatus  = false;        
-  editExistingFileName = '';  
-  submitting  = false;        
+  fileName = '';
+  fileStatus = false;
+  editExistingFileName = '';
+  submitting = false;
 
   // ── Edit row ──────────────────────────────────────────────────────────────
-  editingRow: MouRecord | null = null;   // was: signal<MouRecord | null>(null)
+  editingRow: MouRecord | null = null; // was: signal<MouRecord | null>(null)
 
   // ── Constructor injection (replaces inject()) ──────────────────────────────
   constructor(
-    private readonly mouService:    MOUCrudOperation,
+    private readonly mouService: MOUCrudOperation,
     private readonly cookieService: CookieService,
     private readonly cifWebService: LpuCIFWebService,
-    private readonly modalService:  NgbModal,
-    private readonly router:        Router,
-    private readonly authSession:   LoginSessionService,
-    private readonly cdRef:         ChangeDetectorRef,
+    private readonly modalService: NgbModal,
+    private readonly router: Router,
+    private readonly authSession: LoginSessionService,
+    private readonly cdRef: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private readonly platformId: Object,
   ) {}
 
@@ -123,10 +122,14 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
 
   // ── Session ───────────────────────────────────────────────────────────────
   private loadSession(): void {
-    if (!isPlatformBrowser(this.platformId)) { return; }
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
 
-    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';//'http://172.19.2.52/umsweb/webftp/CIFDocuments/CIFMouDocuments/';
-    this.ServerUrl = 'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';
+    this.serverUrl =
+      'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/'; //'http://172.19.2.52/umsweb/webftp/CIFDocuments/CIFMouDocuments/';
+    this.ServerUrl =
+      'https://files.lpu.in/umsweb/CIFDocuments/CIFMouDocuments/';
 
     const rawData = this.cookieService.get('InternalUserAuthData');
     if (!rawData || rawData.trim().length === 0) {
@@ -136,11 +139,11 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const c         = JSON.parse(rawData);
-      this.UserRole   = c.UserRole ;//?.length > 0 ? c.userRole : 'Internal User';
+      const c = JSON.parse(rawData);
+      this.UserRole = c.UserRole; //?.length > 0 ? c.userRole : 'Internal User';
       this.user_Email = c.EmailId;
-      this.userEmail  = c.EmailId        ?? '';   
-      this.userName   = c.CandidateName  ?? '';   
+      this.userEmail = c.EmailId ?? '';
+      this.userName = c.CandidateName ?? '';
     } catch {
       this.cookieService.delete('InternalUserAuthData');
       this.router.navigate(['/Home']);
@@ -149,14 +152,15 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
 
   // ── Load ──────────────────────────────────────────────────────────────────
   loadMyMous(): void {
-    this.isLoading = true;                       
-    this.mouService.viewMyMous(this.userEmail)   
+    this.isLoading = true;
+    this.mouService
+      .viewMyMous(this.userEmail)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: res => {
-          this.mouList    = res.item1 ?? [];     
-          this.currentPage = 1;                  
-          this.isLoading  = false;               
+        next: (res) => {
+          this.mouList = res.item1 ?? [];
+          this.currentPage = 1;
+          this.isLoading = false;
         },
         error: () => {
           this.isLoading = false;
@@ -167,47 +171,50 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
   // ── Create form ───────────────────────────────────────────────────────────
   openCreateForm(): void {
     this.resetForm();
-    this.formMode = 'create';                      
-  } 
- 
-  closeForm(): void { 
-    this.formMode = null;                          
+    this.formMode = 'create';
+  }
+
+  closeForm(): void {
+    this.formMode = null;
     this.resetForm();
   }
 
   // ── Edit modal ────────────────────────────────────────────────────────────
   openEditModal(row: MouRecord): void {
-    this.editingRow = row;                        
+    this.editingRow = row;
 
     this.form = {
-      mouId:        row.mouId        ?? '',
-      mouTitle:     row.mouTitle,
+      mouId: row.mouId ?? '',
+      mouTitle: row.mouTitle,
       mouStartDate: this.toInputDate(row.mouStartDate),
-      mouEndDate:   this.toInputDate(row.mouEndDate),
-      mouRemarks:   row.mouRemarks   ?? '',
+      mouEndDate: this.toInputDate(row.mouEndDate),
+      mouRemarks: row.mouRemarks ?? '',
     };
 
     this.fileData64 = '';
-    this.fileName   = '';
-    this.fileStatus  = false;                       
- 
-    this.editExistingFileName =                     
-      row.mouDocumentUrl
-        ? row.mouDocumentUrl.split('/').pop() ?? row.mouDocumentUrl
-        : '';
+    this.fileName = '';
+    this.fileStatus = false;
+
+    this.editExistingFileName = row.mouDocumentUrl
+      ? (row.mouDocumentUrl.split('/').pop() ?? row.mouDocumentUrl)
+      : '';
 
     this.modalService.open(this.editModal, { size: 'lg', centered: true });
   }
 
   // ── File handling ─────────────────────────────────────────────────────────
   onFileSelected(event: Event): void {
-    this.fileStatus = false;                       
+    this.fileStatus = false;
     const target = event.target as HTMLInputElement;
-    const file   = target.files?.[0];
+    const file = target.files?.[0];
     if (!file) return;
 
     if (file.size > 5_242_880) {
-      Swal.fire({ title: 'File too large', text: 'Max allowed size is 5 MB.', icon: 'warning' });
+      Swal.fire({
+        title: 'File too large',
+        text: 'Max allowed size is 5 MB.',
+        icon: 'warning',
+      });
       target.value = '';
       return;
     }
@@ -218,7 +225,11 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
     if (!allowed.includes(file.type)) {
-      Swal.fire({ title: 'Invalid file type', text: 'Only PDF and Word documents are allowed.', icon: 'warning' });
+      Swal.fire({
+        title: 'Invalid file type',
+        text: 'Only PDF and Word documents are allowed.',
+        icon: 'warning',
+      });
       target.value = '';
       return;
     }
@@ -226,61 +237,79 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
     reader.onload = () => {
       this.fileData64 = (reader.result as string).split(',')[1];
-      this.fileName   = file.name;
-      this.fileStatus  = true;                     
+      this.fileName = file.name;
+      this.fileStatus = true;
     };
     reader.readAsDataURL(file);
   }
 
   // ── Submit: Insert ────────────────────────────────────────────────────────
   submitCreate(ngForm: NgForm): void {
-    if (ngForm.invalid) { ngForm.form.markAllAsTouched(); return; }
-    if (!this.fileStatus) {                        // was: !this.fileStatus()
-      Swal.fire({ title: 'Document required', text: 'Please upload the MOU document.', icon: 'warning' });
+    if (ngForm.invalid) {
+      ngForm.form.markAllAsTouched();
+      return;
+    }
+    if (!this.fileStatus) {
+      // was: !this.fileStatus()
+      Swal.fire({
+        title: 'Document required',
+        text: 'Please upload the MOU document.',
+        icon: 'warning',
+      });
       return;
     }
 
-    this.submitting = true;                      
+    this.submitting = true;
 
     const payload: MouInsertPayload = {
-      action:          'Insert',
-      mouTitle:        this.form.mouTitle,
+      action: 'Insert',
+      mouTitle: this.form.mouTitle,
       mouDocumentData: this.fileData64,
-      mouDocumentUrl:  this.fileName,
-      mouStartDate:    this.form.mouStartDate,
-      mouEndDate:      this.form.mouEndDate,
-      mouRemarks:      this.form.mouRemarks,
-      userId:          this.userEmail,          
+      mouDocumentUrl: this.fileName,
+      mouStartDate: this.form.mouStartDate,
+      mouEndDate: this.form.mouEndDate,
+      mouRemarks: this.form.mouRemarks,
+      userId: this.userEmail,
     };
 
-    this.mouService.insertMou(payload)
+    this.mouService
+      .insertMou(payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: res => {
-          this.submitting = false;                
+        next: (res) => {
+          this.submitting = false;
           if (res.item1?.[0]?.msg === 'Success') {
-            Swal.fire({ title: 'MOU Submitted!', icon: 'success' })
-              .then(() => { this.closeForm(); this.loadMyMous(); });
+            Swal.fire({ title: 'MOU Submitted!', icon: 'success' }).then(() => {
+              this.closeForm();
+              this.loadMyMous();
+            });
           } else {
             Swal.fire({ title: 'Submission Failed', icon: 'error' });
           }
         },
         error: () => {
           this.submitting = false;
-          Swal.fire({ title: 'Error', text: 'Could not submit MOU.', icon: 'error' });
+          Swal.fire({
+            title: 'Error',
+            text: 'Could not submit MOU.',
+            icon: 'error',
+          });
         },
       });
   }
 
   // ── Submit: Update ────────────────────────────────────────────────────────
   submitUpdate(ngForm: NgForm, modal: any): void {
-    if (ngForm.invalid) { ngForm.form.markAllAsTouched(); return; }
+    if (ngForm.invalid) {
+      ngForm.form.markAllAsTouched();
+      return;
+    }
 
-    if (!this.fileStatus) {                     
+    if (!this.fileStatus) {
       Swal.fire({
         title: 'Document required',
-        text:  'Please upload the MOU document to proceed with the update.',
-        icon:  'warning',
+        text: 'Please upload the MOU document to proceed with the update.',
+        icon: 'warning',
       });
       return;
     }
@@ -288,41 +317,48 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
     this.submitting = true;
 
     const payload: MouUpdatePayload = {
-      action:          'Update',
-      mouId:           this.form.mouId,
-      mouTitle:        this.form.mouTitle,
+      action: 'Update',
+      mouId: this.form.mouId,
+      mouTitle: this.form.mouTitle,
       mouDocumentData: this.fileData64,
-      mouDocumentUrl:  this.fileName,
-      mouStartDate:    this.form.mouStartDate,
-      mouEndDate:      this.form.mouEndDate,
-      mouRemarks:      this.form.mouRemarks,
-      loginName:       this.userEmail,           
-      userId:          this.userEmail,
+      mouDocumentUrl: this.fileName,
+      mouStartDate: this.form.mouStartDate,
+      mouEndDate: this.form.mouEndDate,
+      mouRemarks: this.form.mouRemarks,
+      loginName: this.userEmail,
+      userId: this.userEmail,
     };
 
-    this.mouService.updateMou(payload)
+    this.mouService
+      .updateMou(payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: res => {
+        next: (res) => {
           this.submitting = false;
           if (res.item1?.[0]?.msg === 'Success') {
-            Swal.fire({ title: 'MOU Updated!', icon: 'success' })
-              .then(() => { modal.close(); this.loadMyMous(); });
+            Swal.fire({ title: 'MOU Updated!', icon: 'success' }).then(() => {
+              modal.close();
+              this.loadMyMous();
+            });
           } else {
             Swal.fire({ title: 'Update Failed', icon: 'error' });
           }
         },
         error: () => {
           this.submitting = false;
-          Swal.fire({ title: 'Error', text: 'Could not update MOU.', icon: 'error' });
+          Swal.fire({
+            title: 'Error',
+            text: 'Could not update MOU.',
+            icon: 'error',
+          });
         },
       });
   }
 
   // ── Search & pagination ───────────────────────────────────────────────────
   onSearch(value: string): void {
-    this.searchQuery = value;                      
-    this.currentPage = 1;                          
+    this.searchQuery = value;
+    this.currentPage = 1;
   }
 
   nextPage(): void {
@@ -333,77 +369,83 @@ export class NewUserMouComponent implements OnInit, OnDestroy {
     if (this.currentPage > 1) this.currentPage--;
   }
 
- 
   statusLabel(row: MouRecord): string {
-    if (row.mouStatus === '0')       return 'Expired';
-    if (row.mouStatus === '1')       return 'Active';
-    if (row.mouStatus === 'NA')       return 'Pending';
-    if (row.isApproved === 'True')   return 'Approved';
-    if (row.isApproved === 'False')  return 'Disapproved';
-    if (row.isApproved === 'NA')    return 'Pending';
+    if (row.mouStatus === '0') return 'Expired';
+    if (row.mouStatus === '1') return 'Active';
+    if (row.mouStatus === 'NA') return 'Pending';
+    if (row.isApproved === 'True') return 'Approved';
+    if (row.isApproved === 'False') return 'Disapproved';
+    if (row.isApproved === 'NA') return 'Pending';
     return 'Pending';
   }
 
   statusClass(row: MouRecord): string {
-    if (row.mouStatus === '0')       return 'badge-expired';
-    if (row.mouStatus === '1')       return 'badge-active';
-    if (row.isApproved === 'True')   return 'badge-approved';
-    if (row.isApproved === 'False')  return 'badge-disapproved';
+    if (row.mouStatus === '0') return 'badge-expired';
+    if (row.mouStatus === '1') return 'badge-active';
+    if (row.isApproved === 'True') return 'badge-approved';
+    if (row.isApproved === 'False') return 'badge-disapproved';
     return 'badge-pending';
   }
 
-  viewDocument(url: string ): void {
+  viewDocument(url: string): void {
     // window.open(this.serverUrl + url, '_blank');
     const urls = this.serverUrl + url;
     this.onDownloadFile(urls);
   }
 
-
-  
-   downloadFile(fileName: string): void {
+  downloadFile(fileName: string): void {
     const url = this.serverUrl + fileName;
     this.onDownloadFile(url);
     // window.open(url, '_blank');
   }
 
+  onDownloadFile(remoteUrl: string): void {
+    Swal.fire({
+      title: 'Downloading...',
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
 
-  
-     onDownloadFile(remoteUrl: string): void {
-       Swal.fire({ title: 'Downloading...', didOpen: () => { Swal.showLoading(null); }});
-    
-        this.cifWebService.downloadFile(remoteUrl).subscribe({
-          next: (blob: Blob) => {
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-    
-            const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-            link.download = fileName;
-    
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(downloadUrl);
-    
-            Swal.close();
-          },
-          error: async (err) => {
-            Swal.close();
-            if (err.error instanceof Blob) {
-              const errorMsg = JSON.parse(await err.error.text());
-              Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-            } else {
-              Swal.fire('Error', 'Could not connect to the server', 'error');
-            }
-          }
-        });
-      }
+    this.cifWebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          Swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      },
+    });
+  }
   // ── Private helpers ───────────────────────────────────────────────────────
   private resetForm(): void {
-    this.form = { mouId: '', mouTitle: '', mouStartDate: '', mouEndDate: '', mouRemarks: '' };
-    this.fileData64          = '';
-    this.fileName            = '';
-    this.fileStatus          = false;
+    this.form = {
+      mouId: '',
+      mouTitle: '',
+      mouStartDate: '',
+      mouEndDate: '',
+      mouRemarks: '',
+    };
+    this.fileData64 = '';
+    this.fileName = '';
+    this.fileStatus = false;
     this.editExistingFileName = '';
   }
 

@@ -1,5 +1,13 @@
 import { FormBuilder } from '@angular/forms';
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -24,9 +32,208 @@ import { DatePipe } from '@angular/common';
   selector: 'app-view-bookings',
   templateUrl: './view-bookings.component.html',
   styleUrls: ['./view-bookings.component.scss'],
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class ViewBookingsComponent implements OnInit {
+  isReuploadAllowed(date: any): boolean {
+    if (!date) {
+      return false;
+    }
+
+    let bookingDate: Date;
+
+    // Handle MM/dd/yyyy HH:mm:ss format
+    if (typeof date === 'string' && date.includes('/')) {
+      const datePart = date.split(' ')[0];
+      const parts = datePart.split('/');
+
+      if (parts.length !== 3) return false;
+
+      const month = Number(parts[0]);
+      const day = Number(parts[1]);
+      const year = Number(parts[2]);
+
+      bookingDate = new Date(year, month - 1, day);
+    } else {
+      bookingDate = new Date(date);
+    }
+
+    if (isNaN(bookingDate.getTime())) {
+      return false;
+    }
+
+    // Cutoff date: 20 September 2026
+    const cutoffDate = new Date(2026, 8, 18);
+
+    return bookingDate > cutoffDate;
+  }
+  @ViewChild('ReuploadSampleSheetModal')
+  ReuploadSampleSheetModal: TemplateRef<any>;
+
+  // ============================================
+  // Properties - File Upload
+  // ============================================
+  // ReceiptRemarks = '';
+  // FileDataX: string | null = null;
+  // fileDataX: any;
+  // fileStatus: any;
+  // fileName: any;
+  // fileChosen: { [key: number]: boolean } = {};
+  sampleSheetFileChosen = false;
+  sampleSheetFileName = '';
+  sampleSheetBase64: string | null = null;
+
+  openReuploadSampleModal(booking: any): void {
+    this.BookingCase = booking;
+    this.sampleSheetFileChosen = false;
+    this.sampleSheetFileName = '';
+    this.sampleSheetBase64 = null;
+    this.modalService
+      .open(this.ReuploadSampleSheetModal, { size: 'lg', centered: true })
+      .result.then(
+        (result: string) => console.log('Modal closed:', result),
+        () => {},
+      );
+  }
+  uploadNewSampleSheet(modal: any): void {
+    if (
+      !this.BookingCase ||
+      !this.sampleSheetFileChosen ||
+      !this.sampleSheetBase64
+    ) {
+      Swal.fire({
+        title: 'No file selected',
+        text: 'Please select an Excel file to upload.',
+        icon: 'warning',
+      });
+      return;
+    }
+
+    const bookingId =
+      this.BookingCase.id ??
+      this.BookingCase.bookingId ??
+      this.BookingCase.BookingId;
+    if (!bookingId) {
+      Swal.fire({
+        title: 'Missing Booking ID',
+        text: 'Unable to determine the Booking ID for this record.',
+        icon: 'error',
+      });
+      return;
+    }
+
+    const instrumentId =
+      this.BookingCase.instrumentId ??
+      this.BookingCase.InstrumentId ??
+      this.BookingCase.instrument ??
+      '';
+
+    this.loadingIndicator = true;
+    const formData = new FormData();
+    formData.append('BookingId', bookingId.toString());
+    formData.append('InstrumentId', instrumentId.toString());
+    formData.append('FilePath', this.sampleSheetFileName);
+    formData.append('File', this.sampleSheetBase64);
+    formData.append(
+      'UpdatedBy',
+      this.UserId || this.user_Email || this.userEmail || '',
+    );
+
+    this.CIFwebService.ReuploadBookingSampleSheet(formData).subscribe({
+      next: (data: any) => {
+        this.loadingIndicator = false;
+        const msg = data?.item1?.[0]?.msg || '';
+        const returnId = data?.item1?.[0]?.returnId;
+
+        if (
+          returnId === 1 ||
+          msg.toLowerCase() === 'success' ||
+          msg.toLowerCase() === 'ok'
+        ) {
+          Swal.fire({
+            title: 'Uploaded Successfully!',
+            text: 'Excel sample sheet has been updated.',
+            icon: 'success',
+          }).then(() => {
+            modal.close('uploaded');
+            this.LoadPageDetails();
+          });
+        } else {
+          Swal.fire({
+            title: 'Upload Failed',
+            text:
+              msg || 'Failed to upload Excel sample sheet. Please try again.',
+            icon: 'error',
+          });
+        }
+      },
+      error: (err: any) => {
+        this.loadingIndicator = false;
+        const errorMsg =
+          err?.error?.message ||
+          err?.error ||
+          err?.message ||
+          'Failed to upload Excel sample sheet.';
+        Swal.fire({
+          title: 'Error',
+          text:
+            typeof errorMsg === 'string'
+              ? errorMsg
+              : 'Failed to upload Excel sample sheet.',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  onSampleSheetSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file: File | null = target.files?.[0] || null;
+    this.sampleSheetFileChosen = false;
+    this.sampleSheetFileName = '';
+    this.sampleSheetBase64 = null;
+
+    if (!file) {
+      return;
+    }
+
+    const validExtensions = /\.(xls|xlsx)$/i;
+    if (!validExtensions.test(file.name)) {
+      Swal.fire({
+        title: 'Invalid File Type',
+        text: 'Please select a valid Excel file (.xls or .xlsx).',
+        icon: 'warning',
+      });
+      target.value = '';
+      return;
+    }
+
+    if (file.size > 5148576) {
+      Swal.fire({
+        title: 'File size exceeds 5 MB',
+        text: 'Please upload a smaller file.',
+        icon: 'warning',
+      });
+      target.value = '';
+      return;
+    }
+
+    const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+    const safeFileName = fileNameRegex.test(file.name)
+      ? file.name
+      : file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64Data = result.split(',')[1] || '';
+      this.sampleSheetBase64 = base64Data;
+      this.sampleSheetFileName = safeFileName;
+      this.sampleSheetFileChosen = !!base64Data;
+    };
+  }
+
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('ngSelectComponentStream')
   ngSelectComponentStream: NgSelectComponent;
@@ -34,7 +241,8 @@ export class ViewBookingsComponent implements OnInit {
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
   @ViewChild('viewDescModal2') viewDescModal2: TemplateRef<any>;
   @ViewChild('ViewUpdateStatusModal') ViewUpdateStatusModal: TemplateRef<any>;
-  @ViewChild('PaymentReceiptUploadModal') PaymentReceiptUploadModal: TemplateRef<any>;
+  @ViewChild('PaymentReceiptUploadModal')
+  PaymentReceiptUploadModal: TemplateRef<any>;
   dataSource: MatTableDataSource<any>;
 
   TypeId: any = 'CIF';
@@ -59,10 +267,21 @@ export class ViewBookingsComponent implements OnInit {
   BookingData: any[] = [];
 
   // Pagination - Items per page options
-  itemsPerPageOptions: number[] = [ 5, 10, 15, 20, 25];
-  
-  currentPage = 1; itemsPerPage = 2; tmpsBookingData: any[] = []; paymentresult: PaymentRequest[] = []; paymentData: any;
-  InstrumentId: any; UserRole: any; UserId: any; MobileNo: any; departmentName: any; candidateName: any; supervisorName: any; serverUrl: any;
+  itemsPerPageOptions: number[] = [5, 10, 15, 20, 25];
+
+  currentPage = 1;
+  itemsPerPage = 2;
+  tmpsBookingData: any[] = [];
+  paymentresult: PaymentRequest[] = [];
+  paymentData: any;
+  InstrumentId: any;
+  UserRole: any;
+  UserId: any;
+  MobileNo: any;
+  departmentName: any;
+  candidateName: any;
+  supervisorName: any;
+  serverUrl: any;
   ResponseUrl: any;
 
   // ============================================
@@ -84,10 +303,17 @@ export class ViewBookingsComponent implements OnInit {
   // ============================================
   // Properties - Route Parameters
   // ============================================
-  id: any; status: any; type: any; transactionNo: any; hashedValue: any; course: any; keyNote: any;
+  id: any;
+  status: any;
+  type: any;
+  transactionNo: any;
+  hashedValue: any;
+  course: any;
+  keyNote: any;
 
   constructor(
-    private CIFwebService: LpuCIFWebService, private location: Location,
+    private CIFwebService: LpuCIFWebService,
+    private location: Location,
     private storageService: StorageService,
     private authService: AuthService,
     private datePipe: DatePipe,
@@ -98,9 +324,11 @@ export class ViewBookingsComponent implements OnInit {
     private AuthSession: LoginSessionService,
     private router: Router,
     private route: ActivatedRoute,
-    private cookieService: CookieService
-  ) { }
-  user_Email: any; qrCodeUrl: string; sessionData: any[] = [];
+    private cookieService: CookieService,
+  ) {}
+  user_Email: any;
+  qrCodeUrl: string;
+  sessionData: any[] = [];
 
   getSessionDetails() {
     this.sessionData = this.AuthSession.getSession();
@@ -108,9 +336,10 @@ export class ViewBookingsComponent implements OnInit {
       this.user_Email = session[0]['userEmail'];
     }
   }
-  userId:any;userEmail:any;
+  userId: any;
+  userEmail: any;
   ngOnInit(): void {
-   this.LoadPageDetails()
+    this.LoadPageDetails();
   }
   // LoadPageDetails(){
   //    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';// https://files.lpu.in/umsweb/Journal/
@@ -127,43 +356,49 @@ export class ViewBookingsComponent implements OnInit {
   //   this.departmentName = retrievedCookies.DepartmentName;
   //   this.candidateName = retrievedCookies.CandidateName;
   //   this.getParams();
-  //   this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path();    
-  //   const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;    
+  //   this.ResponseUrl = window.location.origin + '/ViewBookings';//this.location.path();
+  //   const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
   //    this.ResponseUrl = `${baseUrl}/ViewBookings`;
   //   this.getBookingDetails();
   //   this.fetchAllSampleStatus();
   //   this.fetchPaymentProofDetailsForUser();
   // }
 
-
   LoadPageDetails() {
-  this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
-  
-  // Refresh User/Cookie context
-  const GetCookieData = this.cookieService.get('InternalUserAuthData');
-  if (GetCookieData) {
-    const retrievedCookies = JSON.parse(GetCookieData);
-    this.UserRole = retrievedCookies.userRole?.length > 0 ? retrievedCookies.userRole : 'Internal User';
-    this.user_Email = this.UserId = this.userEmail = this.userId = retrievedCookies.EmailId;
-    this.MobileNo = retrievedCookies.MobileNo;
-    this.supervisorName = retrievedCookies.SupervisorName;
-    this.departmentName = retrievedCookies.DepartmentName;
-    this.candidateName = retrievedCookies.CandidateName;
+    this.serverUrl = 'https://files.lpu.in/umsweb/CIFDocuments/';
+
+    // Refresh User/Cookie context
+    const GetCookieData = this.cookieService.get('InternalUserAuthData');
+    if (GetCookieData) {
+      const retrievedCookies = JSON.parse(GetCookieData);
+      this.UserRole =
+        retrievedCookies.userRole?.length > 0
+          ? retrievedCookies.userRole
+          : 'Internal User';
+      this.user_Email =
+        this.UserId =
+        this.userEmail =
+        this.userId =
+          retrievedCookies.EmailId;
+      this.MobileNo = retrievedCookies.MobileNo;
+      this.supervisorName = retrievedCookies.SupervisorName;
+      this.departmentName = retrievedCookies.DepartmentName;
+      this.candidateName = retrievedCookies.CandidateName;
+    }
+
+    this.getParams();
+
+    // Logic to handle internal pathing without window.location.origin conflicts
+    const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
+    this.ResponseUrl = `${baseUrl}/ViewBookings`;
+
+    // RE-FETCH ALL DATA FROM API
+    this.getBookingDetails();
+    this.fetchAllSampleStatus();
+    this.fetchPaymentProofDetailsForUser();
   }
-
-  this.getParams();
-  
-  // Logic to handle internal pathing without window.location.origin conflicts
-  const baseUrl = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}`;
-  this.ResponseUrl = `${baseUrl}/ViewBookings`;
-
-  // RE-FETCH ALL DATA FROM API
-  this.getBookingDetails();
-  this.fetchAllSampleStatus();
-  this.fetchPaymentProofDetailsForUser();
-}
   getParams(): void {
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       this.id = params.get('id');
       this.status = params.get('status');
       this.type = params.get('type');
@@ -182,7 +417,7 @@ export class ViewBookingsComponent implements OnInit {
 
       var result;
       this.CIFwebService.GetDecodePaymentStatusDetails(formData).subscribe({
-        next: data => {
+        next: (data) => {
           result = data;
 
           if (result?.status == 'failure') {
@@ -190,8 +425,7 @@ export class ViewBookingsComponent implements OnInit {
               title: 'Payment Failed ',
               icon: 'error',
             });
-          }
-          else if (result?.status == 'success') {
+          } else if (result?.status == 'success') {
             Swal.fire({
               title: 'Payment Made Successfully',
               icon: 'success',
@@ -211,7 +445,7 @@ export class ViewBookingsComponent implements OnInit {
     return this.BookingData.filter(
       (booking: { instrumentName: string; analysisType: string }) =>
         booking.instrumentName.toLowerCase().includes(searchTerm) ||
-        booking.analysisType.toLowerCase().includes(searchTerm)
+        booking.analysisType.toLowerCase().includes(searchTerm),
     );
   }
   getBookingDetails() {
@@ -231,7 +465,7 @@ export class ViewBookingsComponent implements OnInit {
               item !== 'bookingRequestDate' &&
               item !== 'instrumentId' &&
               item !== 'id' &&
-              item !== 'analysisId'
+              item !== 'analysisId',
           );
 
           this.columns.push();
@@ -281,22 +515,32 @@ export class ViewBookingsComponent implements OnInit {
   }
   exportToExcel(): void {
     const fileName = 'Booking_Details_report.xlsx';
-    const exportedData = this.BookingData.map(item => ({
+    const exportedData = this.BookingData.map((item) => ({
       BookingId: item.bookingId,
       InstrumentName: item.instrumentName,
       AnalysisType: item.analysisType,
       AnalysisCharges: item.analysisCharges,
       Samples: item.noOfSamples,
       totalCharges: item.totalCharges,
-      RequestDate: this.datePipe.transform(item.bookingRequestDate, 'dd/MM/yyyy')
-
-
+      RequestDate: this.datePipe.transform(
+        item.bookingRequestDate,
+        'dd/MM/yyyy',
+      ),
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
 
     const wscols = [
-      { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 200 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 200 },
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 180 },
+      { wpx: 180 },
     ];
     ws['!cols'] = wscols;
 
@@ -304,7 +548,9 @@ export class ViewBookingsComponent implements OnInit {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.href = URL.createObjectURL(
+      new Blob([blobData], { type: 'application/octet-stream' }),
+    );
     link.download = fileName;
     link.click();
   }
@@ -319,9 +565,9 @@ export class ViewBookingsComponent implements OnInit {
     this.modalService
       .open(this.viewDescModal2, { size: 'xl' })
       .result.then((result: string) => {
-        console.log('Modal closed' );
+        console.log('Modal closed');
       })
-      .catch((res: any) => { });
+      .catch((res: any) => {});
   }
 
   VerifyData(BookingCase: any) {
@@ -346,7 +592,6 @@ export class ViewBookingsComponent implements OnInit {
           const paymentUrlData = results.payment.item1[0].url;
           if (paymentUrlData && paymentUrlData.length > 0) {
             window.location.href = paymentUrlData;
-
           } else {
             Swal.fire({
               title: 'Error Occurred, Try Again Later',
@@ -379,7 +624,6 @@ export class ViewBookingsComponent implements OnInit {
     });
   }
 
-
   openQRCodeScreen(url: string): Promise<any> {
     return Swal.fire({
       title: 'Scan the QR Code to Proceed with Payment',
@@ -394,25 +638,71 @@ export class ViewBookingsComponent implements OnInit {
         window.open(url);
       }
     });
-
   }
 
   search() {
     const query = this.searchQuery.toLowerCase();
     this.tmpsBookingData = this.BookingData.filter((item) => {
       return Object.values(item).some((val) =>
-        String(val).toLowerCase().includes(query)
+        String(val).toLowerCase().includes(query),
       );
     });
   }
 
-  downloadFile(fileName: string): void {
+  downloadFiles(fileName: string): void {
     const url = this.serverUrl + fileName;
     window.open(url, '_blank');
   }
+
+  downloadFile(remoteUrl: string): void {
+    swal.fire({
+      title: 'Downloading...',
+      didOpen: () => {
+        swal.showLoading(null);
+      },
+    });
+
+    this.CIFwebService.downloadFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        let message = 'Download failed';
+        if (err.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            message = errorMsg.message || message;
+          } catch {
+            message = 'Failed to download file from server';
+          }
+          swal.fire('Error', message, 'error');
+        } else {
+          swal.fire(
+            'Error',
+            err?.error?.message || 'Could not connect to the server',
+            'error',
+          );
+        }
+      },
+    });
+  }
   ToGetSampleforId: any;
   ToGetSampleforInstrumentId: any;
-  SampleStatusData: any; dataSourceSamples: any;
+  SampleStatusData: any;
+  dataSourceSamples: any;
 
   GetStatus(Data: any) {
     this.ToGetSampleforId = Data['bookingId']; // Use bookingId
@@ -422,7 +712,7 @@ export class ViewBookingsComponent implements OnInit {
     this.SampleStatusData = this.dataSourceSamples.filter(
       (item: any) =>
         item.bookingId == this.ToGetSampleforId && // Match bookingId
-        item.instrumentId == this.ToGetSampleforInstrumentId // Match instrumentId
+        item.instrumentId == this.ToGetSampleforInstrumentId, // Match instrumentId
     );
 
     // Check if any data was found
@@ -431,16 +721,16 @@ export class ViewBookingsComponent implements OnInit {
       this.modalService
         .open(this.ViewUpdateStatusModal, { size: 'sm' })
         .result.then((result: string) => {
-          console.log('Modal closed: ' );
+          console.log('Modal closed: ');
         })
-        .catch((res: any) => { });
+        .catch((res: any) => {});
     } else {
       // Handle case where no data is found
       this.SampleStatusData = []; // Ensure it's an empty array
       swal.fire({
         title: 'No Data Found',
         text: 'No sample status data available for the selected booking and instrument.',
-        icon: 'info'
+        icon: 'info',
       });
     }
   }
@@ -471,7 +761,7 @@ export class ViewBookingsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error fetching payment proof details:', error);
-      }
+      },
     });
   }
 
@@ -488,7 +778,7 @@ export class ViewBookingsComponent implements OnInit {
   hasProofUploaded(bookingId: any): boolean {
     // Check if bookingId exists in uploadProofStatusData
     return this.uploadProofStatusData.some(
-      (proof: any) => String(proof.bookingId) === String(bookingId)
+      (proof: any) => String(proof.bookingId) === String(bookingId),
     );
   }
 
@@ -497,10 +787,12 @@ export class ViewBookingsComponent implements OnInit {
   // ============================================
   openReceiptUploadModal(booking: any): void {
     this.BookingCase = booking;
-    this.modalService.open(this.PaymentReceiptUploadModal, { size: 'lg', centered: true }).result.then(
-      (result: string) => console.log('Modal closed:', result),
-      () => {}
-    );
+    this.modalService
+      .open(this.PaymentReceiptUploadModal, { size: 'lg', centered: true })
+      .result.then(
+        (result: string) => console.log('Modal closed:', result),
+        () => {},
+      );
   }
 
   onFileXSelected(event: any, id: number): void {
@@ -515,7 +807,7 @@ export class ViewBookingsComponent implements OnInit {
       Swal.fire({
         title: 'File size exceeds 5 MB',
         text: 'Please upload a smaller file.',
-        icon: 'warning'
+        icon: 'warning',
       });
       target.value = '';
       return;
@@ -552,14 +844,17 @@ export class ViewBookingsComponent implements OnInit {
 
           if (returnId === 1 || returnId === -1) {
             Swal.fire({
-              title: returnId === 1 ? 'Upload Successful' : 'Receipt Already Exists',
-              text: returnId === 1 ? 'Receipt saved successfully!' : (message || 'A receipt has already been uploaded.'),
-              icon: returnId === 1 ? 'success' : 'warning'
+              title:
+                returnId === 1 ? 'Upload Successful' : 'Receipt Already Exists',
+              text:
+                returnId === 1
+                  ? 'Receipt saved successfully!'
+                  : message || 'A receipt has already been uploaded.',
+              icon: returnId === 1 ? 'success' : 'warning',
             }).then(() => {
               Model.close();
               // REFRESH DATA MANUALLY (Avoids IIS 404)
               this.LoadPageDetails();
-
             });
           } else if (returnId === 0) {
             Swal.fire({
@@ -567,7 +862,7 @@ export class ViewBookingsComponent implements OnInit {
               text: message || 'Failed to upload receipt. Please try again.',
               icon: 'error',
               timer: 2000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
           }
           this.loadingIndicator = false;
@@ -577,16 +872,16 @@ export class ViewBookingsComponent implements OnInit {
             title: 'Error',
             text: 'Internal Server error',
             icon: 'error',
-            showConfirmButton: false
+            showConfirmButton: false,
           });
           this.loadingIndicator = false;
-        }
+        },
       });
       // this.CIFwebService.UploadPaymentReceipt(formData).subscribe({
       //   next: (data: any) => {
       //     const returnId = data.item1[0]?.returnId;
       //     const message = data.item1[0]?.msg;
-          
+
       //     if (returnId === 1) {
       //       Swal.fire({
       //         title: 'Upload Successful',
@@ -629,13 +924,10 @@ export class ViewBookingsComponent implements OnInit {
     }
   }
 
-
-
   private refreshData() {
-    
-  const currentUrl = this.router.url;
-  this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-    this.router.navigate([currentUrl]);
-  });
-}
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+  }
 }

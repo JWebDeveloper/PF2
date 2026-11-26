@@ -287,10 +287,10 @@
                                                 *ngIf=" AllBookingTestsDataRow?.paymentStatus == 'success'; else NA">
                                                 <button class="btn btn-primary "
                                                     (click)="openEditModal(AllBookingTestsDataRow)">
-                                                    Modify Staff
-                                                    <!-- <i class="bi bi-pencil-square"></i>  -->
+                                                    <!-- Modify Staff -->
+                                                    <i class="bi bi-pencil-square"></i>
                                                 </button> <br />
-                                                <span class="badge text-bg-info m-2 fs-5">Assinged to : -
+                                                <span class="text-success m-1 fs-5">Handling Staff : -
                                                     {{AllBookingTestsDataRow.assignedUserId}}</span><br />
                                             </td>
                                             <ng-template #NA>
