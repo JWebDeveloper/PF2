@@ -1,0 +1,159 @@
+================================================================================
+CIF-New PROJECT - TASK LIST (UI, BACKEND/SERVICES & CONFIGURATION CHANGES)
+Branch: 26-11-26 (Commit c037889 + Unstaged Working Tree Changes)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. UI CHANGES (FRONTEND COMPONENTS, TEMPLATES & STYLES)
+--------------------------------------------------------------------------------
+
+[UI-01] Internal User - View Bookings: Re-upload Sample Excel Sheet Feature
+  Files:
+    - src/app/views/pages/InternalUserDashboard/view-bookings/view-bookings.component.html
+    - src/app/views/pages/InternalUserDashboard/view-bookings/view-bookings.component.ts
+    - src/app/views/pages/InternalUserDashboard/view-bookings/view-bookings.component.scss
+  Tasks:
+    - Add an "Important Notice" warning alert banner at the top of the bookings page
+      instructing users to re-upload sample Excel sheets for bookings made from
+      19 Sep 2026 onward (or email cif@lpu.co.in).
+    - Add date-cutoff check `isReuploadAllowed(date)` (bookings after 18 Sep 2026)
+      to conditionally show the Reupload Excel Sample Sheet button in the Request
+      Sheet column.
+    - Build the `#ReuploadSampleSheetModal` modal with read-only Booking ID and
+      Instrument Name fields, `.xls`/`.xlsx` file input (max 5 MB, filename
+      sanitization, base64 encoding via FileReader), and `uploadNewSampleSheet(modal)`
+      handler.
+    - Replace icon font tags on View Request Sheet, Reupload Excel Sample Sheet,
+      and View Sample Status buttons with CSS-masked SVG icons (`.btn-icon.view`,
+      `.btn-icon.upload`) in `view-bookings.component.scss`.
+    - Format `bookingRequestDate` in the table using Angular's `date:'dd/MM/yyyy'`
+      pipe (unstaged).
+    - Update `LoadPageDetails()` to safely check `InternalUserAuthData` cookie and
+      re-fetch booking details, sample status, and payment proof details in-place.
+
+[UI-02] Staff Dashboard - Staff User Login: Dynamic Staff Authorization List
+  Files:
+    - src/app/views/pages/StaffDashboard/StaffUserlogin/StaffUser-login.component.ts (unstaged)
+  Tasks:
+    - Replace the hardcoded `AllallowedIds` array with `getAllCifUserList(callback?)`
+      fetching authorized UIDs from `CIFwebService.GetAllUserLists()`, merged with
+      `defaultCifUserList` as fallback/ensured entries (including UID `31309`).
+    - Update `GetEmployeeDetails(UserId)` to validate against `AllCifUserList`,
+      clear cookies/session/storage and show SweetAlert warnings when unauthorized
+      or when employee details are missing.
+    - Increase `StaffUserAuthData` cookie expiration from 35 minutes to 45 minutes.
+    - Add safe optional chaining (`data?.item1?.[0]`) in `StoreInternalUserInDataBase()`.
+
+[UI-03] Admin Dashboard - Assign Test: Table Action & Pagination Updates
+  Files:
+    - src/app/views/pages/AdminDashboard/AdminAssignTest/AdminAssignTest.component.html
+    - src/app/views/pages/AdminDashboard/AdminAssignTest/AdminAssignTest.component.ts
+  Tasks:
+    - Replace "Modify Staff" button label with `<i class="bi bi-pencil-square"></i>`.
+    - Update assigned staff indicator from `Assinged to : -` badge to
+      `Handling Staff : -` (`text-success`).
+    - Remove `'20'` and `'All'` from `itemsPerPageOptions` in `AdminAssignTest.component.ts`.
+
+[UI-04] Internal User - New Bookings: Request Sheet Opening Behavior
+  Files:
+    - src/app/views/pages/InternalUserDashboard/new-bookings/new-bookings.component.ts
+  Tasks:
+    - Update `testClick(a)` to open `this.serverUrl + a` directly in a new browser
+      tab (`window.open(fileName, '_blank')`) instead of appending `.xlsx` and
+      calling `onDownloadFile()`.
+
+[UI-05] Internal User - CIF MOU Page: Formatting & Download Handling Cleanup
+  Files:
+    - src/app/views/pages/InternalUserDashboard/CIF-Mou-Page/new-Mou.component.ts
+  Tasks:
+    - Standardize code formatting across `NewUserMouComponent`, status helpers,
+      pagination, and `onDownloadFile()` blob download handling.
+
+
+--------------------------------------------------------------------------------
+2. BACKEND / API INTEGRATION & ANGULAR SERVICE LAYER CHANGES
+--------------------------------------------------------------------------------
+
+[BE-01] Sample Sheet Re-upload API Integration
+  Files:
+    - src/app/_services/lpu-cifweb.service.ts
+  Tasks:
+    - Add `ReuploadBookingSampleSheet(bookingSampleData: FormData)` calling
+      `POST {apiUrl}api/LpuCIF/ReuploadBookingSampleSheet` with Bearer token
+      authorization header.
+    - Backend contract expected: accepts FormData fields `BookingId`,
+      `InstrumentId`, `FilePath`, `File` (base64), and `UpdatedBy`, returning
+      `item1[0].returnId` / `item1[0].msg`.
+
+[BE-02] Dynamic CIF Staff User List API Usage
+  Files:
+    - src/app/views/pages/StaffDashboard/StaffUserlogin/StaffUser-login.component.ts
+    - src/app/_services/lpu-cifweb.service.ts
+  Tasks:
+    - Integrate `CIFwebService.GetAllUserLists()` during staff login validation
+      to retrieve authorized CIF staff UIDs dynamically from the backend.
+
+[BE-03] Centralized Environment API URL Binding Across Services
+  Files:
+    - src/app/_services/lpu-cifweb.service.ts
+    - src/app/_services/auth.service.ts
+    - src/app/_services/cif-analysis.service.ts
+    - src/app/_services/analysis-price.service.ts
+  Tasks:
+    - Replace hardcoded API base URLs with `environment.apiUrl` across
+      `LpuCIFWebService`, `AuthService`, `CIFAnalysisService`, and
+      `AnalysisPriceService` (`environment.apiUrl + '/LpuCIF'`).
+
+[BE-04] MOU CRUD Service Endpoint Path Corrections
+  Files:
+    - src/app/_services/mou-crud-operation.service.ts
+  Tasks:
+    - Update endpoint URLs from `${this.baseUrl}/CIFMOUCrudOperation` to
+      `${this.baseUrl}api/LpuCIF/CIFMOUCrudOperation` for `viewMyMous`,
+      `viewAllMous`, `approveMou`, `disapproveMou`, `deleteMou`, and
+      `uploadMouDocument`.
+
+[BE-05] MOU Documents & Supporting Services Cleanup
+  Files:
+    - src/app/_services/mou-documents.service.ts
+    - src/app/_services/click-to-call.service.ts
+    - src/app/_services/login-session.service.ts
+    - src/app/_services/lpu-cifweb-new-way.service.ts
+    - src/app/_services/storage.service.ts
+  Tasks:
+    - Update `AUTH_API` in `mou-documents.service.ts` to `https://projectsapi.lpu.in/`.
+    - Remove commented-out legacy code in `storage.service.ts` and clean up
+      formatting in `lpu-cifweb-new-way.service.ts`, `click-to-call.service.ts`,
+      and `login-session.service.ts`.
+
+[BE-06] Unused / Legacy Services Archiving
+  Files:
+    - src/app/_services/Notinuse/
+  Tasks:
+    - Move 13 unused service and spec files (`agreement-entry.service.ts`,
+      `auth.service.spec.ts`, `cohortcommon.service.ts/.spec.ts`,
+      `cohortnetwork.service.ts/.spec.ts`, `lpu-cifweb.service.spec.ts`,
+      `obpAuto-assign.ts`, `placement.service.ts`, `rms.service.ts`,
+      `semesterExchange.service.ts`, `storage.service.spec.ts`,
+      `student-grievance-services.service.ts`) into `src/app/_services/Notinuse/`.
+
+
+--------------------------------------------------------------------------------
+3. ENVIRONMENT & PROJECT CONFIGURATION CHANGES
+--------------------------------------------------------------------------------
+
+[CFG-01] Environment Configurations
+  Files:
+    - src/environments/environment.ts
+    - src/environments/environment.prod.ts
+  Tasks:
+    - Set `apiUrl` to `'https://webapi.lpu.in/cif/'` in both development and
+      production environment files alongside `headerUrl`, `footerUrl`, and
+      `authToken`.
+
+[CFG-02] Git Ignore Configuration
+  Files:
+    - .gitignore
+  Tasks:
+    - Add `/old-Builds` to `.gitignore`.
+

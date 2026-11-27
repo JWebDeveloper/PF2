@@ -10,18 +10,19 @@
 
 <div class="container-fluid BottomSpace" *ngIf="BookingData.length > 0; else noDataTemplate">
   <div class="row mt-4">
-    <div class="col-12">
+    <div class="col-10" style="margin-left: 10%;">
       <div class="alert alert-warning border-start border-4 border-warning shadow-sm d-flex align-items-start gap-3 mb-0" role="alert">
         <i class="bi bi-exclamation-triangle-fill fs-4 text-warning flex-shrink-0 mt-1"></i>
         <div>
-          <h6 class="alert-heading fw-bold mb-1">Important Notice</h6>
+          <h6 class="alert-heading fw-bold fs-4 mb-1">Important Note</h6>
           <p class="mb-1">
-            Due to a temporary technical issue, please re-upload your sample Excel sheets for bookings made between
+            Due to a temporary technical issue, please reupload or email your sample Excel sheets for bookings made between
             <strong>19 Sep 2026</strong> and today.
+            Include your Booking Id along with your cif login id or email id against each sample excel sheet .
           </p>
-          <p class="mb-0">
-            Alternatively, you may email your sample sheets to
-            <a href="mailto:cif@lpu.co.in" class="alert-link text-decoration-underline">cif@lpu.co.in</a>.
+          <p class="mb-0 ">
+            Email id to send samples -
+            <a href="mailto:cif@lpu.co.in" class="alert-link text-decoration-underline text-danger">cif@lpu.co.in</a>. <br/>
           </p>
         </div>
       </div>
@@ -77,8 +78,8 @@
                       </td>
                       <td class="fw-bold d-none d-lg-table-cell">{{BookingDataRow.noOfSamples}}</td>
                       <td class="fw-bold d-none d-lg-table-cell">
-                        <!-- {{BookingDataRow.bookingRequestDate | date:'dd/MM/yyyy'}} -->
-                        {{BookingDataRow.bookingRequestDate }}
+                        {{BookingDataRow.bookingRequestDate | date:'dd/MM/yyyy'}}
+                        <!-- {{BookingDataRow.bookingRequestDate }} -->
                       </td>
                       <td class="fw-bold d-none d-lg-table-cell text-center">
                         <ng-container *ngIf="BookingDataRow.fileName; else NoFile">
